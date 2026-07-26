@@ -254,6 +254,7 @@ svg.collabels .collbl{display:block}
 .actsub .au{color:var(--faint)}.actsub .asep{color:var(--line)}
 .actsub .acum{margin-left:auto;font-weight:800;color:var(--dim)}
 .actcarry{background:color-mix(in srgb,var(--accent) 7%,transparent);border-radius:5px;padding:2px 5px}
+.act-editedtag{font-size:9.5px;font-weight:800;color:var(--crit);background:color-mix(in srgb,var(--crit) 14%,transparent);border-radius:5px;padding:1px 5px;letter-spacing:.2px;white-space:nowrap}
 .actmn{display:flex;flex-wrap:wrap;gap:3px 8px;font-size:11.5px;color:var(--faint);margin:-4px 0 9px 2px}
 .actmn b{color:var(--dim)}
 .actmn span.on{color:var(--accent)}

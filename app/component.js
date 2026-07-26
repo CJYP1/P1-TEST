@@ -83,9 +83,18 @@ class Component extends DCLogic {
   zd(lv,z){const v=(this._zdate||{})[lv+'||'+(z.mk||z.lid)];return v&&v.start?v:null;}
   ad(lv,zmk,aid){const v=(this._actDate||{})[lv+'||'+zmk+'||'+aid];return (v&&(v.start||v.end))?v:null;}
   colMon(lv,zmk,id){return (this._colMonth||{})[lv+'||'+zmk+'||col||'+id]||'';}
-  _zdateRow(lv,z,label,which,fb){const v=(this._zdate||{})[lv+'||'+(z.mk||z.lid)]||{};const iso=v[which]||'';
-    if(this.rwsIsAdmin())return `<div class="pr"><span>${label}</span><input type="date" class="zdate-in" data-which="${which}" value="${iso}" style="font-size:11px;padding:1px 4px;border:1px dashed var(--accent);border-radius:5px;background:var(--panel);color:var(--txt)"></div>`;
-    return `<div class="pr"><span>${label}</span><b>${iso?this._fmtD(iso):'—'}${iso?' <span style="color:var(--accent);font-size:8px">P6</span>':''}</b></div>`;}
+  /* Zone plan start/end derived from the earliest start / latest end across all of that zone's activities (_actDate) */
+  _zoneActSpan(lv,zmk){const pre=lv+'||'+zmk+'||';let start=null,end=null;
+    Object.keys(this._actDate||{}).forEach(k=>{if(!k.startsWith(pre))return;const v=this._actDate[k];
+      if(v&&v.start&&(!start||v.start<start))start=v.start;
+      if(v&&v.end&&(!end||v.end>end))end=v.end;});
+    return {start,end};}
+  _zdateRow(lv,z,label,which,fb){const zmk=z.mk||z.lid;const manual=(this._zdate||{})[lv+'||'+zmk]||{};
+    const auto=this._zoneActSpan(lv,zmk);
+    const iso=manual[which]||auto[which]||'';
+    const isAuto=!manual[which]&&!!auto[which];
+    if(this.rwsIsAdmin())return `<div class="pr"><span>${label}</span><input type="date" class="zdate-in" data-which="${which}" value="${manual[which]||''}" placeholder="${auto[which]||''}" title="${isAuto?'Auto — derived from activity dates below. Leave blank to keep auto, or set a date to override.':'Manually set'}" style="font-size:11px;padding:1px 4px;border:1px dashed var(--accent);border-radius:5px;background:var(--panel);color:var(--txt)"></div>`;
+    return `<div class="pr"><span>${label}</span><b>${iso?this._fmtD(iso):'—'}${isAuto?' <span style="color:var(--faint);font-size:8px" title="Derived from activity dates">AUTO</span>':''}</b></div>`;}
   _transferRings(){
     if(this._trRingsLevel===this.curLevel) return this._trRings;
     const rings=[], ov=(this.DATA&&this.DATA.overlays)||{};
@@ -1275,6 +1284,9 @@ class Component extends DCLogic {
       const bc=pct==null?'var(--faint)':(pct>=100?'#35c08e':(pct>0?this.cssvar('--wip'):'var(--faint)'));
       const chk=admin?`<select class="act-vis" data-a="${a.id}" title="User visibility — Auto: based on data · Show: always · Hide: never"><option value="auto"${_vis==='auto'?' selected':''}>Auto</option><option value="show"${_vis==='show'?' selected':''}>Show</option><option value="hide"${_vis==='hide'?' selected':''}>Hide</option></select>`:'';
       const planCell=admin?`<input class="act-plan" data-a="${a.id}" value="${plan==null?'':plan}" placeholder="—" title="Planned in ${sm} (admin)">`:`${plan==null?'—':this.fmt(plan)}`;
+      const _planEdited=this.isEdited('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm);
+      const _doneEdited=this.isEdited('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm);
+      const _editBadge=(on)=>on?`<span class="act-editedtag" title="Manually changed on the webpage — this value won't be overwritten by future CSV updates">✎ edited</span>`:'';
       const _ea=this._elemAct(a.id); const _derived=_ea&&this._zoneHasElems(lv,zmk,_ea.types);
       const doneCell=_derived?`<span class="act-derived" title="Auto-counted from the ${_ea.label} list below (by completion date) — stays in sync with the checklist">${dm==null?0:this.fmt(dm)}<span class="lnk" data-jump="${_ea.sec}" title="Jump to the ${_ea.label} list to mark each one complete">✎ Update ${_ea.label}</span></span>`:(canEdit?`<input class="act-donem" data-a="${a.id}" value="${dm==null?'':dm}" placeholder="—" title="Done in ${sm}"${canEdit?'':' disabled'}>`:`${dm==null?'—':this.fmt(dm)}`);
       const mn='';  /* Done/Plan单月行已移除(与 by累计 重复) */
@@ -1282,7 +1294,7 @@ class Component extends DCLogic {
       const actDateLine=admin?`<div class="actsub actdate"><span class="am2">Dates</span> <input type="date" class="actdate-in" data-a="${a.id}" data-which="start" value="${_adv.start||''}" title="${a.label} start"> <span class="asep">→</span> <input type="date" class="actdate-in" data-a="${a.id}" data-which="end" value="${_adv.end||''}" title="${a.label} end"></div>`:((_adv.start||_adv.end)?`<div class="actsub actdate"><span class="am2">Dates</span> <b>${_adv.start?this._fmtD(_adv.start):'—'} → ${_adv.end?this._fmtD(_adv.end):'—'}</b></div>`:'');
       return `<div class="actcard ${hidden?'act-off':''}"><div class="actrow">${chk}<span class="actlbl">${a.label}${(admin&&hidden)?' <span class="hiddentag">hidden from users</span>':''}${(a.custom&&admin)?' <span class="lnk actdel" data-a="'+a.id+'" style="color:var(--crit);cursor:pointer" title="Delete custom activity">✕</span>':''}</span><span class="actbar"><i style="width:${Math.min(pct||0,100)}%;background:${bc}"></i></span><span class="actpct" style="color:${bc}">${pct==null?'—':pct+'%'}</span>${this._cmtBtn(lv,zmk,a.id)}</div>`+
         (a.info?`<div class="actinfotext">&#9432; ${this.esc(a.info)}</div>`:``)+
-        `<div class="actsub"><span class="am">${sm}</span><span class="am2">Plan</span>${planCell}${this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="asep">|</span><span class="am2">Done</span>${doneCell}${this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="acum">${sm}: ${this.fmt(cg.done)}${plan==null?'':' / '+this.fmt(plan)} ${a.unit}</span></div>`+actDateLine+carryLine+mn+this._cmtPanel(lv,zmk,a.id)+this._actElemSecFull(lv,z,a.id)+'</div>';
+        `<div class="actsub"><span class="am">${sm}</span><span class="am2">Plan</span>${planCell}${_editBadge(_planEdited)}${this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="asep">|</span><span class="am2">Done</span>${doneCell}${_editBadge(_doneEdited)}${this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="acum">${sm}: ${this.fmt(cg.done)}${plan==null?'':' / '+this.fmt(plan)} ${a.unit}</span></div>`+actDateLine+carryLine+mn+this._cmtPanel(lv,zmk,a.id)+this._actElemSecFull(lv,z,a.id)+'</div>';
     }).join('');
     const opts=M.map(mm=>`<option value="${mm}" ${mm===sm?'selected':''}>${mm}${mm===curL?' (now)':''}</option>`).join('');
     const nav=`<div style="display:flex;align-items:center;gap:5px">
