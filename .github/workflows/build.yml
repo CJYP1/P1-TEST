@@ -1,0 +1,33 @@
+# 自动构建: 在 GitHub 网页上改 CSV / 源文件后, 推送即自动校验并重新生成
+name: auto-build
+on:
+  push:
+    paths:
+      - 'app/**'
+      - 'presentation/**'
+      - 'data-csv/**'
+      - 'tools/**'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 校验并导入工作安排 CSV → zp-data.global.js
+        run: python tools/work_csv.py import
+      - name: 重新生成注入 bundle(应用逻辑/内嵌页面/分区对照)
+        run: python tools/build.py
+      - name: 重新生成 L1 标记清单
+        run: python tools/mark_l1.py
+      - name: 提交生成结果
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "auto-build: 重新生成 bundle 与数据"
+          git push

@@ -1,0 +1,188 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,sans-serif;background:#eef1f5;color:#1b1e26;-webkit-font-smoothing:antialiased}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rpulse{0%,100%{r:19}50%{r:29}}
+.rp-pulse{animation:rpulse 2.2s ease-in-out infinite}
+</style></head>
+<body>
+<div id="app" style="max-width:1340px;margin:0 auto;padding:26px 32px 56px"></div>
+<script>
+(function(){
+  var R = window.__ROLLUP || null;
+  var ASOF = window.__ASOF || "Jul '26";
+  var base=[["Apr","'26",2],["May","'26",7],["Jun","'26",6],["Jul","'26",6],["Aug","'26",7],["Sep","'26",7],["Oct","'26",10],["Nov","'26",10],["Dec","'26",10],["Jan","'27",9],["Feb","'27",9],["Mar","'27",9],["Apr","'27",8],["May","'27",8]];
+  var mp=[164,null,null,368,362,491,560,544,608,535,541,474,514,348];
+  var groupsDef=[
+    ["Q1 · Foundation","Apr – Jun 2026",[0,1,2],"#7c8ba0"],
+    ["Q2 · Superstructure","Jul – Sep 2026",[3,4,5],"#16a06b"],
+    ["Q3 · Envelope","Oct – Dec 2026",[6,7,8],"#3b82c4"],
+    ["Q4 · Fit-out & Handover","Jan – May 2027",[9,10,11,12,13],"#8b6bd6"]
+  ];
+  function curIdx(){var i=base.findIndex(function(b){return (b[0]+" "+b[1])===ASOF||(b[0]+b[1])===ASOF;});return i<0?3:i;}
+  function compute(){
+    var M=[],cumDays=0;
+    for(var i=0;i<14;i++){
+      var target=base[i][2]; cumDays+=target;
+      var doneEl=R&&R.critDoneMonth?(R.critDoneMonth[i]||0):0;
+      var cumEl=R&&R.critCum?(R.critCum[i]||0):0;
+      var planned=R?R.critPlanned:0;
+      var pct=(R&&planned)?Math.round(cumEl/planned*100):0;
+      var daysEarned=Math.round(target*pct/100);
+      M.push({i:i,mo:base[i][0],yr:base[i][1],target:target,cumDays:cumDays,doneEl:doneEl,cumEl:cumEl,pct:pct,daysEarned:daysEarned,mp:mp[i]});
+    }
+    return M;
+  }
+  function roadmapSVG(M,CUR){
+    var GR="#16a06b",GRD="#0f7a52",INK="#1b1e26",DIM="#5b6271",FAINT="#98a0ad";
+    var MS={2:'Q1 END',5:'Q2 END',8:'Q3 END',13:'TARGET'};
+    var MC="#e0912b",MCD="#b9741d";
+    var VW=1260,VH=290,cy=156,x0=74,x1=1186,step=(x1-x0)/13;
+    var X=function(i){return x0+i*step;}, curX=X(CUR);
+    var s='';
+    for(var i=0;i<14;i++){ if(MS[i]!=null){var x=X(i); s+='<rect x="'+(x-32)+'" y="24" width="64" height="'+(VH-46)+'" rx="15" fill="'+MC+'" opacity="0.10"/>';}}
+    s+='<defs><linearGradient id="road2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1eb178"/><stop offset="1" stop-color="'+GR+'"/></linearGradient></defs>';
+    s+='<rect x="'+(x0-16)+'" y="'+(cy-21)+'" width="'+(x1-x0+32)+'" height="42" rx="21" fill="#e3e8ef"/>';
+    s+='<rect x="'+(x0-16)+'" y="'+(cy-21)+'" width="'+(curX-(x0-16))+'" height="42" rx="21" fill="url(#road2)"/>';
+    s+='<line x1="'+(x0-6)+'" y1="'+cy+'" x2="'+curX+'" y2="'+cy+'" stroke="#fff" stroke-width="3" stroke-dasharray="2 18" stroke-linecap="round" opacity="0.95"/>';
+    s+='<line x1="'+curX+'" y1="'+cy+'" x2="'+(x1+6)+'" y2="'+cy+'" stroke="#c7cfdb" stroke-width="3" stroke-dasharray="2 18" stroke-linecap="round"/>';
+    for(var i=0;i<14;i++){
+      var m=M[i],x=X(i),done=i<CUR,cur=i===CUR,ms=MS[i]!=null;
+      s+='<text x="'+x+'" y="'+(cy-44)+'" font-size="'+(ms?15.5:13.5)+'" font-weight="800" fill="'+(ms?MCD:((done||cur)?INK:DIM))+'" text-anchor="middle">'+m.mo+'</text>';
+      if(m.yr!==(M[i-1]&&M[i-1].yr)) s+='<text x="'+x+'" y="'+(cy-60)+'" font-size="11" font-weight="700" fill="'+FAINT+'" text-anchor="middle">'+m.yr+'</text>';
+      if(cur) s+='<circle class="rp-pulse" cx="'+x+'" cy="'+cy+'" r="24" fill="'+GR+'" opacity="0.15"/>';
+      var Rr=ms?18:(cur?16:(done?15:12));
+      if(ms) s+='<circle cx="'+x+'" cy="'+cy+'" r="'+(Rr+6)+'" fill="none" stroke="'+MC+'" stroke-width="2.5"/>';
+      if(cur){
+        s+='<circle cx="'+x+'" cy="'+cy+'" r="'+Rr+'" fill="'+GR+'" stroke="#fff" stroke-width="3.5"/>';
+        s+='<circle cx="'+x+'" cy="'+cy+'" r="5.5" fill="#fff"/>';
+      } else if(done){
+        s+='<circle cx="'+x+'" cy="'+cy+'" r="'+Rr+'" fill="'+GR+'" stroke="#fff" stroke-width="3.5"/>';
+        s+='<path d="M'+(x-6)+','+(cy+0.4)+' l4,4.3 l7.4,-8.6" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>';
+      } else {
+        s+='<circle cx="'+x+'" cy="'+cy+'" r="'+Rr+'" fill="#fff" stroke="'+(ms?MC:'#c7cfd9')+'" stroke-width="'+(ms?3:2.6)+'"/>';
+        if(ms) s+='<circle cx="'+x+'" cy="'+cy+'" r="5" fill="'+MC+'"/>';
+      }
+      if(ms){
+        s+='<rect x="'+(x-27)+'" y="'+(cy+32)+'" width="54" height="31" rx="9" fill="'+((done||cur)?MCD:MC)+'"/>';
+        s+='<text x="'+x+'" y="'+(cy+53)+'" font-size="17" font-weight="800" fill="#fff" text-anchor="middle">'+m.cumDays+'</text>';
+        s+='<text x="'+x+'" y="'+(cy+80)+'" font-size="10" font-weight="800" fill="'+MCD+'" text-anchor="middle">'+MS[i]+'</text>';
+      } else {
+        s+='<text x="'+x+'" y="'+(cy+45)+'" font-size="13" font-weight="700" fill="'+((done||cur)?GRD:FAINT)+'" text-anchor="middle">'+m.cumDays+'</text>';
+        s+='<text x="'+x+'" y="'+(cy+59)+'" font-size="8.5" font-weight="700" fill="'+FAINT+'" text-anchor="middle">DAYS</text>';
+      }
+    }
+    s+='<g transform="translate('+curX+','+(cy-86)+')"><rect x="-30" y="-16" width="60" height="21" rx="10.5" fill="'+GR+'"/><text x="0" y="-1.5" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">TODAY</text><path d="M-5,5 L5,5 L0,13 Z" fill="'+GR+'"/></g>';
+    return '<svg viewBox="0 0 '+VW+' '+VH+'" style="width:100%;height:auto;display:block" preserveAspectRatio="xMidYMid meet">'+s+'</svg>';
+  }
+  function areaCards(areas){
+    return areas.map(function(a){
+      return '<div style="border:1px solid #e6e9ef;border-top:3px solid '+a.col+';border-radius:13px;padding:13px 16px">'
+        +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px"><div style="font-size:13.5px;font-weight:800;color:#1b1e26">'+a.label+'</div><div style="flex:1"></div><div style="font-size:24px;font-weight:800;color:'+a.barCol+';line-height:1">'+a.pct+'%</div></div>'
+        +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:11px"><div style="font-size:10.5px;font-weight:700;color:#98a0ad">vs plan node <b style="color:#5b6271">'+a.plannedPct+'%</b></div><div style="font-size:10.5px;font-weight:800;color:'+a.deltaCol+'">'+a.deltaTxt+'</div></div>'
+        +'<div style="display:flex;gap:0"><div style="flex:1;border-right:1px solid #f0f2f6"><div style="font-size:18px;font-weight:800;color:#0f7a52;line-height:1">'+a.daysEarned+'<small style="font-size:10px;font-weight:700">/'+a.daysShare+'d</small></div><div style="font-size:8.5px;font-weight:800;color:#98a0ad;letter-spacing:.3px;margin-top:2px">DAYS EARNED</div></div>'
+        +'<div style="flex:1;padding-left:12px"><div style="font-size:18px;font-weight:800;color:#1b1e26;line-height:1">'+a.finish+'</div><div style="font-size:8.5px;font-weight:800;color:#98a0ad;letter-spacing:.3px;margin-top:2px">FINISH LINE</div></div></div>'
+        +'<div style="font-size:10px;font-weight:700;color:#98a0ad;margin-top:9px">'+a.done+' / '+a.planned+' critical elements</div>'
+      +'</div>';
+    }).join('');
+  }
+  function groupCards(M,CUR,areaSeries){
+    return groupsDef.map(function(gd){
+      var label=gd[0],range=gd[1],idxs=gd[2],col=gd[3];
+      var subTarget=idxs.reduce(function(a,k){return a+M[k].target;},0);
+      var subDone=idxs.reduce(function(a,k){return a+(k<=CUR?M[k].target:0);},0);
+      var subCol=subDone<subTarget?"#d98a2a":"#0f7a52";
+      var rows=idxs.map(function(k){
+        var m=M[k],done=k<CUR,cur=k===CUR;
+        var tag=done?"✓ Passed":(cur?"● Current":"○ Ahead");
+        var tagCol=done?"#0f7a52":(cur?"#16a06b":"#98a0ad");
+        var pillCol=(done||cur)?"#0f7a52":"#5b6271";
+        var mpTxt=m.mp!=null?("MP "+m.mp):"MP —";
+        var bits=areaSeries.map(function(a){
+          var abd=(a.doneMonth&&a.doneMonth[k])||0;
+          var abp=a.planned?Math.round(((a.cum&&a.cum[k])||0)/a.planned*100):0;
+          return '<div style="display:flex;align-items:center;gap:8px;padding:2px 0">'
+            +'<div style="width:58px;flex:0 0 auto;display:flex;align-items:center;gap:6px;padding-left:12px"><span style="width:8px;height:8px;border-radius:2px;background:'+a.col+';flex:0 0 auto"></span><span style="font-size:11px;font-weight:800;color:#7a8194">'+a.key+'</span></div>'
+            +'<div style="flex:1"></div><div style="text-align:center;min-width:46px"></div>'
+            +'<div style="text-align:center;min-width:44px"><div style="font-size:13px;font-weight:800;color:#5b6271;line-height:1">'+abd+'</div></div>'
+            +'<div style="text-align:center;min-width:54px"><div style="font-size:13px;font-weight:800;color:'+a.col+';line-height:1">'+abp+'%</div></div>'
+            +'<div style="width:60px;flex:0 0 auto"></div></div>';
+        }).join('');
+        return '<div style="border-top:1px solid #f0f2f6;padding:9px 0 8px"><div style="display:flex;align-items:center;gap:8px">'
+          +'<div style="width:58px;flex:0 0 auto"><div style="font-size:12.5px;font-weight:800;color:#1b1e26">'+m.mo+' <span style="color:#98a0ad;font-weight:700">'+m.yr+'</span></div><div style="font-size:9px;font-weight:800;color:'+tagCol+';margin-top:1px">'+tag+'</div></div>'
+          +'<div style="flex:1"></div>'
+          +'<div style="text-align:center;min-width:46px"><div style="font-size:19px;font-weight:800;color:'+pillCol+';line-height:1">+'+m.target+'<small style="font-size:10px;font-weight:700">d</small></div><div style="font-size:8px;font-weight:800;color:#98a0ad;letter-spacing:.3px">GAINED</div></div>'
+          +'<div style="text-align:center;min-width:44px"><div style="font-size:19px;font-weight:800;color:#1b1e26;line-height:1">'+m.doneEl+'</div><div style="font-size:8px;font-weight:800;color:#98a0ad;letter-spacing:.3px">DONE</div></div>'
+          +'<div style="text-align:center;min-width:54px"><div style="font-size:19px;font-weight:800;color:#16a06b;line-height:1">'+m.pct+'%</div><div style="font-size:8px;font-weight:800;color:#98a0ad;letter-spacing:.3px">COMPLETE</div></div>'
+          +'<div style="width:60px;text-align:right;flex:0 0 auto;font-size:10px;font-weight:700;color:#98a0ad">'+mpTxt+'</div></div>'
+          +'<div style="margin-top:4px">'+bits+'</div></div>';
+      }).join('');
+      return '<div style="animation:fadein .5s ease .1s both"><div style="background:#fff;border:1px solid #e6e9ef;border-top:3px solid '+col+';border-radius:14px;padding:12px 16px 8px;box-shadow:0 1px 2px rgba(20,30,50,.04)">'
+        +'<div style="display:flex;align-items:baseline;gap:9px;margin-bottom:4px"><div style="font-size:14px;font-weight:800">'+label+'</div><div style="font-size:11px;color:#5b6271;font-weight:500">'+range+'</div><div style="flex:1"></div><div style="font-size:12px;font-weight:800;color:'+subCol+'">'+subDone+' / '+subTarget+' d</div></div>'
+        +rows+'</div></div>';
+    }).join('');
+  }
+  function render(){
+    var M=compute(), CUR=curIdx();
+    var totalDays=M[13].cumDays;
+    var critPct=R?(R.critPct||0):0;
+    var cats=(R&&R.critByCat?R.critByCat:[]).map(function(c){return {label:c.label,done:c.done,planned:c.planned,pct:c.planned?Math.round(c.done/c.planned*100):0,col:(c.done>=c.planned&&c.planned>0)?"#16a06b":"#d98a2a"};});
+    var cumArr=M.map(function(m){return m.cumDays;});
+    var areaSeries=(R&&R.byArea)?R.byArea:[];
+    var areas=areaSeries.map(function(a){
+      var denom=cumArr[a.finishIdx]||cumArr[13];
+      var plannedPct=Math.max(0,Math.min(100,Math.round(cumArr[CUR]/denom*100)));
+      var delta=a.pct-plannedPct;
+      return {key:a.key,label:a.label,col:a.col,pct:a.pct,plannedPct:plannedPct,done:a.done,planned:a.planned,daysShare:a.daysShare,daysEarned:a.daysEarned,finish:a.finish,barCol:a.pct>=100?"#16a06b":a.col,deltaTxt:(delta>=0?"▲ "+delta+"% ahead of plan":"▼ "+(-delta)+"% behind plan"),deltaCol:(delta>=0?"#0f7a52":"#d98a2a")};
+    });
+    var liveMsg,liveBg,liveBd,liveFg,liveDot;
+    if(!R){ liveMsg="Could not load map data — showing programme plan only."; liveBg="#fdf1f1";liveBd="#f3c9c9";liveFg="#b3453f";liveDot="#cf4f86"; }
+    else if(!R.hasCrit){ liveMsg="No critical-path zones defined on the map yet. Mark zones as critical there and their work drives this roadmap. ("+(R.totalPlanned||0)+" elements total across all zones.)"; liveBg="#fff7ec";liveBd="#f3ddb8";liveFg="#9a6a1c";liveDot="#e0912b"; }
+    else { liveMsg="Live · critical path "+R.critDone+" of "+R.critPlanned+" elements complete ("+critPct+"%). Days are earned as critical work is signed off."; liveBg="#eefaf3";liveBd="#bfe6ce";liveFg="#0f7a52";liveDot="#16a06b"; }
+    var asOfL=M[CUR].mo+" "+M[CUR].yr;
+    var html='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px"><div>'
+      +'<div style="font-size:19px;font-weight:800;letter-spacing:-.2px">Programme Time-Savings Roadmap</div>'
+      +'<div style="font-size:12px;color:#5b6271;font-weight:500;margin-top:1px">Progress tracks the critical-path work on the map · each 100% earns that month’s programme days · April 2026 → May 2027</div>'
+      +'</div></div>';
+    html+='<div style="display:flex;align-items:center;gap:9px;background:'+liveBg+';border:1px solid '+liveBd+';color:'+liveFg+';border-radius:10px;padding:8px 13px;font-size:11.5px;font-weight:700;margin-bottom:16px"><span style="width:8px;height:8px;border-radius:50%;background:'+liveDot+';flex:0 0 auto"></span>'+liveMsg+'</div>';
+    html+='<div style="display:flex;align-items:stretch;gap:26px;background:#fff;border:1px solid #e6e9ef;border-radius:16px;padding:26px 30px;box-shadow:0 6px 22px rgba(20,30,50,.06);margin-bottom:18px;flex-wrap:wrap;animation:fadein .5s ease both">'
+      +'<div style="display:flex;align-items:flex-end;gap:16px;padding-right:26px"><div style="font-size:82px;font-weight:800;color:#16a06b;line-height:.86;letter-spacing:-2px">'+totalDays+'</div>'
+      +'<div style="padding-bottom:8px"><div style="font-size:20px;font-weight:800;color:#1b1e26;line-height:1">days saved</div><div style="font-size:12px;color:#5b6271;font-weight:600;margin-top:3px">programme target · May 2027</div></div></div>'
+      +'<div style="display:flex;align-items:center;flex:1;flex-wrap:wrap;gap:4px 0">'
+      +'<div style="display:flex;flex-direction:column;gap:2px;padding:0 20px;border-left:1px solid #e6e9ef"><div style="font-size:26px;font-weight:800;color:#0f7a52;line-height:1">'+critPct+'%</div><div style="font-size:11px;color:#5b6271;font-weight:600">Critical path complete · live</div></div>'
+      +'<div style="display:flex;flex-direction:column;gap:2px;padding:0 20px;border-left:1px solid #e6e9ef"><div style="font-size:26px;font-weight:800;color:#1b1e26;line-height:1">'+(R?R.critDone:0)+' / '+(R?R.critPlanned:0)+'</div><div style="font-size:11px;color:#5b6271;font-weight:600">Critical elements signed off</div></div>'
+      +'<div style="display:flex;flex-direction:column;gap:2px;padding:0 20px;border-left:1px solid #e6e9ef"><div style="font-size:26px;font-weight:800;color:#1b1e26;line-height:1">'+Math.round(totalDays*critPct/100)+' d</div><div style="font-size:11px;color:#5b6271;font-weight:600">Days earned so far · '+asOfL+'</div></div>'
+      +'</div></div>';
+    if(cats.length){
+      html+='<div style="background:#fff;border:1px solid #e6e9ef;border-radius:16px;padding:16px 22px;box-shadow:0 6px 22px rgba(20,30,50,.06);margin-bottom:18px;animation:fadein .5s ease .03s both">'
+        +'<div style="font-size:11px;font-weight:800;color:#98a0ad;letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px">Critical-path quantities by category · each counted once</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:10px">'
+        +cats.map(function(c){return '<div style="display:flex;align-items:center;gap:10px;background:#f6f8fb;border:1px solid #e6e9ef;border-radius:11px;padding:9px 14px;min-width:150px"><div style="flex:1"><div style="font-size:12.5px;font-weight:800;color:#1b1e26">'+c.label+'</div><div style="font-size:10px;font-weight:700;color:#98a0ad">'+c.done+' done · '+c.planned+' planned</div></div><div style="font-size:20px;font-weight:800;color:'+c.col+';line-height:1">'+c.pct+'%</div></div>';}).join('')
+        +'</div></div>';
+    }
+    html+='<div style="background:#fff;border:1px solid #e6e9ef;border-radius:16px;padding:22px 24px 16px;box-shadow:0 6px 22px rgba(20,30,50,.06);margin-bottom:18px;animation:fadein .5s ease .06s both">'
+      +'<div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px"><div style="font-size:14px;font-weight:800">Programme roadmap</div>'
+      +'<div style="display:flex;gap:18px;flex-wrap:wrap;font-size:10.5px;color:#5b6271;font-weight:600">'
+      +'<span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:50%;background:#16a06b;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px">✓</span>Passed</span>'
+      +'<span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #c7cfd9;display:inline-block"></span>Ahead</span>'
+      +'<span style="display:flex;align-items:center;gap:6px"><span style="color:#d98a2a;font-weight:800">◆</span>quarter-end milestone</span>'
+      +'</div></div>'+roadmapSVG(M,CUR)+'</div>';
+    // combined: area cards + quarterly detail
+    html+='<div style="background:#fff;border:1px solid #e6e9ef;border-radius:16px;padding:18px 22px 16px;box-shadow:0 6px 22px rgba(20,30,50,.06);margin-bottom:18px;animation:fadein .5s ease .06s both">';
+    if(areas.length){
+      html+='<div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px"><div style="font-size:11px;font-weight:800;color:#98a0ad;letter-spacing:.4px;text-transform:uppercase">Days shared across the three areas · each measured against its own finish · vs plan node</div><div style="font-size:11px;color:#5b6271;font-weight:600">108 d split by critical-path work volume</div></div>'
+        +'<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">'+areaCards(areas)+'</div>'
+        +'<div style="height:1px;background:#eef1f5;margin:18px 0 14px"></div>';
+    }
+    html+='<div style="font-size:11px;font-weight:800;color:#98a0ad;letter-spacing:.4px;text-transform:uppercase;margin-bottom:12px">Quarterly detail · gained days vs live completion</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px">'+groupCards(M,CUR,areaSeries)+'</div>';
+    html+='</div>';
+    document.getElementById('app').innerHTML=html;
+  }
+  render();
+})();
+</script>
+</body></html>
