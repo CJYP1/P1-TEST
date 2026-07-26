@@ -67,7 +67,7 @@ zx_json = json.dumps(zx, ensure_ascii=False, separators=(', ', ': '))
 seed = {}
 za = ROOT/'data-csv'/'fixed'/'zone-activity.csv'
 if za.exists():
-    ap, ad = {}, {}
+    ap, ad, adm = {}, {}, {}
     with open(za, encoding='utf-8-sig') as f:
         rd = csv.DictReader(f)
         for row in rd:
@@ -79,6 +79,11 @@ if za.exists():
                 try: v = float(qty); v = int(v) if v == int(v) else v
                 except ValueError: sys.exit(f'zone-activity.csv: {lv}/{zmk}/{aid}/{mon} 计划量 "{qty}" 不是数字')
                 ap[f'{lv}||{zmk}||{aid}||{mon}'] = v
+            done = (row.get('完成量') or '').strip().replace(',','')
+            if mon and done not in ('','—','-'):
+                try: dv = float(done); dv = int(dv) if dv == int(dv) else dv
+                except ValueError: sys.exit(f'zone-activity.csv: {lv}/{zmk}/{aid}/{mon} 完成量 "{done}" 不是数字')
+                adm[f'{lv}||{zmk}||{aid}||{mon}'] = dv
             s, e = (row.get('活动开始') or '').strip(), (row.get('活动结束') or '').strip()
             if s or e:
                 o = {}
@@ -87,6 +92,7 @@ if za.exists():
                 ad[f'{lv}||{zmk}||{aid}'] = o
     if ap: seed['actPlan'] = ap
     if ad: seed['actDate'] = ad
+    if adm: seed['actDoneM'] = adm
 zpd = ROOT/'data-csv'/'fixed'/'zone-plan-dates.csv'
 if zpd.exists():
     zd = {}
