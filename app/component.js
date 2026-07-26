@@ -93,7 +93,11 @@ class Component extends DCLogic {
     const auto=this._zoneActSpan(lv,zmk);
     const iso=manual[which]||auto[which]||'';
     const isAuto=!manual[which]&&!!auto[which];
-    if(this.rwsIsAdmin())return `<div class="pr"><span>${label}</span><input type="date" class="zdate-in" data-which="${which}" value="${manual[which]||''}" placeholder="${auto[which]||''}" title="${isAuto?'Auto — derived from activity dates below. Leave blank to keep auto, or set a date to override.':'Manually set'}" style="font-size:11px;padding:1px 4px;border:1px dashed var(--accent);border-radius:5px;background:var(--panel);color:var(--txt)"></div>`;
+    /* NOTE: native <input type="date"> ignores the placeholder attribute and always shows the
+       browser's own "dd/mm/yyyy" text, so an auto-derived date can never be shown that way.
+       Instead: pre-fill the input's value with the auto date (when there's no manual override)
+       and show an "AUTO" tag next to it so admins can tell it's derived, not manually set. */
+    if(this.rwsIsAdmin())return `<div class="pr"><span>${label}</span><input type="date" class="zdate-in" data-which="${which}" value="${manual[which]||auto[which]||''}" title="${isAuto?'Auto — derived from activity dates below. Clear and save to remove the override, or set a new date to override.':'Manually set'}" style="font-size:11px;padding:1px 4px;border:1px dashed var(--accent);border-radius:5px;background:var(--panel);color:var(--txt)">${isAuto?' <span style="color:var(--faint);font-size:8px" title="Derived from activity dates">AUTO</span>':''}</div>`;
     return `<div class="pr"><span>${label}</span><b>${iso?this._fmtD(iso):'—'}${isAuto?' <span style="color:var(--faint);font-size:8px" title="Derived from activity dates">AUTO</span>':''}</b></div>`;}
   _transferRings(){
     if(this._trRingsLevel===this.curLevel) return this._trRings;
