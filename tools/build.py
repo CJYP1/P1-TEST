@@ -65,31 +65,42 @@ zx_json = json.dumps(zx, ensure_ascii=False, separators=(', ', ': '))
 
 # zone-activity / zone-plan-dates / col-month → locked-data 种子(基准数据进区域面板)
 seed = {}
-za = ROOT/'data-csv'/'fixed'/'zone-activity.csv'
-if za.exists():
+# 支持两种来源:
+#   1) 单文件(旧): data-csv/fixed/zone-activity.csv
+#   2) 按楼层拆分(新): data-csv/fixed/zone-activity/*.csv (每层一个文件, 内容用同一套表头)
+za_single = ROOT/'data-csv'/'fixed'/'zone-activity.csv'
+za_dir = ROOT/'data-csv'/'fixed'/'zone-activity'
+za_files = []
+if za_dir.exists() and za_dir.is_dir():
+    za_files = sorted(za_dir.glob('*.csv'))
+elif za_single.exists():
+    za_files = [za_single]
+
+if za_files:
     ap, ad, adm = {}, {}, {}
-    with open(za, encoding='utf-8-sig') as f:
-        rd = csv.DictReader(f)
-        for row in rd:
-            lv, zmk, aid = row['楼层'].strip(), row['分区'].strip(), row['活动'].strip()
-            if not lv or not zmk or not aid: continue
-            mon = (row.get('月份') or '').strip()
-            qty = (row.get('计划量') or '').strip().replace(',','')
-            if mon and qty not in ('','—','-'):
-                try: v = float(qty); v = int(v) if v == int(v) else v
-                except ValueError: sys.exit(f'zone-activity.csv: {lv}/{zmk}/{aid}/{mon} 计划量 "{qty}" 不是数字')
-                ap[f'{lv}||{zmk}||{aid}||{mon}'] = v
-            done = (row.get('完成量') or '').strip().replace(',','')
-            if mon and done not in ('','—','-'):
-                try: dv = float(done); dv = int(dv) if dv == int(dv) else dv
-                except ValueError: sys.exit(f'zone-activity.csv: {lv}/{zmk}/{aid}/{mon} 完成量 "{done}" 不是数字')
-                adm[f'{lv}||{zmk}||{aid}||{mon}'] = dv
-            s, e = (row.get('活动开始') or '').strip(), (row.get('活动结束') or '').strip()
-            if s or e:
-                o = {}
-                if s: o['start'] = s
-                if e: o['end'] = e
-                ad[f'{lv}||{zmk}||{aid}'] = o
+    for za in za_files:
+        with open(za, encoding='utf-8-sig') as f:
+            rd = csv.DictReader(f)
+            for row in rd:
+                lv, zmk, aid = row['楼层'].strip(), row['分区'].strip(), row['活动'].strip()
+                if not lv or not zmk or not aid: continue
+                mon = (row.get('月份') or '').strip()
+                qty = (row.get('计划量') or '').strip().replace(',','')
+                if mon and qty not in ('','—','-'):
+                    try: v = float(qty); v = int(v) if v == int(v) else v
+                    except ValueError: sys.exit(f'{za.name}: {lv}/{zmk}/{aid}/{mon} 计划量 "{qty}" 不是数字')
+                    ap[f'{lv}||{zmk}||{aid}||{mon}'] = v
+                done = (row.get('完成量') or '').strip().replace(',','')
+                if mon and done not in ('','—','-'):
+                    try: dv = float(done); dv = int(dv) if dv == int(dv) else dv
+                    except ValueError: sys.exit(f'{za.name}: {lv}/{zmk}/{aid}/{mon} 完成量 "{done}" 不是数字')
+                    adm[f'{lv}||{zmk}||{aid}||{mon}'] = dv
+                s, e = (row.get('活动开始') or '').strip(), (row.get('活动结束') or '').strip()
+                if s or e:
+                    o = {}
+                    if s: o['start'] = s
+                    if e: o['end'] = e
+                    ad[f'{lv}||{zmk}||{aid}'] = o
     if ap: seed['actPlan'] = ap
     if ad: seed['actDate'] = ad
     if adm: seed['actDoneM'] = adm
