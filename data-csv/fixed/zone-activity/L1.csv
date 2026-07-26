@@ -8,7 +8,6 @@ L1,L1|ZC3.1B,exc,Excavation,,,,,
 L1,L1|ZC3.1B,demo,Demolition,,,,,
 L1,L1|ZC3.1B,slab,Cast Slab,,,,,
 L1,L1|ZC3.1B,act_wall,Wall,,,,,
-L1,L1|ZC3.1B,act_corewall,Core Wall,,,,,
 L1,L1|ZC3.1B,act_colcorbel,Columns Corbel,,,,,
 L1,L1|ZC3.1A,col,Columns,,,,,
 L1,L1|ZC3.1A,pile,Pile Caps,,,,,
@@ -19,7 +18,6 @@ L1,L1|ZC3.1A,exc,Excavation,,,,,
 L1,L1|ZC3.1A,demo,Demolition,,,,,
 L1,L1|ZC3.1A,slab,Cast Slab,,,,,
 L1,L1|ZC3.1A,act_wall,Wall,,,,,
-L1,L1|ZC3.1A,act_corewall,Core Wall,,,,,
 L1,L1|ZC3.1A,act_colcorbel,Columns Corbel,,,,,
 L1,L1|ZC3.2,col,Columns,,,,,
 L1,L1|ZC3.2,pile,Pile Caps,,,,,
@@ -30,7 +28,6 @@ L1,L1|ZC3.2,exc,Excavation,,,,,
 L1,L1|ZC3.2,demo,Demolition,,,,,
 L1,L1|ZC3.2,slab,Cast Slab,,,,,
 L1,L1|ZC3.2,act_wall,Wall,,,,,
-L1,L1|ZC3.2,act_corewall,Core Wall,,,,,
 L1,L1|ZC3.2,act_colcorbel,Columns Corbel,,,,,
 L1,L1|MSLAB2,col,Columns,,,,,
 L1,L1|MSLAB2,pile,Pile Caps,,,,,
@@ -52,7 +49,6 @@ L1,L1|ZC2.2,exc,Excavation,,,,,
 L1,L1|ZC2.2,demo,Demolition,,,,,
 L1,L1|ZC2.2,slab,Cast Slab,,,,,
 L1,L1|ZC2.2,act_wall,Wall,,,,,
-L1,L1|ZC2.2,act_corewall,Core Wall,,,,,
 L1,L1|ZC2.2,act_colcorbel,Columns Corbel,,,,,
 L1,L1|MSLAB3,col,Columns,,,,,
 L1,L1|MSLAB3,pile,Pile Caps,,,,,
@@ -74,7 +70,6 @@ L1,L1|ZC1,exc,Excavation,,,,,
 L1,L1|ZC1,demo,Demolition,,,,,
 L1,L1|ZC1,slab,Cast Slab,,,,,
 L1,L1|ZC1,act_wall,Wall,,,,,
-L1,L1|ZC1,act_corewall,Core Wall,,,,,
 L1,L1|ZC1,act_colcorbel,Columns Corbel,,,,,
 L1,L1|CAPPINGBEAM6,col,Columns,,,,,
 L1,L1|CAPPINGBEAM6,pile,Pile Caps,,,,,
@@ -184,7 +179,6 @@ L1,L1|ZC2.1,exc,Excavation,,,,,
 L1,L1|ZC2.1,demo,Demolition,,,,,
 L1,L1|ZC2.1,slab,Cast Slab,,,,,
 L1,L1|ZC2.1,act_wall,Wall,,,,,
-L1,L1|ZC2.1,act_corewall,Core Wall,,,,,
 L1,L1|ZC2.1,act_colcorbel,Columns Corbel,,,,,
 L1,L1|SLAB13F011,col,Columns,,,,,
 L1,L1|SLAB13F011,pile,Pile Caps,,,,,
@@ -274,16 +268,12 @@ L1,L1|SLAB8A2,slab,Cast Slab,,,,,
 L1,L1|SLAB8A2,act_wall,Wall,,,,,
 L1,L1|SLAB8A2,act_corewall,Core Wall,,,,,
 L1,L1|SLAB8A2,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB102,col,Columns,,,,,
 L1,L1|SLAB102,pile,Pile Caps,,,,,
 L1,L1|SLAB102,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB102,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB102,ls,Lift / Stairs,,,,,
 L1,L1|SLAB102,exc,Excavation,,,,,
 L1,L1|SLAB102,demo,Demolition,,,,,
-L1,L1|SLAB102,slab,Cast Slab,,,,,
-L1,L1|SLAB102,act_wall,Wall,,,,,
-L1,L1|SLAB102,act_corewall,Core Wall,,,,,
 L1,L1|SLAB102,act_colcorbel,Columns Corbel,,,,,
 L1,L1|SLAB13F012,col,Columns,,,,,
 L1,L1|SLAB13F012,pile,Pile Caps,,,,,
@@ -296,15 +286,12 @@ L1,L1|SLAB13F012,slab,Cast Slab,,,,,
 L1,L1|SLAB13F012,act_wall,Wall,,,,,
 L1,L1|SLAB13F012,act_corewall,Core Wall,,,,,
 L1,L1|SLAB13F012,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB101,col,Columns,,,,,
 L1,L1|SLAB101,pile,Pile Caps,,,,,
 L1,L1|SLAB101,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB101,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB101,ls,Lift / Stairs,,,,,
 L1,L1|SLAB101,exc,Excavation,,,,,
 L1,L1|SLAB101,demo,Demolition,,,,,
-L1,L1|SLAB101,slab,Cast Slab,,,,,
-L1,L1|SLAB101,act_wall,Wall,,,,,
 L1,L1|SLAB101,act_corewall,Core Wall,,,,,
 L1,L1|SLAB101,act_colcorbel,Columns Corbel,,,,,
 L1,L1|CAPPINGBEAM3A,col,Columns,,,,,
@@ -318,14 +305,12 @@ L1,L1|CAPPINGBEAM3A,slab,Cast Slab,,,,,
 L1,L1|CAPPINGBEAM3A,act_wall,Wall,,,,,
 L1,L1|CAPPINGBEAM3A,act_corewall,Core Wall,,,,,
 L1,L1|CAPPINGBEAM3A,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB81,col,Columns,,,,,
 L1,L1|SLAB81,pile,Pile Caps,,,,,
 L1,L1|SLAB81,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB81,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB81,ls,Lift / Stairs,,,,,
 L1,L1|SLAB81,exc,Excavation,,,,,
 L1,L1|SLAB81,demo,Demolition,,,,,
-L1,L1|SLAB81,slab,Cast Slab,,,,,
 L1,L1|SLAB81,act_wall,Wall,,,,,
 L1,L1|SLAB81,act_corewall,Core Wall,,,,,
 L1,L1|SLAB81,act_colcorbel,Columns Corbel,,,,,
@@ -351,38 +336,29 @@ L1,L1|SLAB2B,slab,Cast Slab,,,,,
 L1,L1|SLAB2B,act_wall,Wall,,,,,
 L1,L1|SLAB2B,act_corewall,Core Wall,,,,,
 L1,L1|SLAB2B,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB72,col,Columns,,,,,
 L1,L1|SLAB72,pile,Pile Caps,,,,,
 L1,L1|SLAB72,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB72,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB72,ls,Lift / Stairs,,,,,
 L1,L1|SLAB72,exc,Excavation,,,,,
 L1,L1|SLAB72,demo,Demolition,,,,,
-L1,L1|SLAB72,slab,Cast Slab,,,,,
 L1,L1|SLAB72,act_wall,Wall,,,,,
-L1,L1|SLAB72,act_corewall,Core Wall,,,,,
 L1,L1|SLAB72,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB82,col,Columns,,,,,
 L1,L1|SLAB82,pile,Pile Caps,,,,,
 L1,L1|SLAB82,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB82,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB82,ls,Lift / Stairs,,,,,
 L1,L1|SLAB82,exc,Excavation,,,,,
 L1,L1|SLAB82,demo,Demolition,,,,,
-L1,L1|SLAB82,slab,Cast Slab,,,,,
-L1,L1|SLAB82,act_wall,Wall,,,,,
 L1,L1|SLAB82,act_corewall,Core Wall,,,,,
 L1,L1|SLAB82,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB71,col,Columns,,,,,
 L1,L1|SLAB71,pile,Pile Caps,,,,,
 L1,L1|SLAB71,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB71,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB71,ls,Lift / Stairs,,,,,
 L1,L1|SLAB71,exc,Excavation,,,,,
 L1,L1|SLAB71,demo,Demolition,,,,,
-L1,L1|SLAB71,slab,Cast Slab,,,,,
 L1,L1|SLAB71,act_wall,Wall,,,,,
-L1,L1|SLAB71,act_corewall,Core Wall,,,,,
 L1,L1|SLAB71,act_colcorbel,Columns Corbel,,,,,
 L1,L1|CAPPINGBEAM3B,col,Columns,,,,,
 L1,L1|CAPPINGBEAM3B,pile,Pile Caps,,,,,
@@ -412,7 +388,6 @@ L1,L1|SLABB2.4,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB2.4,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB2.4,ls,Lift / Stairs,,,,,
 L1,L1|SLABB2.4,exc,Excavation,,,,,
-L1,L1|SLABB2.4,demo,Demolition,,,,,
 L1,L1|SLABB2.4,slab,Cast Slab,,,,,
 L1,L1|SLABB2.4,act_wall,Wall,,,,,
 L1,L1|SLABB2.4,act_corewall,Core Wall,,,,,
@@ -428,15 +403,12 @@ L1,L1|SLAB4A,slab,Cast Slab,,,,,
 L1,L1|SLAB4A,act_wall,Wall,,,,,
 L1,L1|SLAB4A,act_corewall,Core Wall,,,,,
 L1,L1|SLAB4A,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB73,col,Columns,,,,,
 L1,L1|SLAB73,pile,Pile Caps,,,,,
 L1,L1|SLAB73,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB73,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB73,ls,Lift / Stairs,,,,,
 L1,L1|SLAB73,exc,Excavation,,,,,
 L1,L1|SLAB73,demo,Demolition,,,,,
-L1,L1|SLAB73,slab,Cast Slab,,,,,
-L1,L1|SLAB73,act_wall,Wall,,,,,
 L1,L1|SLAB73,act_corewall,Core Wall,,,,,
 L1,L1|SLAB73,act_colcorbel,Columns Corbel,,,,,
 L1,L1|SLAB6B,col,Columns,,,,,
@@ -472,14 +444,11 @@ L1,L1|SLAB1,slab,Cast Slab,,,,,
 L1,L1|SLAB1,act_wall,Wall,,,,,
 L1,L1|SLAB1,act_corewall,Core Wall,,,,,
 L1,L1|SLAB1,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLABB2.3,col,Columns,,,,,
 L1,L1|SLABB2.3,pile,Pile Caps,,,,,
 L1,L1|SLABB2.3,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB2.3,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB2.3,ls,Lift / Stairs,,,,,
 L1,L1|SLABB2.3,exc,Excavation,,,,,
-L1,L1|SLABB2.3,demo,Demolition,,,,,
-L1,L1|SLABB2.3,slab,Cast Slab,,,,,
 L1,L1|SLABB2.3,act_wall,Wall,,,,,
 L1,L1|SLABB2.3,act_corewall,Core Wall,,,,,
 L1,L1|SLABB2.3,act_colcorbel,Columns Corbel,,,,,
@@ -505,27 +474,21 @@ L1,L1|CAPPINGBEAM2A,slab,Cast Slab,,,,,
 L1,L1|CAPPINGBEAM2A,act_wall,Wall,,,,,
 L1,L1|CAPPINGBEAM2A,act_corewall,Core Wall,,,,,
 L1,L1|CAPPINGBEAM2A,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLAB74,col,Columns,,,,,
 L1,L1|SLAB74,pile,Pile Caps,,,,,
 L1,L1|SLAB74,mbeam,Steel Main Beams,,,,,
 L1,L1|SLAB74,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLAB74,ls,Lift / Stairs,,,,,
 L1,L1|SLAB74,exc,Excavation,,,,,
 L1,L1|SLAB74,demo,Demolition,,,,,
-L1,L1|SLAB74,slab,Cast Slab,,,,,
 L1,L1|SLAB74,act_wall,Wall,,,,,
 L1,L1|SLAB74,act_corewall,Core Wall,,,,,
 L1,L1|SLAB74,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLABB3.3,col,Columns,,,,,
 L1,L1|SLABB3.3,pile,Pile Caps,,,,,
 L1,L1|SLABB3.3,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB3.3,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB3.3,ls,Lift / Stairs,,,,,
 L1,L1|SLABB3.3,exc,Excavation,,,,,
-L1,L1|SLABB3.3,demo,Demolition,,,,,
-L1,L1|SLABB3.3,slab,Cast Slab,,,,,
 L1,L1|SLABB3.3,act_wall,Wall,,,,,
-L1,L1|SLABB3.3,act_corewall,Core Wall,,,,,
 L1,L1|SLABB3.3,act_colcorbel,Columns Corbel,,,,,
 L1,L1|SLAB3A,col,Columns,,,,,
 L1,L1|SLAB3A,pile,Pile Caps,,,,,
@@ -538,14 +501,11 @@ L1,L1|SLAB3A,slab,Cast Slab,,,,,
 L1,L1|SLAB3A,act_wall,Wall,,,,,
 L1,L1|SLAB3A,act_corewall,Core Wall,,,,,
 L1,L1|SLAB3A,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLABB2.2,col,Columns,,,,,
 L1,L1|SLABB2.2,pile,Pile Caps,,,,,
 L1,L1|SLABB2.2,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB2.2,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB2.2,ls,Lift / Stairs,,,,,
 L1,L1|SLABB2.2,exc,Excavation,,,,,
-L1,L1|SLABB2.2,demo,Demolition,,,,,
-L1,L1|SLABB2.2,slab,Cast Slab,,,,,
 L1,L1|SLABB2.2,act_wall,Wall,,,,,
 L1,L1|SLABB2.2,act_corewall,Core Wall,,,,,
 L1,L1|SLABB2.2,act_colcorbel,Columns Corbel,,,,,
@@ -593,16 +553,10 @@ L1,L1|SLAB5B,slab,Cast Slab,,,,,
 L1,L1|SLAB5B,act_wall,Wall,,,,,
 L1,L1|SLAB5B,act_corewall,Core Wall,,,,,
 L1,L1|SLAB5B,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLABB2.1,col,Columns,,,,,
 L1,L1|SLABB2.1,pile,Pile Caps,,,,,
-L1,L1|SLABB2.1,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB2.1,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB2.1,ls,Lift / Stairs,,,,,
 L1,L1|SLABB2.1,exc,Excavation,,,,,
-L1,L1|SLABB2.1,demo,Demolition,,,,,
-L1,L1|SLABB2.1,slab,Cast Slab,,,,,
-L1,L1|SLABB2.1,act_wall,Wall,,,,,
-L1,L1|SLABB2.1,act_corewall,Core Wall,,,,,
 L1,L1|SLABB2.1,act_colcorbel,Columns Corbel,,,,,
 L1,L1|CAPPINGBEAM2B,col,Columns,,,,,
 L1,L1|CAPPINGBEAM2B,pile,Pile Caps,,,,,
@@ -637,14 +591,11 @@ L1,L1|SLAB3B,slab,Cast Slab,,,,,
 L1,L1|SLAB3B,act_wall,Wall,,,,,
 L1,L1|SLAB3B,act_corewall,Core Wall,,,,,
 L1,L1|SLAB3B,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLABB3.2,col,Columns,,,,,
 L1,L1|SLABB3.2,pile,Pile Caps,,,,,
 L1,L1|SLABB3.2,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB3.2,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB3.2,ls,Lift / Stairs,,,,,
 L1,L1|SLABB3.2,exc,Excavation,,,,,
-L1,L1|SLABB3.2,demo,Demolition,,,,,
-L1,L1|SLABB3.2,slab,Cast Slab,,,,,
 L1,L1|SLABB3.2,act_wall,Wall,,,,,
 L1,L1|SLABB3.2,act_corewall,Core Wall,,,,,
 L1,L1|SLABB3.2,act_colcorbel,Columns Corbel,,,,,
@@ -747,14 +698,113 @@ L1,L1|CAPPINGBEAM1A,slab,Cast Slab,,,,,
 L1,L1|CAPPINGBEAM1A,act_wall,Wall,,,,,
 L1,L1|CAPPINGBEAM1A,act_corewall,Core Wall,,,,,
 L1,L1|CAPPINGBEAM1A,act_colcorbel,Columns Corbel,,,,,
-L1,L1|SLABB3.1,col,Columns,,,,,
 L1,L1|SLABB3.1,pile,Pile Caps,,,,,
 L1,L1|SLABB3.1,mbeam,Steel Main Beams,,,,,
 L1,L1|SLABB3.1,cbeam,Cast S Main Beams,,,,,
 L1,L1|SLABB3.1,ls,Lift / Stairs,,,,,
 L1,L1|SLABB3.1,exc,Excavation,,,,,
-L1,L1|SLABB3.1,demo,Demolition,,,,,
-L1,L1|SLABB3.1,slab,Cast Slab,,,,,
-L1,L1|SLABB3.1,act_wall,Wall,,,,,
 L1,L1|SLABB3.1,act_corewall,Core Wall,,,,,
 L1,L1|SLABB3.1,act_colcorbel,Columns Corbel,,,,,
+L1,L1|SLAB101,act_wall,Wall,Aug'26,3,,2026-08-10,2026-09-18
+L1,L1|SLAB101,act_wall,Wall,Sep'26,3,,2026-08-10,2026-09-18
+L1,L1|SLAB101,col,Columns,Aug'26,2,,2026-08-10,2026-08-21
+L1,L1|SLAB101,slab,Cast Slab,Jul'26,2,,2026-07-03,2026-08-07
+L1,L1|SLAB102,act_corewall,Core Wall,Jul'26,1,,2026-07-03,2026-09-03
+L1,L1|SLAB102,act_corewall,Core Wall,Aug'26,2,,2026-07-03,2026-09-03
+L1,L1|SLAB102,act_wall,Wall,Jul'26,1,,2026-07-03,2026-08-13
+L1,L1|SLAB102,act_wall,Wall,Aug'26,1,,2026-07-03,2026-08-13
+L1,L1|SLAB102,col,Columns,Jul'26,5,,2026-07-03,2026-07-27
+L1,L1|SLAB102,slab,Cast Slab,May'26,1,,2026-05-05,2026-07-02
+L1,L1|SLAB102,slab,Cast Slab,Jun'26,2,,2026-05-05,2026-07-02
+L1,L1|SLAB71,act_corewall,Core Wall,May'26,1,,2026-05-05,2026-07-06
+L1,L1|SLAB71,act_corewall,Core Wall,Jun'26,2,,2026-05-05,2026-07-06
+L1,L1|SLAB71,col,Columns,Jun'26,4,,2026-06-18,2026-07-01
+L1,L1|SLAB71,slab,Cast Slab,Apr'26,2,,2026-04-01,2026-05-04
+L1,L1|SLAB72,act_corewall,Core Wall,Jun'26,4,,2026-06-04,2026-08-05
+L1,L1|SLAB72,act_corewall,Core Wall,Jul'26,4,,2026-06-04,2026-08-05
+L1,L1|SLAB72,act_corewall,Core Wall,Aug'26,1,,2026-06-04,2026-08-05
+L1,L1|SLAB72,col,Columns,Jun'26,4,,2026-06-04,2026-06-17
+L1,L1|SLAB72,slab,Cast Slab,Apr'26,1,,2026-04-01,2026-06-03
+L1,L1|SLAB72,slab,Cast Slab,May'26,2,,2026-04-01,2026-06-03
+L1,L1|SLAB73,act_wall,Wall,Jun'26,2,,2026-06-04,2026-07-18
+L1,L1|SLAB73,act_wall,Wall,Jul'26,2,,2026-06-04,2026-07-18
+L1,L1|SLAB73,col,Columns,Jun'26,5,,2026-06-22,2026-07-03
+L1,L1|SLAB73,col,Columns,Jul'26,1,,2026-06-22,2026-07-03
+L1,L1|SLAB73,slab,Cast Slab,Apr'26,1,,2026-04-01,2026-06-03
+L1,L1|SLAB73,slab,Cast Slab,May'26,2,,2026-04-01,2026-06-03
+L1,L1|SLAB74,col,Columns,Jun'26,3,,2026-06-08,2026-06-19
+L1,L1|SLAB74,slab,Cast Slab,Apr'26,1,,2026-04-01,2026-06-05
+L1,L1|SLAB74,slab,Cast Slab,May'26,2,,2026-04-01,2026-06-05
+L1,L1|SLAB81,col,Columns,Oct'26,2,,2026-10-07,2026-10-20
+L1,L1|SLAB81,slab,Cast Slab,Jun'26,1,,2026-06-04,2026-06-23
+L1,L1|SLAB82,act_wall,Wall,Aug'26,1,,2026-08-27,2026-10-07
+L1,L1|SLAB82,act_wall,Wall,Sep'26,4,,2026-08-27,2026-10-07
+L1,L1|SLAB82,act_wall,Wall,Oct'26,1,,2026-08-27,2026-10-07
+L1,L1|SLAB82,col,Columns,Sep'26,6,,2026-09-01,2026-09-17
+L1,L1|SLAB82,slab,Cast Slab,May'26,2,,2026-05-05,2026-06-03
+L1,L1|SLABB2.1,act_corewall,Core Wall,Sep'26,1,,2026-09-18,2026-10-29
+L1,L1|SLABB2.1,act_corewall,Core Wall,Oct'26,1,,2026-09-18,2026-10-29
+L1,L1|SLABB2.1,act_wall,Wall,Aug'26,3,,2026-08-20,2026-09-30
+L1,L1|SLABB2.1,act_wall,Wall,Sep'26,7,,2026-08-20,2026-09-30
+L1,L1|SLABB2.1,col,Columns,Aug'26,6,,2026-08-20,2026-09-11
+L1,L1|SLABB2.1,col,Columns,Sep'26,5,,2026-08-20,2026-09-11
+L1,L1|SLABB2.1,demo,Demolition,Apr'26,2,,2026-04-01,2026-04-22
+L1,L1|SLABB2.1,mbeam,Steel Main Beams,Sep'26,1,,2026-09-14,2026-09-18
+L1,L1|SLABB2.1,slab,Cast Slab,Aug'26,2,,2026-07-30,2026-08-19
+L1,L1|SLABB2.2,col,Columns,Aug'26,6,,2026-08-19,2026-09-01
+L1,L1|SLABB2.2,demo,Demolition,Apr'26,1,,2026-04-01,2026-04-10
+L1,L1|SLABB2.2,slab,Cast Slab,Aug'26,2,,2026-07-30,2026-08-18
+L1,L1|SLABB2.3,col,Columns,Aug'26,5,,2026-08-18,2026-09-18
+L1,L1|SLABB2.3,col,Columns,Sep'26,6,,2026-08-18,2026-09-18
+L1,L1|SLABB2.3,demo,Demolition,Apr'26,1,,2026-04-13,2026-05-20
+L1,L1|SLABB2.3,demo,Demolition,May'26,1,,2026-04-13,2026-05-20
+L1,L1|SLABB2.3,slab,Cast Slab,Aug'26,3,,2026-07-31,2026-09-08
+L1,L1|SLABB2.3,slab,Cast Slab,Sep'26,1,,2026-07-31,2026-09-08
+L1,L1|SLABB2.4,demo,Demolition,May'26,1,,2026-05-21,2026-06-12
+L1,L1|SLABB2.4,demo,Demolition,Jun'26,1,,2026-05-21,2026-06-12
+L1,L1|SLABB3.1,act_wall,Wall,Oct'26,5,,2026-09-30,2026-11-10
+L1,L1|SLABB3.1,act_wall,Wall,Nov'26,1,,2026-09-30,2026-11-10
+L1,L1|SLABB3.1,col,Columns,Oct'26,3,,2026-09-30,2026-10-13
+L1,L1|SLABB3.1,demo,Demolition,Jun'26,3,,2026-06-15,2026-07-03
+L1,L1|SLABB3.1,slab,Cast Slab,Sep'26,1,,2026-09-10,2026-09-29
+L1,L1|SLABB3.2,col,Columns,Oct'26,7,,2026-10-20,2026-11-02
+L1,L1|SLABB3.2,col,Columns,Nov'26,1,,2026-10-20,2026-11-02
+L1,L1|SLABB3.2,demo,Demolition,Feb'27,1,,2027-02-01,2027-02-18
+L1,L1|SLABB3.2,slab,Cast Slab,Sep'26,1,,2026-09-21,2026-10-19
+L1,L1|SLABB3.2,slab,Cast Slab,Oct'26,1,,2026-09-21,2026-10-19
+L1,L1|SLABB3.3,act_corewall,Core Wall,Nov'26,1,,2026-11-20,2027-01-21
+L1,L1|SLABB3.3,act_corewall,Core Wall,Dec'26,1,,2026-11-20,2027-01-21
+L1,L1|SLABB3.3,act_corewall,Core Wall,Jan'27,1,,2026-11-20,2027-01-21
+L1,L1|SLABB3.3,col,Columns,Nov'26,14,,2026-11-12,2026-12-04
+L1,L1|SLABB3.3,col,Columns,Dec'26,3,,2026-11-12,2026-12-04
+L1,L1|SLABB3.3,demo,Demolition,Mar'27,2,,2027-02-19,2027-04-21
+L1,L1|SLABB3.3,demo,Demolition,Apr'27,1,,2027-02-19,2027-04-21
+L1,L1|SLABB3.3,slab,Cast Slab,Nov'26,2,,2026-10-28,2026-11-16
+L1,L1|ZC1,act_corewall,Core Wall,Apr'26,3,,2026-04-11,2026-08-21
+L1,L1|ZC1,act_corewall,Core Wall,May'26,5,,2026-04-11,2026-08-21
+L1,L1|ZC1,act_corewall,Core Wall,Jun'26,5,,2026-04-11,2026-08-21
+L1,L1|ZC1,act_corewall,Core Wall,Jul'26,5,,2026-04-11,2026-08-21
+L1,L1|ZC1,act_corewall,Core Wall,Aug'26,4,,2026-04-11,2026-08-21
+L1,L1|ZC2.1,act_corewall,Core Wall,Aug'26,3,,2026-08-15,2026-12-21
+L1,L1|ZC2.1,act_corewall,Core Wall,Sep'26,5,,2026-08-15,2026-12-21
+L1,L1|ZC2.1,act_corewall,Core Wall,Oct'26,6,,2026-08-15,2026-12-21
+L1,L1|ZC2.1,act_corewall,Core Wall,Nov'26,5,,2026-08-15,2026-12-21
+L1,L1|ZC2.1,act_corewall,Core Wall,Dec'26,4,,2026-08-15,2026-12-21
+L1,L1|ZC2.2,act_corewall,Core Wall,Aug'26,3,,2026-08-15,2026-12-21
+L1,L1|ZC2.2,act_corewall,Core Wall,Sep'26,5,,2026-08-15,2026-12-21
+L1,L1|ZC2.2,act_corewall,Core Wall,Oct'26,6,,2026-08-15,2026-12-21
+L1,L1|ZC2.2,act_corewall,Core Wall,Nov'26,5,,2026-08-15,2026-12-21
+L1,L1|ZC2.2,act_corewall,Core Wall,Dec'26,4,,2026-08-15,2026-12-21
+L1,L1|ZC3.1A,act_corewall,Core Wall,Sep'26,4,,2026-09-07,2026-12-28
+L1,L1|ZC3.1A,act_corewall,Core Wall,Oct'26,6,,2026-09-07,2026-12-28
+L1,L1|ZC3.1A,act_corewall,Core Wall,Nov'26,5,,2026-09-07,2026-12-28
+L1,L1|ZC3.1A,act_corewall,Core Wall,Dec'26,5,,2026-09-07,2026-12-28
+L1,L1|ZC3.1B,act_corewall,Core Wall,Sep'26,4,,2026-09-07,2027-01-11
+L1,L1|ZC3.1B,act_corewall,Core Wall,Oct'26,6,,2026-09-07,2027-01-11
+L1,L1|ZC3.1B,act_corewall,Core Wall,Nov'26,5,,2026-09-07,2027-01-11
+L1,L1|ZC3.1B,act_corewall,Core Wall,Dec'26,6,,2026-09-07,2027-01-11
+L1,L1|ZC3.1B,act_corewall,Core Wall,Jan'27,2,,2026-09-07,2027-01-11
+L1,L1|ZC3.2,act_corewall,Core Wall,Sep'26,4,,2026-09-07,2026-12-28
+L1,L1|ZC3.2,act_corewall,Core Wall,Oct'26,6,,2026-09-07,2026-12-28
+L1,L1|ZC3.2,act_corewall,Core Wall,Nov'26,5,,2026-09-07,2026-12-28
+L1,L1|ZC3.2,act_corewall,Core Wall,Dec'26,5,,2026-09-07,2026-12-28
