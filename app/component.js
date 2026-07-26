@@ -1673,6 +1673,12 @@ class Component extends DCLogic {
     const lf=this.root.querySelector('#lockFile');
     this.root.querySelector('#loadLock').addEventListener('click',()=>lf.click());
     lf.addEventListener('change',e=>{const f=e.target.files[0];if(f)this.loadLock(f);lf.value='';});
+    const _cc=this.root.querySelector('#rwsClearCache'); if(_cc) _cc.addEventListener('click',()=>{
+      if(!confirm('清理本机缓存?\n\n将清掉浏览器里残留的本地数据(计划量/实际量/覆盖/状态等), 然后刷新页面。\n\n• 不影响云端已保存的数据\n• 不影响你的登录\n• 刷新后会从云端重新加载最新数据')) return;
+      var keys=['rws_zp_ov','rws_zp_plan_ov','rws_qty_ov','rws_crit_ov','rws_edited_keys','rws_elem_status','rws_zone_updates','rws_act_total','rws_act_plan','rws_act_donem','rws_act_hidden','rws_act_defs','rws_act_date','rws_act_cmt','rws_col_month','rws_zdate','rws_elem_date','rws_cat_add','rws_elem_add','rws_last_daily_export','rws_offline_queue'];
+      keys.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+      alert('已清理本机缓存, 即将刷新。'); location.reload();
+    });
     this.root.querySelector('#mExport').addEventListener('click',()=>this.exportExcel());
     this.root.querySelector('#mClose').addEventListener('click',()=>this.root.querySelector('#modal').classList.remove('open'));
     this.root.querySelector('#openSched').addEventListener('click',()=>this.openSched());
