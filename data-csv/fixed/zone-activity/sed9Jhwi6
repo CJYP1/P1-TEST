@@ -1,5 +1,5 @@
 ﻿楼层,分区,活动,活动名称(参考),月份,计划量,完成量,活动开始,活动结束
-B1M,B1M|S7,col,Columns,Jan'27,3,1,2027-01-01,2027-03-01
+B1M,B1M|S7,col,Columns,Jan'27,3,1,1/3/2027,3/1/2027
 B1M,B1M|S7,col,Columns,Feb'27,3,,2027-01-01,2027-03-01
 B1M,B1M|S7,pile,Pile Caps,Dec'26,6,6,2026-11-01,2026-12-20
 B1M,B1M|S7,mbeam,Steel Main Beams,Dec'26,6,6,2026-11-01,2026-12-20

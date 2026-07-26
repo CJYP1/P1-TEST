@@ -18,6 +18,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: 统一 zone-activity 日期格式(YYYY-MM-DD, 修正 Excel 导出的日期)
+        run: python tools/normalize_dates.py
       - name: 校验并导入工作安排 CSV → zp-data.global.js
         run: python tools/work_csv.py import
       - name: 重新生成注入 bundle(应用逻辑/内嵌页面/分区对照)
