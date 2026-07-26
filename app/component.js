@@ -125,22 +125,11 @@ class Component extends DCLogic {
     const addl=admin?`<div class="cust-add-row" style="padding-left:2px"><span class="allbtn cnewcat-act" data-a="${aid}" data-lab="${this.esc(_alab)}" title="Add an item to the ${this.esc(_alab)} list" style="color:var(--accent);cursor:pointer;font-size:10.5px;font-weight:700">+ ${this.esc(_alab)} List</span></div>`:'';
     return base+flat+linked+addl;
   }
-  colHtmlFor(lv,z){const zmk=z.mk||z.lid,sm=this._actMonth||this.actDefaultMonth();const meta=x=>this.esc(x.sz||'')+(x.c?' · crit':''),cf=x=>x.c;
+  colHtmlFor(lv,z){const meta=x=>this.esc(x.sz||'')+(x.c?' · crit':''),cf=x=>x.c;
     const cols=z.cols||[];
-    const hasMon=cols.some(x=>this.colMon(lv,zmk,(typeof x==='string')?x:x.id));
-    if(!hasMon)return this.elRows(lv,z,'col',cols,meta,'none listed',cf);
-    /* Team rule — for selected month M show only: (a) not-done with planned month <= M
-       (this month's plan + earlier plans rolled over/owed); (b) done whose completion date is in M.
-       Future-planned-not-started and earlier-completed columns are hidden. */
-    const AM=this.ACT_MONTHS, mIdx=AM.indexOf(sm);
-    const todo=[], donem=[];
-    cols.forEach(x=>{const id=(typeof x==='string')?x:x.id;const key=this.ekey(lv,z,'col',id);
-      const isDone=this.elemStatus(key)==='done';const pm=this.colMon(lv,zmk,id),pmi=AM.indexOf(pm);
-      if(isDone){const dm=this.dateToActMonth(this.elemDate(key)||this.todayISOStr());if(dm===sm)donem.push(x);}
-      else if(pm&&pmi>=0&&mIdx>=0&&pmi<=mIdx)todo.push(x);});
-    let out=`<div class="colmon on"><div class="colmon-hd">🗓 ${this.esc(sm)} · to do <span>${todo.length} incl. carried-over</span></div>${todo.length?this.elRows(lv,z,'col',todo,meta,'',cf):'<div class="empty" style="padding:4px 8px">nothing due this month</div>'}</div>`;
-    if(donem.length) out+=`<div class="colmon"><div class="colmon-hd" style="color:var(--done)">✓ done in ${this.esc(sm)} <span>${donem.length}</span></div>${this.elRows(lv,z,'col',donem,meta,'',cf)}</div>`;
-    return out;}
+    /* Always show the full column list (regardless of per-column target month) — critical
+       columns are outlined/highlighted via critFn so they stand out without hiding the rest. */
+    return this.elRows(lv,z,'col',cols,meta,'none listed',cf);}
   saveDates(){try{localStorage.setItem('rws_zdate',JSON.stringify(this._zdate||{}));localStorage.setItem('rws_act_date',JSON.stringify(this._actDate||{}));localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth||{}));}catch(e){}}
   saveActCmt(){try{localStorage.setItem('rws_act_cmt',JSON.stringify(this._actCmt||{}));}catch(e){}}
   actCmts(lv,zmk,aid){const pre=lv+'||'+zmk+'||'+aid+'||';const o=this._actCmt||{};return Object.keys(o).filter(k=>k.indexOf(pre)===0).map(k=>({k,...o[k]})).sort((a,b)=>String(a.ts||'').localeCompare(String(b.ts||'')));}

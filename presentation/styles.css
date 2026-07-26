@@ -331,6 +331,7 @@ svg.collabels .collbl{display:block}
 .idrow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:5px 8px;font-size:11px;padding:3px 6px;border-radius:5px;color:var(--dim)}
 .idrow:nth-child(odd){background:var(--panel2)}
 .idrow .id{font-weight:600;color:var(--txt);font-family:'Consolas',monospace;font-size:10.5px}
+.idrow.crit{outline:2px solid var(--crit);outline-offset:-1px;background:color-mix(in srgb,var(--crit) 8%,transparent)}
 .idrow.crit .id{color:var(--crit)}
 .idrow .meta{color:var(--faint);font-size:10px;text-align:right;white-space:nowrap;flex:1}
 .elchip{flex-shrink:0;font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;cursor:pointer;color:var(--c);border:1px solid var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);user-select:none;min-width:52px;text-align:center}
