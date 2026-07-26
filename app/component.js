@@ -475,7 +475,7 @@ class Component extends DCLogic {
   }
   rwsRenderUserBar(){
     const info=this.root.querySelector('#rwsUserInfo'), lo=this.root.querySelector('#rwsLogoutBtn'), ab=this.root.querySelector('#rwsAdminBtn'), jb=this.root.querySelector('#exportJson');
-    const adminOnly=['#openSched','#saveLock','#loadLock','#exportXls','#openTable','#exportJson'].map(s=>this.root.querySelector(s)).filter(Boolean);
+    const adminOnly=['#openSched','#saveLock','#loadLock','#exportXls','#openTable','#exportJson','#rwsChangesBtn'].map(s=>this.root.querySelector(s)).filter(Boolean);
     const u=this._rwsUser;
     try{if(this.DATA&&this.root.querySelector('#rail'))this.buildRail();}catch(_e){}
     if(!u){info.textContent='';lo.style.display='none';ab.style.display='none';adminOnly.forEach(b=>b.style.display='none');return;}
@@ -522,6 +522,10 @@ class Component extends DCLogic {
       this.root.querySelector('#rwsAuthGate').style.display='flex';
     });
     this.root.querySelector('#rwsAdminBtn').addEventListener('click',()=>this.rwsOpenAdmin());
+    const _cb=this.root.querySelector('#rwsChangesBtn');
+    if(_cb) _cb.addEventListener('click',()=>this.rwsOpenChanges());
+    const _cc2=this.root.querySelector('#rwsChangesClose');
+    if(_cc2) _cc2.addEventListener('click',()=>{this.root.querySelector('#rwsChangesModal').style.display='none';});
     this.root.querySelector('#rwsAdminClose').addEventListener('click',()=>{this.root.querySelector('#rwsAdminModal').style.display='none';});
     this.root.querySelector('#rwsAdminTabs').addEventListener('click',e=>{
       const b=e.target.closest('button[data-tab]'); if(!b)return;
@@ -565,9 +569,39 @@ class Component extends DCLogic {
       try{localStorage.setItem('rws_zp_ov',JSON.stringify(this._zpOv));}catch(e){}
       this.applyUpdates(); this.buildRail(); this.buildTimeline(); this.render(); this.refreshUpdBadge();
       if(this.selKey){const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(z)this.selectZone(z);}
+      try{this.rwsCheckChangesDot();}catch(e){}
     }catch(e){ console.warn('[rws] cloud state pull skipped (offline?)',e); }
     rwsQueueFlush();
     this.rwsMaybeDailyExport();
+  }
+  async rwsOpenChanges(){
+    const modal=this.root.querySelector('#rwsChangesModal');
+    const body=this.root.querySelector('#rwsChangesBody');
+    modal.style.display='flex'; body.innerHTML='<div class="empty">加载中…</div>';
+    try{
+      const rows=await rwsAdminActivityLog(200);
+      const seen=localStorage.getItem('rws_changes_seen')||'';
+      const fmtV=v=>{if(v==null||v==='')return '—';const s=(typeof v==='object')?JSON.stringify(v):String(v);return this.esc(s.replace(/^"|"$/g,''));};
+      if(!rows.length){ body.innerHTML='<div class="empty">暂无变更记录</div>'; }
+      else {
+        body.innerHTML='<div style="font-size:11px;color:var(--dim);margin-bottom:8px">共 '+rows.length+' 条最近变更 · 高亮=自你上次查看后的新变更</div><table class="reg"><thead><tr><th>时间</th><th>谁</th><th>改了什么</th><th>区域</th><th>楼层·分区</th><th>项目</th><th>原值→新值</th></tr></thead><tbody>'+
+          rows.map(r=>{const d=this.rwsLogParts(r);const isNew=seen&&r.created_at>seen;return '<tr'+(isNew?' style="background:color-mix(in srgb,var(--accent) 14%,transparent)"':'')+'><td>'+this.esc(new Date(r.created_at).toLocaleString())+'</td><td>'+this.esc(r.username||'')+'</td><td>'+this.esc(this.rwsActionLabel(r))+'</td><td>'+this.esc(d.area)+'</td><td>'+this.esc(d.zone)+'</td><td>'+this.esc(d.detail)+'</td><td>'+fmtV(r.old_value)+' → '+fmtV(r.new_value)+'</td></tr>';}).join('')+
+          '</tbody></table>';
+      }
+      // 标记为已看, 清红点
+      if(rows.length) localStorage.setItem('rws_changes_seen', rows[0].created_at);
+      const dot=this.root.querySelector('#rwsChangesDot'); if(dot) dot.style.display='none';
+    }catch(e){ body.innerHTML='<div class="empty">无法加载变更: '+this.esc(e.message)+'</div>'; }
+  }
+  async rwsCheckChangesDot(){
+    if(!this.rwsIsAdmin())return;
+    try{
+      const rows=await rwsAdminActivityLog(200);
+      const seen=localStorage.getItem('rws_changes_seen')||'';
+      const n=rows.filter(r=>!seen||r.created_at>seen).length;
+      const dot=this.root.querySelector('#rwsChangesDot');
+      if(dot){ if(n>0){dot.textContent=n>99?'99+':n;dot.style.display='';} else dot.style.display='none'; }
+    }catch(e){}
   }
   async rwsOpenAdmin(){
     if(!this.rwsIsAdmin())return;
