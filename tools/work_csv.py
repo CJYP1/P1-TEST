@@ -94,7 +94,9 @@ def do_import():
     zp = load_zp(); reg = region_of(zp)
     months_ok = set(zp['months'])
     errors = []
-    triples = {}          # (zone, mon, idx) -> item
+    triples = {}          # (unused, kept)
+    from collections import defaultdict as _dd
+    seq_plan = _dd(lambda: _dd(list))   # zone -> mon -> [items]  (序号自动)
     for fp in sorted(WORK.glob('*.csv')):
         with open(fp, encoding='utf-8-sig') as f:
             for ln, row in enumerate(csv.DictReader(f), start=2):
@@ -106,19 +108,14 @@ def do_import():
                     errors.append(f'{fp.name} 第{ln}行: 小区 "{zone}" 不在楼栋分组里 — 跳过'); continue
                 if mon not in months_ok:
                     errors.append(f'{fp.name} 第{ln}行: 月份 "{mon}" 不合法 — 跳过'); continue
-                try:
-                    idx = int(row.get('序号') or 0)
-                except ValueError:
-                    errors.append(f'{fp.name} 第{ln}行: 序号非整数 — 跳过'); continue
+                # 序号忽略CSV填的值, 按读取顺序自动分配(彻底避免序号冲突)
+                idx = None
                 def num(col):
                     v = (row.get(col) or '').strip().replace(',','')
                     if v in ('','—','-'): return None
                     try: return int(v) if float(v)==int(float(v)) else round(float(v),2)
                     except ValueError:
                         errors.append(f'{fp.name} 第{ln}行 {col}: "{v}" 不是数字 — 置空'); return None
-                key = (zone, mon, idx)
-                if key in triples:
-                    errors.append(f'{fp.name} 第{ln}行: {zone}/{mon}/序号{idx} 重复 — 跳过'); continue
                 it = {'w': wname, 'p': num('计划量'), 'd': num('实际量'),
                       'u': (row.get('单位') or '').strip(), 'pct': num('完成率%')}
                 for col, fld in [('计划开始','ps'), ('计划结束','pf'), ('实际完成日期','af')]:
@@ -129,18 +126,12 @@ def do_import():
                             it[fld] = v
                         except ValueError:
                             errors.append(f'{fp.name} 第{ln}行 {col}: "{v}" 应为 YYYY-MM-DD — 跳过该格')
-                triples[key] = it
-    new_plan = defaultdict(lambda: defaultdict(dict))
-    for (zone, mon, idx), it in triples.items():
-        new_plan[zone][mon][idx] = it
+                seq_plan[zone][mon].append(it)
     plan = {}
-    for zone in sorted(new_plan):
+    for zone in sorted(seq_plan):
         plan[zone] = {}
-        for mon in new_plan[zone]:
-            idxs = sorted(new_plan[zone][mon])
-            if idxs != list(range(len(idxs))):
-                errors.append(f'{zone}/{mon}: 序号不连续 {idxs} — 按现有顺序压实')
-            plan[zone][mon] = [new_plan[zone][mon][i] for i in idxs]
+        for mon in seq_plan[zone]:
+            plan[zone][mon] = seq_plan[zone][mon]  # 序号=列表顺序, 自动0..n连续
     if errors:
         print(f'✗ 发现 {len(errors)} 个问题, 未写入任何数据(修正后重跑):')
         for e in errors[:30]: print('   ', e)
