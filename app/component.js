@@ -125,10 +125,12 @@ class Component extends DCLogic {
     const addl=admin?`<div class="cust-add-row" style="padding-left:2px"><span class="allbtn cnewcat-act" data-a="${aid}" data-lab="${this.esc(_alab)}" title="Add an item to the ${this.esc(_alab)} list" style="color:var(--accent);cursor:pointer;font-size:10.5px;font-weight:700">+ ${this.esc(_alab)} List</span></div>`:'';
     return base+flat+linked+addl;
   }
-  colHtmlFor(lv,z){const meta=x=>this.esc(x.sz||'')+(x.c?' · crit':''),cf=x=>x.c;
+  colHtmlFor(lv,z){const zoneCrit=!!z.crit;const meta=x=>this.esc(x.sz||'')+((zoneCrit||x.c)?' · crit':''),cf=x=>zoneCrit||x.c;
     const cols=z.cols||[];
-    /* Always show the full column list (regardless of per-column target month) — critical
-       columns are outlined/highlighted via critFn so they stand out without hiding the rest. */
+    /* Always show the full column list (regardless of per-column target month) — every column
+       is outlined/highlighted (via critFn) when its own flag is set OR when the whole zone is a
+       critical zone, so a critical zone's columns are visibly called out even if none are
+       individually flagged. */
     return this.elRows(lv,z,'col',cols,meta,'none listed',cf);}
   saveDates(){try{localStorage.setItem('rws_zdate',JSON.stringify(this._zdate||{}));localStorage.setItem('rws_act_date',JSON.stringify(this._actDate||{}));localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth||{}));}catch(e){}}
   saveActCmt(){try{localStorage.setItem('rws_act_cmt',JSON.stringify(this._actCmt||{}));}catch(e){}}
