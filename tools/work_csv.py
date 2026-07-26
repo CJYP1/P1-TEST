@@ -142,8 +142,72 @@ def do_import():
     gi = next(i for i,l in enumerate(g) if l.startswith('window.__RWS.ZP'))
     g[gi] = 'window.__RWS.ZP = ' + blob + ';'
     (ROOT/'zp-data.global.js').write_text('\n'.join(g), encoding='utf-8')
+    # ---- 额外: 把柱/桩/梁/板类计划量灌进活动区(zone-activity.csv) ----
+    try:
+        _gen_zone_activity(plan)
+    except Exception as _e:
+        print('  (活动区灌入跳过:', _e, ')')
     n = sum(len(v) for z in plan.values() for v in z.values())
     print(f'✔ 导入完成: {len(plan)} 个小区, {n} 条工作安排 → zp-data.js / zp-data.global.js 已同步; 刷新网页生效')
+
+
+_M2ABBR={'January':"Jan",'February':"Feb",'March':"Mar",'April':"Apr",'May':"May",'June':"Jun",'July':"Jul",'August':"Aug",'September':"Sep",'October':"Oct",'November':"Nov",'December':"Dec"}
+def _month_to_act(mon):
+    import re
+    m=re.match(r'([A-Za-z]+)\s+(\d{4})',str(mon))
+    if not m or m.group(1) not in _M2ABBR: return None
+    return f"{_M2ABBR[m.group(1)]}'{m.group(2)[2:]}"
+
+def _work_to_aid(w):
+    wl=str(w).lower()
+    if 'column' in wl: return 'col'
+    if 'pile' in wl or 'cap' in wl: return 'pile'
+    if 'steel' in wl and 'beam' in wl: return 'sbeam'
+    if 'main beam' in wl or ('beam' in wl and 'steel' not in wl and 'core' not in wl): return 'mbeam'
+    if 'core' in wl and 'wall' in wl: return 'act_corewall'
+    if 'slab' in wl or 'demolition' in wl: return None  # slab/demo走台账, 不进活动区柱桩梁
+    return None
+
+def _load_zone_map():
+    import json, re
+    t=(ROOT/'zone-data.global.js').read_text(encoding='utf-8')
+    line=next(l for l in t.split('\n') if l.startswith('window.__RWS.DATA'))
+    D=json.loads(line[line.index('{'):line.rindex('}')+1].rstrip(';'))
+    def norm(s): return re.sub(r'[^a-z0-9]','',str(s).lower())
+    web={}
+    for lv in D['levels']:
+        for z in D['levels'][lv]['zones']:
+            mk=z.get('mk')
+            for nm in [z['label']]+[s.get('n') for s in z.get('sub',[]) if s.get('n')]:
+                web[norm(nm)]=(lv,mk)
+            web[norm(mk)]=(lv,mk)
+    pod2slab={'POD2.1T':'SLAB 7-2','POD2.1':'SLAB 7-1','POD2.1CIST':'SLAB 7-4','POD2.1CIS':'SLAB 7-3','POD2.2T':'SLAB 8-2','POD2.2':'SLAB 8-1','POD2.3T':'SLAB 13 (F01-1)','POD2.3CIST':'SLAB 13 (F01-2)','POD2.4T':'SLAB 8A-2','POD2.4':'SLAB 8A-1','POD2.6CIST':'SLAB 10-2','POD2.6CIS':'SLAB 10-1','POD4.1 CIST':'SLAB B-2.1','POD4.1CIST':'SLAB B-2.1','POD4.1':'SLAB B-2.2','POD4.1CIS':'SLAB B-2.2','POD4.2':'SLAB B-2.3','POD4.2T':'SLAB B-2.4','POD4.3T':'SLAB B-3.2','POD4.3CIST':'SLAB B-3.1','POD4.4':'SLAB B-3.3'}
+    return web, pod2slab, norm
+
+def _gen_zone_activity(plan):
+    import csv as _csv
+    web, pod2slab, norm = _load_zone_map()
+    rows=[]; hit=0; miss=set()
+    for zone in plan:
+        n=norm(zone); lvmk=web.get(n)
+        if not lvmk and zone in pod2slab: lvmk=web.get(norm(pod2slab[zone]))
+        for mon, items in plan[zone].items():
+            am=_month_to_act(mon)
+            for it in items:
+                aid=_work_to_aid(it.get('w',''))
+                if not aid or am is None: continue
+                p=it.get('p')
+                if p is None: continue
+                if not lvmk: miss.add(zone); continue
+                lv,mk=lvmk
+                ps=it.get('ps') or ''; pf=it.get('pf') or ''
+                rows.append([lv,mk,aid,am,p,ps,pf]); hit+=1
+    out=ROOT/'data-csv'/'fixed'/'zone-activity.csv'
+    with open(out,'w',newline='',encoding='utf-8-sig') as f:
+        w=_csv.writer(f)
+        w.writerow(['楼层','分区','活动','月份','计划量','活动开始','活动结束'])
+        w.writerows(rows)
+    print(f'  ✔ 活动区: 灌入{hit}条柱/桩/梁计划 → zone-activity.csv (映射不了的分区{len(miss)}个)')
 
 if __name__ == '__main__':
     mode = sys.argv[1] if len(sys.argv) > 1 else ''
