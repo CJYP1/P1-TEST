@@ -405,11 +405,16 @@ class Component extends DCLogic {
     try{this.elem=JSON.parse(localStorage.getItem('rws_elem_status')||'{}');}catch(e){this.elem={};}
     try{this._elemDate=JSON.parse(localStorage.getItem('rws_elem_date')||'{}');}catch(e){this._elemDate={};}
     const emb=document.getElementById('locked-data');
-    if(emb){try{const d=JSON.parse(emb.textContent||'{}');if(d.elem)this.elem={...d.elem,...this.elem};if(d.elemDate)this._elemDate={...d.elemDate,...this._elemDate};if(d.updates)this.updates={...d.updates,...this.updates};if(d.zpOv){this._embZpOv=d.zpOv;if(this._zpOv){this._zpOv={...d.zpOv,...this._zpOv};if(this.zpApplyOv)this.zpApplyOv();}}if(d.crit){this._critOv={...d.crit,...(this._critOv||{})};}if(d.actTotal){this._actTotal={...d.actTotal,...(this._actTotal||{})};}if(d.actPlan){this._actPlan={...d.actPlan,...(this._actPlan||{})};}if(d.actDoneM){this._actDoneM={...d.actDoneM,...(this._actDoneM||{})};}if(d.actHidden){this._actHidden={...d.actHidden,...(this._actHidden||{})};}
-      /* 基准数据种子扩展(data-csv 生成): 活动起止/区域起止/柱目标月/活动定义 — 文件为底, 管理员改动仍优先 */
-      if(d.actDate){this._actDate={...d.actDate,...(this._actDate||{})};}
-      if(d.zdate){this._zdate={...d.zdate,...(this._zdate||{})};}
-      if(d.colMonth){this._colMonth={...d.colMonth,...(this._colMonth||{})};}
+    if(emb){try{const d=JSON.parse(emb.textContent||'{}');if(d.elem)this.elem={...d.elem,...this.elem};if(d.elemDate)this._elemDate={...d.elemDate,...this._elemDate};if(d.updates)this.updates={...d.updates,...this.updates};if(d.zpOv){this._embZpOv=d.zpOv;if(this._zpOv){this._zpOv={...d.zpOv,...this._zpOv};if(this.zpApplyOv)this.zpApplyOv();}}if(d.crit){this._critOv={...d.crit,...(this._critOv||{})};}
+      /* CSV(基准数据)现在优先于云端/本地手改 —— 除非该键已被管理员手动锁定(isEdited), 锁定的值仍保留 */
+      if(d.actTotal){const s=d.actTotal,t=this._actTotal||{};Object.keys(s).forEach(k=>{if(!this.isEdited('act_total',k))t[k]=s[k];});this._actTotal=t;}
+      if(d.actPlan){const s=d.actPlan,t=this._actPlan||{};Object.keys(s).forEach(k=>{if(!this.isEdited('act_plan',k))t[k]=s[k];});this._actPlan=t;}
+      if(d.actDoneM){const s=d.actDoneM,t=this._actDoneM||{};Object.keys(s).forEach(k=>{if(!this.isEdited('act_done_m',k))t[k]=s[k];});this._actDoneM=t;}
+      if(d.actHidden){this._actHidden={...d.actHidden,...(this._actHidden||{})};}
+      /* 基准数据种子扩展(data-csv 生成): 活动起止/区域起止/柱目标月/活动定义 — CSV 优先(无锁定保护) */
+      if(d.actDate){this._actDate={...(this._actDate||{}),...d.actDate};}
+      if(d.zdate){this._zdate={...(this._zdate||{}),...d.zdate};}
+      if(d.colMonth){this._colMonth={...(this._colMonth||{}),...d.colMonth};}
       if(Array.isArray(d.actDefs)){const ex=new Set((this._actDefs||[]).map(x=>x&&x.id));d.actDefs.forEach(x=>{if(x&&x.id&&!ex.has(x.id)){(this._actDefs=this._actDefs||[]).push(x);}});}
       }catch(e){}}
   }
