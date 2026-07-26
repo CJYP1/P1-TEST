@@ -1,19 +1,19 @@
 ﻿楼层,分区,活动,活动名称(参考),月份,计划量,完成量,活动开始,活动结束
-B2,B2|EB2-2.1,act_corewall,Core Wall,Jun'26,0.3333,,17/6/2026,30/6/2026
-B2,B2|EB2-2.1,act_corewall,Core Wall,Jul'26,0.6667,,1/7/2026,28/7/2026
-B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,17/6/2026,30/6/2026
-B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,1/7/2026,15/7/2026
-B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,17/6/2026,30/6/2026
-B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,1/7/2026,15/7/2026
-B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,17/6/2026,30/6/2026
-B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,1/7/2026,15/7/2026
-B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,17/6/2026,30/6/2026
-B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,1/7/2026,15/7/2026
-B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,17/6/2026,30/6/2026
-B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,1/7/2026,15/7/2026
-B2,B2|EB2-2.1,act_corewall,Core Wall,Aug'26,0.3537,,3/8/2026,31/8/2026
-B2,B2|EB2-2.1,act_corewall,Core Wall,Sep'26,0.3659,,1/9/2026,30/9/2026
-B2,B2|EB2-2.1,act_corewall,Core Wall,Oct'26,0.2804,,1/10/2026,23/10/2026
+B2,B2|EB2-2.1,act_corewall,Core Wall,Jun'26,0.3333,,2026-06-17,2026-06-30
+B2,B2|EB2-2.1,act_corewall,Core Wall,Jul'26,0.6667,,2026-07-01,2026-07-28
+B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,2026-06-17,2026-06-30
+B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,2026-07-01,2026-07-15
+B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,2026-06-17,2026-06-30
+B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,2026-07-01,2026-07-15
+B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,2026-06-17,2026-06-30
+B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,2026-07-01,2026-07-15
+B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,2026-06-17,2026-06-30
+B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,2026-07-01,2026-07-15
+B2,B2|EB2-2.1,col,Columns,Jun'26,0.4828,,2026-06-17,2026-06-30
+B2,B2|EB2-2.1,col,Columns,Jul'26,0.5172,,2026-07-01,2026-07-15
+B2,B2|EB2-2.1,act_corewall,Core Wall,Aug'26,0.3537,,2026-08-03,2026-08-31
+B2,B2|EB2-2.1,act_corewall,Core Wall,Sep'26,0.3659,,2026-09-01,2026-09-30
+B2,B2|EB2-2.1,act_corewall,Core Wall,Oct'26,0.2804,,2026-10-01,2026-10-23
 B2,B2|EB2-2.1,col,Columns,,,,,
 B2,B2|EB2-2.1,pile,Pile Caps,,,,,
 B2,B2|EB2-2.1,mbeam,Steel Main Beams,,,,,
@@ -25,10 +25,10 @@ B2,B2|EB2-2.1,slab,Cast Slab,,,,,
 B2,B2|EB2-2.1,act_wall,Wall,,,,,
 B2,B2|EB2-2.1,act_corewall,Core Wall,,,,,
 B2,B2|EB2-2.1,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-2.2,col,Columns,Jun'26,1,,22/6/2026,30/6/2026
-B2,B2|EB2-2.2,col,Columns,Jun'26,1,,22/6/2026,30/6/2026
-B2,B2|EB2-2.2,col,Columns,Jun'26,1,,22/6/2026,30/6/2026
-B2,B2|EB2-2.2,col,Columns,Jun'26,1,,22/6/2026,30/6/2026
+B2,B2|EB2-2.2,col,Columns,Jun'26,1,,2026-06-22,2026-06-30
+B2,B2|EB2-2.2,col,Columns,Jun'26,1,,2026-06-22,2026-06-30
+B2,B2|EB2-2.2,col,Columns,Jun'26,1,,2026-06-22,2026-06-30
+B2,B2|EB2-2.2,col,Columns,Jun'26,1,,2026-06-22,2026-06-30
 B2,B2|EB2-2.2,col,Columns,,,,,
 B2,B2|EB2-2.2,pile,Pile Caps,,,,,
 B2,B2|EB2-2.2,mbeam,Steel Main Beams,,,,,
@@ -40,12 +40,12 @@ B2,B2|EB2-2.2,slab,Cast Slab,,,,,
 B2,B2|EB2-2.2,act_wall,Wall,,,,,
 B2,B2|EB2-2.2,act_corewall,Core Wall,,,,,
 B2,B2|EB2-2.2,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-2.3,col,Columns,Jul'26,1,,1/7/2026,9/7/2026
-B2,B2|EB2-2.3,col,Columns,Jul'26,1,,1/7/2026,9/7/2026
-B2,B2|EB2-2.3,col,Columns,Jul'26,1,,1/7/2026,9/7/2026
-B2,B2|EB2-2.3,col,Columns,Jul'26,1,,1/7/2026,9/7/2026
-B2,B2|EB2-2.3,col,Columns,Jul'26,1,,1/7/2026,9/7/2026
-B2,B2|EB2-2.3,col,Columns,Jul'26,1,,1/7/2026,9/7/2026
+B2,B2|EB2-2.3,col,Columns,Jul'26,1,,2026-07-01,2026-07-09
+B2,B2|EB2-2.3,col,Columns,Jul'26,1,,2026-07-01,2026-07-09
+B2,B2|EB2-2.3,col,Columns,Jul'26,1,,2026-07-01,2026-07-09
+B2,B2|EB2-2.3,col,Columns,Jul'26,1,,2026-07-01,2026-07-09
+B2,B2|EB2-2.3,col,Columns,Jul'26,1,,2026-07-01,2026-07-09
+B2,B2|EB2-2.3,col,Columns,Jul'26,1,,2026-07-01,2026-07-09
 B2,B2|EB2-2.3,col,Columns,,,,,
 B2,B2|EB2-2.3,pile,Pile Caps,,,,,
 B2,B2|EB2-2.3,mbeam,Steel Main Beams,,,,,
@@ -57,9 +57,9 @@ B2,B2|EB2-2.3,slab,Cast Slab,,,,,
 B2,B2|EB2-2.3,act_wall,Wall,,,,,
 B2,B2|EB2-2.3,act_corewall,Core Wall,,,,,
 B2,B2|EB2-2.3,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-2.4,col,Columns,Jul'26,1,,22/7/2026,30/7/2026
-B2,B2|EB2-2.4,col,Columns,Jul'26,1,,22/7/2026,30/7/2026
-B2,B2|EB2-2.4,col,Columns,Jul'26,1,,22/7/2026,30/7/2026
+B2,B2|EB2-2.4,col,Columns,Jul'26,1,,2026-07-22,2026-07-30
+B2,B2|EB2-2.4,col,Columns,Jul'26,1,,2026-07-22,2026-07-30
+B2,B2|EB2-2.4,col,Columns,Jul'26,1,,2026-07-22,2026-07-30
 B2,B2|EB2-2.4,col,Columns,,,,,
 B2,B2|EB2-2.4,pile,Pile Caps,,,,,
 B2,B2|EB2-2.4,mbeam,Steel Main Beams,,,,,
@@ -71,10 +71,10 @@ B2,B2|EB2-2.4,slab,Cast Slab,,,,,
 B2,B2|EB2-2.4,act_wall,Wall,,,,,
 B2,B2|EB2-2.4,act_corewall,Core Wall,,,,,
 B2,B2|EB2-2.4,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,3/8/2026,11/8/2026
-B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,3/8/2026,11/8/2026
-B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,3/8/2026,11/8/2026
-B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,3/8/2026,11/8/2026
+B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,2026-08-03,2026-08-11
+B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,2026-08-03,2026-08-11
+B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,2026-08-03,2026-08-11
+B2,B2|EB2-3.1A-1,col,Columns,Aug'26,1,,2026-08-03,2026-08-11
 B2,B2|EB2-3.1A-1,col,Columns,,,,,
 B2,B2|EB2-3.1A-1,pile,Pile Caps,,,,,
 B2,B2|EB2-3.1A-1,mbeam,Steel Main Beams,,,,,
@@ -86,9 +86,9 @@ B2,B2|EB2-3.1A-1,slab,Cast Slab,,,,,
 B2,B2|EB2-3.1A-1,act_wall,Wall,,,,,
 B2,B2|EB2-3.1A-1,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.1A-1,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.2-1,col,Columns,Aug'26,1,,12/8/2026,20/8/2026
-B2,B2|EB2-3.2-1,col,Columns,Aug'26,1,,12/8/2026,20/8/2026
-B2,B2|EB2-3.2-1,col,Columns,Aug'26,1,,12/8/2026,20/8/2026
+B2,B2|EB2-3.2-1,col,Columns,Aug'26,1,,2026-08-12,2026-08-20
+B2,B2|EB2-3.2-1,col,Columns,Aug'26,1,,2026-08-12,2026-08-20
+B2,B2|EB2-3.2-1,col,Columns,Aug'26,1,,2026-08-12,2026-08-20
 B2,B2|EB2-3.2-1,col,Columns,,,,,
 B2,B2|EB2-3.2-1,pile,Pile Caps,,,,,
 B2,B2|EB2-3.2-1,mbeam,Steel Main Beams,,,,,
@@ -100,20 +100,20 @@ B2,B2|EB2-3.2-1,slab,Cast Slab,,,,,
 B2,B2|EB2-3.2-1,act_wall,Wall,,,,,
 B2,B2|EB2-3.2-1,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.2-1,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.3,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
 B2,B2|EB2-3.3,col,Columns,,,,,
 B2,B2|EB2-3.3,pile,Pile Caps,,,,,
 B2,B2|EB2-3.3,mbeam,Steel Main Beams,,,,,
@@ -125,14 +125,14 @@ B2,B2|EB2-3.3,slab,Cast Slab,,,,,
 B2,B2|EB2-3.3,act_wall,Wall,,,,,
 B2,B2|EB2-3.3,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.3,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-2,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
 B2,B2|EB2-3.1A-2,col,Columns,,,,,
 B2,B2|EB2-3.1A-2,pile,Pile Caps,,,,,
 B2,B2|EB2-3.1A-2,mbeam,Steel Main Beams,,,,,
@@ -144,14 +144,14 @@ B2,B2|EB2-3.1A-2,slab,Cast Slab,,,,,
 B2,B2|EB2-3.1A-2,act_wall,Wall,,,,,
 B2,B2|EB2-3.1A-2,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.1A-2,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.1A-3.2-2,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
 B2,B2|EB2-3.1A-3.2-2,col,Columns,,,,,
 B2,B2|EB2-3.1A-3.2-2,pile,Pile Caps,,,,,
 B2,B2|EB2-3.1A-3.2-2,mbeam,Steel Main Beams,,,,,
@@ -163,10 +163,10 @@ B2,B2|EB2-3.1A-3.2-2,slab,Cast Slab,,,,,
 B2,B2|EB2-3.1A-3.2-2,act_wall,Wall,,,,,
 B2,B2|EB2-3.1A-3.2-2,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.1A-3.2-2,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.4,col,Columns,Sep'26,1,,18/9/2026,28/9/2026
-B2,B2|EB2-3.4,act_corewall,Core Wall,Sep'26,0.2063,,18/9/2026,30/9/2026
-B2,B2|EB2-3.4,act_corewall,Core Wall,Oct'26,0.4921,,1/10/2026,31/10/2026
-B2,B2|EB2-3.4,act_corewall,Core Wall,Nov'26,0.3016,,1/11/2026,19/11/2026
+B2,B2|EB2-3.4,col,Columns,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB2-3.4,act_corewall,Core Wall,Sep'26,0.2063,,2026-09-18,2026-09-30
+B2,B2|EB2-3.4,act_corewall,Core Wall,Oct'26,0.4921,,2026-10-01,2026-10-31
+B2,B2|EB2-3.4,act_corewall,Core Wall,Nov'26,0.3016,,2026-11-01,2026-11-19
 B2,B2|EB2-3.4,col,Columns,,,,,
 B2,B2|EB2-3.4,pile,Pile Caps,,,,,
 B2,B2|EB2-3.4,mbeam,Steel Main Beams,,,,,
@@ -178,10 +178,10 @@ B2,B2|EB2-3.4,slab,Cast Slab,,,,,
 B2,B2|EB2-3.4,act_wall,Wall,,,,,
 B2,B2|EB2-3.4,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.4,act_colcorbel,Columns Corbel,,,,,
-B2,B2|EB2-3.5,col,Columns,Sep'26,83.7,,18/9/2026,28/9/2026
-B2,B2|EB2-3.5,act_corewall,Core Wall,Sep'26,83.7,,18/9/2026,30/9/2026
-B2,B2|EB2-3.5,act_corewall,Core Wall,Oct'26,83.7,,1/10/2026,31/10/2026
-B2,B2|EB2-3.5,act_corewall,Core Wall,Nov'26,83.7,,1/11/2026,19/11/2026
+B2,B2|EB2-3.5,col,Columns,Sep'26,83.7,,2026-09-18,2026-09-28
+B2,B2|EB2-3.5,act_corewall,Core Wall,Sep'26,83.7,,2026-09-18,2026-09-30
+B2,B2|EB2-3.5,act_corewall,Core Wall,Oct'26,83.7,,2026-10-01,2026-10-31
+B2,B2|EB2-3.5,act_corewall,Core Wall,Nov'26,83.7,,2026-11-01,2026-11-19
 B2,B2|EB2-3.5,col,Columns,,,,,
 B2,B2|EB2-3.5,pile,Pile Caps,,,,,
 B2,B2|EB2-3.5,mbeam,Steel Main Beams,,,,,
@@ -193,54 +193,54 @@ B2,B2|EB2-3.5,slab,Cast Slab,,,,,
 B2,B2|EB2-3.5,act_wall,Wall,,,,,
 B2,B2|EB2-3.5,act_corewall,Core Wall,,,,,
 B2,B2|EB2-3.5,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S2,demo,Demolition,Jul'26,,,17/7/2026,30/7/2026
-B2,B2|B2-S2,demo,Demolition,Jul'26,83.7,,17/7/2026,30/7/2026
-B2,B2|B2-S2,exc,Excavation,Jul'26,,,31/7/2026,31/7/2026
-B2,B2|B2-S2,exc,Excavation,Jul'26,83.7,,31/7/2026,31/7/2026
-B2,B2|B2-S2,exc,Excavation,Aug'26,,,1/8/2026,28/8/2026
-B2,B2|B2-S2,exc,Excavation,Aug'26,83.7,,1/8/2026,28/8/2026
-B2,B2|B2-S2,slab,Cast Slab,Sep'26,3.6667,,9/9/2026,30/9/2026
-B2,B2|B2-S2,slab,Cast Slab,Sep'26,83.7,,9/9/2026,30/9/2026
-B2,B2|B2-S2,slab,Cast Slab,Oct'26,3.3333,,1/10/2026,20/10/2026
-B2,B2|B2-S2,slab,Cast Slab,Oct'26,83.7,,1/10/2026,20/10/2026
-B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,1/11/2026,18/11/2026
-B2,B2|B2-S2,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2,act_wall,Wall,Oct'26,0.131,,21/10/2026,31/10/2026
-B2,B2|B2-S2,act_wall,Wall,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2,act_wall,Wall,Nov'26,0.3571,,1/11/2026,30/11/2026
-B2,B2|B2-S2,act_wall,Wall,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S2,act_wall,Wall,Dec'26,0.369,,1/12/2026,31/12/2026
-B2,B2|B2-S2,act_wall,Wall,Dec'26,83.7,,1/12/2026,31/12/2026
-B2,B2|B2-S2,act_wall,Wall,Jan'27,0.1429,,1/1/2027,12/1/2027
-B2,B2|B2-S2,act_wall,Wall,Jan'27,83.7,,1/1/2027,12/1/2027
-B2,B2|B2-S2,demo,Demolition,Dec'26,,,3/12/2026,5/12/2026
-B2,B2|B2-S2,demo,Demolition,Dec'26,83.7,,3/12/2026,5/12/2026
-B2,B2|B2-S2,exc,Excavation,Dec'26,,,6/12/2026,31/12/2026
-B2,B2|B2-S2,exc,Excavation,Dec'26,83.7,,6/12/2026,31/12/2026
-B2,B2|B2-S2,exc,Excavation,Jan'27,,,1/1/2027,2/1/2027
-B2,B2|B2-S2,exc,Excavation,Jan'27,83.7,,1/1/2027,2/1/2027
-B2,B2|B2-S2,slab,Cast Slab,Jan'27,6.7586,,4/1/2027,31/1/2027
-B2,B2|B2-S2,slab,Cast Slab,Jan'27,83.7,,4/1/2027,31/1/2027
-B2,B2|B2-S2,slab,Cast Slab,Feb'27,0.2414,,1/2/2027,1/2/2027
-B2,B2|B2-S2,slab,Cast Slab,Feb'27,83.7,,1/2/2027,1/2/2027
-B2,B2|B2-S2,col,Columns,Feb'27,0.4655,,2/2/2027,28/2/2027
-B2,B2|B2-S2,col,Columns,Feb'27,83.7,,2/2/2027,28/2/2027
-B2,B2|B2-S2,col,Columns,Mar'27,0.5345,,1/3/2027,31/3/2027
-B2,B2|B2-S2,col,Columns,Mar'27,83.7,,1/3/2027,31/3/2027
+B2,B2|B2-S2,demo,Demolition,Jul'26,,,2026-07-17,2026-07-30
+B2,B2|B2-S2,demo,Demolition,Jul'26,83.7,,2026-07-17,2026-07-30
+B2,B2|B2-S2,exc,Excavation,Jul'26,,,2026-07-31,2026-07-31
+B2,B2|B2-S2,exc,Excavation,Jul'26,83.7,,2026-07-31,2026-07-31
+B2,B2|B2-S2,exc,Excavation,Aug'26,,,2026-08-01,2026-08-28
+B2,B2|B2-S2,exc,Excavation,Aug'26,83.7,,2026-08-01,2026-08-28
+B2,B2|B2-S2,slab,Cast Slab,Sep'26,3.6667,,2026-09-09,2026-09-30
+B2,B2|B2-S2,slab,Cast Slab,Sep'26,83.7,,2026-09-09,2026-09-30
+B2,B2|B2-S2,slab,Cast Slab,Oct'26,3.3333,,2026-10-01,2026-10-20
+B2,B2|B2-S2,slab,Cast Slab,Oct'26,83.7,,2026-10-01,2026-10-20
+B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Oct'26,0.3793,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2,col,Columns,Nov'26,0.6207,,2026-11-01,2026-11-18
+B2,B2|B2-S2,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2,act_wall,Wall,Oct'26,0.131,,2026-10-21,2026-10-31
+B2,B2|B2-S2,act_wall,Wall,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2,act_wall,Wall,Nov'26,0.3571,,2026-11-01,2026-11-30
+B2,B2|B2-S2,act_wall,Wall,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S2,act_wall,Wall,Dec'26,0.369,,2026-12-01,2026-12-31
+B2,B2|B2-S2,act_wall,Wall,Dec'26,83.7,,2026-12-01,2026-12-31
+B2,B2|B2-S2,act_wall,Wall,Jan'27,0.1429,,2027-01-01,2027-01-12
+B2,B2|B2-S2,act_wall,Wall,Jan'27,83.7,,2027-01-01,2027-01-12
+B2,B2|B2-S2,demo,Demolition,Dec'26,,,2026-12-03,2026-12-05
+B2,B2|B2-S2,demo,Demolition,Dec'26,83.7,,2026-12-03,2026-12-05
+B2,B2|B2-S2,exc,Excavation,Dec'26,,,2026-12-06,2026-12-31
+B2,B2|B2-S2,exc,Excavation,Dec'26,83.7,,2026-12-06,2026-12-31
+B2,B2|B2-S2,exc,Excavation,Jan'27,,,2027-01-01,2027-01-02
+B2,B2|B2-S2,exc,Excavation,Jan'27,83.7,,2027-01-01,2027-01-02
+B2,B2|B2-S2,slab,Cast Slab,Jan'27,6.7586,,2027-01-04,2027-01-31
+B2,B2|B2-S2,slab,Cast Slab,Jan'27,83.7,,2027-01-04,2027-01-31
+B2,B2|B2-S2,slab,Cast Slab,Feb'27,0.2414,,2027-02-01,2027-02-01
+B2,B2|B2-S2,slab,Cast Slab,Feb'27,83.7,,2027-02-01,2027-02-01
+B2,B2|B2-S2,col,Columns,Feb'27,0.4655,,2027-02-02,2027-02-28
+B2,B2|B2-S2,col,Columns,Feb'27,83.7,,2027-02-02,2027-02-28
+B2,B2|B2-S2,col,Columns,Mar'27,0.5345,,2027-03-01,2027-03-31
+B2,B2|B2-S2,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-31
 B2,B2|B2-S2,col,Columns,,,,,
 B2,B2|B2-S2,pile,Pile Caps,,,,,
 B2,B2|B2-S2,mbeam,Steel Main Beams,,,,,
@@ -252,54 +252,54 @@ B2,B2|B2-S2,slab,Cast Slab,,,,,
 B2,B2|B2-S2,act_wall,Wall,,,,,
 B2,B2|B2-S2,act_corewall,Core Wall,,,,,
 B2,B2|B2-S2,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S2a,demo,Demolition,Jul'26,83.7,,17/7/2026,30/7/2026
-B2,B2|B2-S2a,demo,Demolition,Jul'26,83.7,,17/7/2026,30/7/2026
-B2,B2|B2-S2a,exc,Excavation,Jul'26,83.7,,31/7/2026,31/7/2026
-B2,B2|B2-S2a,exc,Excavation,Jul'26,83.7,,31/7/2026,31/7/2026
-B2,B2|B2-S2a,exc,Excavation,Aug'26,83.7,,1/8/2026,28/8/2026
-B2,B2|B2-S2a,exc,Excavation,Aug'26,83.7,,1/8/2026,28/8/2026
-B2,B2|B2-S2a,slab,Cast Slab,Sep'26,83.7,,9/9/2026,30/9/2026
-B2,B2|B2-S2a,slab,Cast Slab,Sep'26,83.7,,9/9/2026,30/9/2026
-B2,B2|B2-S2a,slab,Cast Slab,Oct'26,83.7,,1/10/2026,20/10/2026
-B2,B2|B2-S2a,slab,Cast Slab,Oct'26,83.7,,1/10/2026,20/10/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,1/11/2026,18/11/2026
-B2,B2|B2-S2a,act_wall,Wall,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,act_wall,Wall,Oct'26,83.7,,21/10/2026,31/10/2026
-B2,B2|B2-S2a,act_wall,Wall,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S2a,act_wall,Wall,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S2a,act_wall,Wall,Dec'26,83.7,,1/12/2026,31/12/2026
-B2,B2|B2-S2a,act_wall,Wall,Dec'26,83.7,,1/12/2026,31/12/2026
-B2,B2|B2-S2a,act_wall,Wall,Jan'27,83.7,,1/1/2027,12/1/2027
-B2,B2|B2-S2a,act_wall,Wall,Jan'27,83.7,,1/1/2027,12/1/2027
-B2,B2|B2-S2a,demo,Demolition,Dec'26,83.7,,3/12/2026,5/12/2026
-B2,B2|B2-S2a,demo,Demolition,Dec'26,83.7,,3/12/2026,5/12/2026
-B2,B2|B2-S2a,exc,Excavation,Dec'26,83.7,,6/12/2026,31/12/2026
-B2,B2|B2-S2a,exc,Excavation,Dec'26,83.7,,6/12/2026,31/12/2026
-B2,B2|B2-S2a,exc,Excavation,Jan'27,83.7,,1/1/2027,2/1/2027
-B2,B2|B2-S2a,exc,Excavation,Jan'27,83.7,,1/1/2027,2/1/2027
-B2,B2|B2-S2a,slab,Cast Slab,Jan'27,83.7,,4/1/2027,31/1/2027
-B2,B2|B2-S2a,slab,Cast Slab,Jan'27,83.7,,4/1/2027,31/1/2027
-B2,B2|B2-S2a,slab,Cast Slab,Feb'27,83.7,,1/2/2027,1/2/2027
-B2,B2|B2-S2a,slab,Cast Slab,Feb'27,83.7,,1/2/2027,1/2/2027
-B2,B2|B2-S2a,col,Columns,Feb'27,83.7,,2/2/2027,28/2/2027
-B2,B2|B2-S2a,col,Columns,Feb'27,83.7,,2/2/2027,28/2/2027
-B2,B2|B2-S2a,col,Columns,Mar'27,83.7,,1/3/2027,31/3/2027
-B2,B2|B2-S2a,col,Columns,Mar'27,83.7,,1/3/2027,31/3/2027
+B2,B2|B2-S2a,demo,Demolition,Jul'26,83.7,,2026-07-17,2026-07-30
+B2,B2|B2-S2a,demo,Demolition,Jul'26,83.7,,2026-07-17,2026-07-30
+B2,B2|B2-S2a,exc,Excavation,Jul'26,83.7,,2026-07-31,2026-07-31
+B2,B2|B2-S2a,exc,Excavation,Jul'26,83.7,,2026-07-31,2026-07-31
+B2,B2|B2-S2a,exc,Excavation,Aug'26,83.7,,2026-08-01,2026-08-28
+B2,B2|B2-S2a,exc,Excavation,Aug'26,83.7,,2026-08-01,2026-08-28
+B2,B2|B2-S2a,slab,Cast Slab,Sep'26,83.7,,2026-09-09,2026-09-30
+B2,B2|B2-S2a,slab,Cast Slab,Sep'26,83.7,,2026-09-09,2026-09-30
+B2,B2|B2-S2a,slab,Cast Slab,Oct'26,83.7,,2026-10-01,2026-10-20
+B2,B2|B2-S2a,slab,Cast Slab,Oct'26,83.7,,2026-10-01,2026-10-20
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-18
+B2,B2|B2-S2a,act_wall,Wall,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,act_wall,Wall,Oct'26,83.7,,2026-10-21,2026-10-31
+B2,B2|B2-S2a,act_wall,Wall,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S2a,act_wall,Wall,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S2a,act_wall,Wall,Dec'26,83.7,,2026-12-01,2026-12-31
+B2,B2|B2-S2a,act_wall,Wall,Dec'26,83.7,,2026-12-01,2026-12-31
+B2,B2|B2-S2a,act_wall,Wall,Jan'27,83.7,,2027-01-01,2027-01-12
+B2,B2|B2-S2a,act_wall,Wall,Jan'27,83.7,,2027-01-01,2027-01-12
+B2,B2|B2-S2a,demo,Demolition,Dec'26,83.7,,2026-12-03,2026-12-05
+B2,B2|B2-S2a,demo,Demolition,Dec'26,83.7,,2026-12-03,2026-12-05
+B2,B2|B2-S2a,exc,Excavation,Dec'26,83.7,,2026-12-06,2026-12-31
+B2,B2|B2-S2a,exc,Excavation,Dec'26,83.7,,2026-12-06,2026-12-31
+B2,B2|B2-S2a,exc,Excavation,Jan'27,83.7,,2027-01-01,2027-01-02
+B2,B2|B2-S2a,exc,Excavation,Jan'27,83.7,,2027-01-01,2027-01-02
+B2,B2|B2-S2a,slab,Cast Slab,Jan'27,83.7,,2027-01-04,2027-01-31
+B2,B2|B2-S2a,slab,Cast Slab,Jan'27,83.7,,2027-01-04,2027-01-31
+B2,B2|B2-S2a,slab,Cast Slab,Feb'27,83.7,,2027-02-01,2027-02-01
+B2,B2|B2-S2a,slab,Cast Slab,Feb'27,83.7,,2027-02-01,2027-02-01
+B2,B2|B2-S2a,col,Columns,Feb'27,83.7,,2027-02-02,2027-02-28
+B2,B2|B2-S2a,col,Columns,Feb'27,83.7,,2027-02-02,2027-02-28
+B2,B2|B2-S2a,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-31
+B2,B2|B2-S2a,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-31
 B2,B2|B2-S2a,col,Columns,,,,,
 B2,B2|B2-S2a,pile,Pile Caps,,,,,
 B2,B2|B2-S2a,mbeam,Steel Main Beams,,,,,
@@ -311,62 +311,62 @@ B2,B2|B2-S2a,slab,Cast Slab,,,,,
 B2,B2|B2-S2a,act_wall,Wall,,,,,
 B2,B2|B2-S2a,act_corewall,Core Wall,,,,,
 B2,B2|B2-S2a,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S1,demo,Demolition,Aug'26,,,27/8/2026,29/8/2026
-B2,B2|B2-S1,demo,Demolition,Aug'26,83.7,,27/8/2026,29/8/2026
-B2,B2|B2-S1,exc,Excavation,Aug'26,,,30/8/2026,31/8/2026
-B2,B2|B2-S1,exc,Excavation,Aug'26,83.7,,30/8/2026,31/8/2026
-B2,B2|B2-S1,exc,Excavation,Sep'26,,,1/9/2026,19/9/2026
-B2,B2|B2-S1,exc,Excavation,Sep'26,83.7,,1/9/2026,19/9/2026
-B2,B2|B2-S1,slab,Cast Slab,Oct'26,4.6667,,4/10/2026,31/10/2026
-B2,B2|B2-S1,slab,Cast Slab,Oct'26,83.7,,4/10/2026,31/10/2026
-B2,B2|B2-S1,slab,Cast Slab,Nov'26,0.3333,,1/11/2026,2/11/2026
-B2,B2|B2-S1,slab,Cast Slab,Nov'26,83.7,,1/11/2026,2/11/2026
-B2,B2|B2-S1,demo,Demolition,Oct'26,,,21/10/2026,23/10/2026
-B2,B2|B2-S1,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S1,exc,Excavation,Oct'26,,,26/10/2026,31/10/2026
-B2,B2|B2-S1,exc,Excavation,Oct'26,83.7,,26/10/2026,31/10/2026
-B2,B2|B2-S1,exc,Excavation,Nov'26,,,1/11/2026,30/11/2026
-B2,B2|B2-S1,exc,Excavation,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S1,exc,Excavation,Dec'26,,,1/12/2026,2/12/2026
-B2,B2|B2-S1,exc,Excavation,Dec'26,83.7,,1/12/2026,2/12/2026
-B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,1/12/2026,30/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1,act_corewall,Core Wall,Nov'26,0.3333,,3/11/2026,30/11/2026
-B2,B2|B2-S1,act_corewall,Core Wall,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1,act_corewall,Core Wall,Dec'26,0.369,,1/12/2026,31/12/2026
-B2,B2|B2-S1,act_corewall,Core Wall,Dec'26,83.7,,1/12/2026,31/12/2026
-B2,B2|B2-S1,act_corewall,Core Wall,Jan'27,0.2977,,1/1/2027,25/1/2027
-B2,B2|B2-S1,act_corewall,Core Wall,Jan'27,83.7,,1/1/2027,25/1/2027
-B2,B2|B2-S1,slab,Cast Slab,Nov'26,5.3333,,3/11/2026,30/11/2026
-B2,B2|B2-S1,slab,Cast Slab,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1,slab,Cast Slab,Dec'26,2.6667,,1/12/2026,14/12/2026
-B2,B2|B2-S1,slab,Cast Slab,Dec'26,83.7,,1/12/2026,14/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,0.8095,,15/12/2026,31/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1,col,Columns,Jan'27,0.1905,,1/1/2027,4/1/2027
-B2,B2|B2-S1,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1,col,Columns,Dec'26,0.8095,,15/12/2026,31/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1,col,Columns,Jan'27,0.1905,,1/1/2027,4/1/2027
-B2,B2|B2-S1,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1,col,Columns,Dec'26,0.8095,,15/12/2026,31/12/2026
-B2,B2|B2-S1,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1,col,Columns,Jan'27,0.1905,,1/1/2027,4/1/2027
-B2,B2|B2-S1,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
+B2,B2|B2-S1,demo,Demolition,Aug'26,,,2026-08-27,2026-08-29
+B2,B2|B2-S1,demo,Demolition,Aug'26,83.7,,2026-08-27,2026-08-29
+B2,B2|B2-S1,exc,Excavation,Aug'26,,,2026-08-30,2026-08-31
+B2,B2|B2-S1,exc,Excavation,Aug'26,83.7,,2026-08-30,2026-08-31
+B2,B2|B2-S1,exc,Excavation,Sep'26,,,2026-09-01,2026-09-19
+B2,B2|B2-S1,exc,Excavation,Sep'26,83.7,,2026-09-01,2026-09-19
+B2,B2|B2-S1,slab,Cast Slab,Oct'26,4.6667,,2026-10-04,2026-10-31
+B2,B2|B2-S1,slab,Cast Slab,Oct'26,83.7,,2026-10-04,2026-10-31
+B2,B2|B2-S1,slab,Cast Slab,Nov'26,0.3333,,2026-11-01,2026-11-02
+B2,B2|B2-S1,slab,Cast Slab,Nov'26,83.7,,2026-11-01,2026-11-02
+B2,B2|B2-S1,demo,Demolition,Oct'26,,,2026-10-21,2026-10-23
+B2,B2|B2-S1,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S1,exc,Excavation,Oct'26,,,2026-10-26,2026-10-31
+B2,B2|B2-S1,exc,Excavation,Oct'26,83.7,,2026-10-26,2026-10-31
+B2,B2|B2-S1,exc,Excavation,Nov'26,,,2026-11-01,2026-11-30
+B2,B2|B2-S1,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S1,exc,Excavation,Dec'26,,,2026-12-01,2026-12-02
+B2,B2|B2-S1,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-02
+B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Nov'26,0.4828,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1,col,Columns,Dec'26,0.5172,,2026-12-01,2026-12-30
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1,act_corewall,Core Wall,Nov'26,0.3333,,2026-11-03,2026-11-30
+B2,B2|B2-S1,act_corewall,Core Wall,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1,act_corewall,Core Wall,Dec'26,0.369,,2026-12-01,2026-12-31
+B2,B2|B2-S1,act_corewall,Core Wall,Dec'26,83.7,,2026-12-01,2026-12-31
+B2,B2|B2-S1,act_corewall,Core Wall,Jan'27,0.2977,,2027-01-01,2027-01-25
+B2,B2|B2-S1,act_corewall,Core Wall,Jan'27,83.7,,2027-01-01,2027-01-25
+B2,B2|B2-S1,slab,Cast Slab,Nov'26,5.3333,,2026-11-03,2026-11-30
+B2,B2|B2-S1,slab,Cast Slab,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1,slab,Cast Slab,Dec'26,2.6667,,2026-12-01,2026-12-14
+B2,B2|B2-S1,slab,Cast Slab,Dec'26,83.7,,2026-12-01,2026-12-14
+B2,B2|B2-S1,col,Columns,Dec'26,0.8095,,2026-12-15,2026-12-31
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1,col,Columns,Jan'27,0.1905,,2027-01-01,2027-01-04
+B2,B2|B2-S1,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1,col,Columns,Dec'26,0.8095,,2026-12-15,2026-12-31
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1,col,Columns,Jan'27,0.1905,,2027-01-01,2027-01-04
+B2,B2|B2-S1,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1,col,Columns,Dec'26,0.8095,,2026-12-15,2026-12-31
+B2,B2|B2-S1,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1,col,Columns,Jan'27,0.1905,,2027-01-01,2027-01-04
+B2,B2|B2-S1,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
 B2,B2|B2-S1,col,Columns,,,,,
 B2,B2|B2-S1,pile,Pile Caps,,,,,
 B2,B2|B2-S1,mbeam,Steel Main Beams,,,,,
@@ -378,62 +378,62 @@ B2,B2|B2-S1,slab,Cast Slab,,,,,
 B2,B2|B2-S1,act_wall,Wall,,,,,
 B2,B2|B2-S1,act_corewall,Core Wall,,,,,
 B2,B2|B2-S1,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S1a,demo,Demolition,Aug'26,83.7,,27/8/2026,29/8/2026
-B2,B2|B2-S1a,demo,Demolition,Aug'26,83.7,,27/8/2026,29/8/2026
-B2,B2|B2-S1a,exc,Excavation,Aug'26,83.7,,30/8/2026,31/8/2026
-B2,B2|B2-S1a,exc,Excavation,Aug'26,83.7,,30/8/2026,31/8/2026
-B2,B2|B2-S1a,exc,Excavation,Sep'26,83.7,,1/9/2026,19/9/2026
-B2,B2|B2-S1a,exc,Excavation,Sep'26,83.7,,1/9/2026,19/9/2026
-B2,B2|B2-S1a,slab,Cast Slab,Oct'26,83.7,,4/10/2026,31/10/2026
-B2,B2|B2-S1a,slab,Cast Slab,Oct'26,83.7,,4/10/2026,31/10/2026
-B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,1/11/2026,2/11/2026
-B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,1/11/2026,2/11/2026
-B2,B2|B2-S1a,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S1a,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S1a,exc,Excavation,Oct'26,83.7,,26/10/2026,31/10/2026
-B2,B2|B2-S1a,exc,Excavation,Oct'26,83.7,,26/10/2026,31/10/2026
-B2,B2|B2-S1a,exc,Excavation,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S1a,exc,Excavation,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S1a,exc,Excavation,Dec'26,83.7,,1/12/2026,2/12/2026
-B2,B2|B2-S1a,exc,Excavation,Dec'26,83.7,,1/12/2026,2/12/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,1/12/2026,30/12/2026
-B2,B2|B2-S1a,act_corewall,Core Wall,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,act_corewall,Core Wall,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,act_corewall,Core Wall,Dec'26,83.7,,1/12/2026,31/12/2026
-B2,B2|B2-S1a,act_corewall,Core Wall,Dec'26,83.7,,1/12/2026,31/12/2026
-B2,B2|B2-S1a,act_corewall,Core Wall,Jan'27,83.7,,1/1/2027,25/1/2027
-B2,B2|B2-S1a,act_corewall,Core Wall,Jan'27,83.7,,1/1/2027,25/1/2027
-B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,3/11/2026,30/11/2026
-B2,B2|B2-S1a,slab,Cast Slab,Dec'26,83.7,,1/12/2026,14/12/2026
-B2,B2|B2-S1a,slab,Cast Slab,Dec'26,83.7,,1/12/2026,14/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,15/12/2026,31/12/2026
-B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
-B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,1/1/2027,4/1/2027
+B2,B2|B2-S1a,demo,Demolition,Aug'26,83.7,,2026-08-27,2026-08-29
+B2,B2|B2-S1a,demo,Demolition,Aug'26,83.7,,2026-08-27,2026-08-29
+B2,B2|B2-S1a,exc,Excavation,Aug'26,83.7,,2026-08-30,2026-08-31
+B2,B2|B2-S1a,exc,Excavation,Aug'26,83.7,,2026-08-30,2026-08-31
+B2,B2|B2-S1a,exc,Excavation,Sep'26,83.7,,2026-09-01,2026-09-19
+B2,B2|B2-S1a,exc,Excavation,Sep'26,83.7,,2026-09-01,2026-09-19
+B2,B2|B2-S1a,slab,Cast Slab,Oct'26,83.7,,2026-10-04,2026-10-31
+B2,B2|B2-S1a,slab,Cast Slab,Oct'26,83.7,,2026-10-04,2026-10-31
+B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,2026-11-01,2026-11-02
+B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,2026-11-01,2026-11-02
+B2,B2|B2-S1a,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S1a,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S1a,exc,Excavation,Oct'26,83.7,,2026-10-26,2026-10-31
+B2,B2|B2-S1a,exc,Excavation,Oct'26,83.7,,2026-10-26,2026-10-31
+B2,B2|B2-S1a,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S1a,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S1a,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-02
+B2,B2|B2-S1a,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-02
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-30
+B2,B2|B2-S1a,act_corewall,Core Wall,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,act_corewall,Core Wall,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,act_corewall,Core Wall,Dec'26,83.7,,2026-12-01,2026-12-31
+B2,B2|B2-S1a,act_corewall,Core Wall,Dec'26,83.7,,2026-12-01,2026-12-31
+B2,B2|B2-S1a,act_corewall,Core Wall,Jan'27,83.7,,2027-01-01,2027-01-25
+B2,B2|B2-S1a,act_corewall,Core Wall,Jan'27,83.7,,2027-01-01,2027-01-25
+B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,slab,Cast Slab,Nov'26,83.7,,2026-11-03,2026-11-30
+B2,B2|B2-S1a,slab,Cast Slab,Dec'26,83.7,,2026-12-01,2026-12-14
+B2,B2|B2-S1a,slab,Cast Slab,Dec'26,83.7,,2026-12-01,2026-12-14
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1a,col,Columns,Dec'26,83.7,,2026-12-15,2026-12-31
+B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
+B2,B2|B2-S1a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-04
 B2,B2|B2-S1a,col,Columns,,,,,
 B2,B2|B2-S1a,pile,Pile Caps,,,,,
 B2,B2|B2-S1a,mbeam,Steel Main Beams,,,,,
@@ -445,28 +445,28 @@ B2,B2|B2-S1a,slab,Cast Slab,,,,,
 B2,B2|B2-S1a,act_wall,Wall,,,,,
 B2,B2|B2-S1a,act_corewall,Core Wall,,,,,
 B2,B2|B2-S1a,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S7,demo,Demolition,Oct'26,,,21/10/2026,23/10/2026
-B2,B2|B2-S7,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S7,exc,Excavation,Oct'26,,,26/10/2026,31/10/2026
-B2,B2|B2-S7,exc,Excavation,Oct'26,83.7,,26/10/2026,31/10/2026
-B2,B2|B2-S7,exc,Excavation,Nov'26,,,1/11/2026,30/11/2026
-B2,B2|B2-S7,exc,Excavation,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S7,exc,Excavation,Dec'26,,,1/12/2026,2/12/2026
-B2,B2|B2-S7,exc,Excavation,Dec'26,83.7,,1/12/2026,2/12/2026
-B2,B2|B2-S7,slab,Cast Slab,Dec'26,6,,3/12/2026,31/12/2026
-B2,B2|B2-S7,slab,Cast Slab,Dec'26,83.7,,3/12/2026,31/12/2026
-B2,B2|B2-S7,col,Columns,Jan'27,3.1,,1/1/2027,31/1/2027
-B2,B2|B2-S7,col,Columns,Jan'27,83.7,,1/1/2027,31/1/2027
-B2,B2|B2-S7,col,Columns,Feb'27,2.8,,1/2/2027,28/2/2027
-B2,B2|B2-S7,col,Columns,Feb'27,83.7,,1/2/2027,28/2/2027
-B2,B2|B2-S7,col,Columns,Mar'27,0.1,,1/3/2027,1/3/2027
-B2,B2|B2-S7,col,Columns,Mar'27,83.7,,1/3/2027,1/3/2027
-B2,B2|B2-S7,act_corewall,Core Wall,Mar'27,0.3571,,2/3/2027,31/3/2027
-B2,B2|B2-S7,act_corewall,Core Wall,Mar'27,83.7,,2/3/2027,31/3/2027
-B2,B2|B2-S7,act_corewall,Core Wall,Apr'27,0.3571,,1/4/2027,30/4/2027
-B2,B2|B2-S7,act_corewall,Core Wall,Apr'27,83.7,,1/4/2027,30/4/2027
-B2,B2|B2-S7,act_corewall,Core Wall,May'27,0.2858,,1/5/2027,24/5/2027
-B2,B2|B2-S7,act_corewall,Core Wall,May'27,83.7,,1/5/2027,24/5/2027
+B2,B2|B2-S7,demo,Demolition,Oct'26,,,2026-10-21,2026-10-23
+B2,B2|B2-S7,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S7,exc,Excavation,Oct'26,,,2026-10-26,2026-10-31
+B2,B2|B2-S7,exc,Excavation,Oct'26,83.7,,2026-10-26,2026-10-31
+B2,B2|B2-S7,exc,Excavation,Nov'26,,,2026-11-01,2026-11-30
+B2,B2|B2-S7,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S7,exc,Excavation,Dec'26,,,2026-12-01,2026-12-02
+B2,B2|B2-S7,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-02
+B2,B2|B2-S7,slab,Cast Slab,Dec'26,6,,2026-12-03,2026-12-31
+B2,B2|B2-S7,slab,Cast Slab,Dec'26,83.7,,2026-12-03,2026-12-31
+B2,B2|B2-S7,col,Columns,Jan'27,3.1,,2027-01-01,2027-01-31
+B2,B2|B2-S7,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-31
+B2,B2|B2-S7,col,Columns,Feb'27,2.8,,2027-02-01,2027-02-28
+B2,B2|B2-S7,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-28
+B2,B2|B2-S7,col,Columns,Mar'27,0.1,,2027-03-01,2027-03-01
+B2,B2|B2-S7,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-01
+B2,B2|B2-S7,act_corewall,Core Wall,Mar'27,0.3571,,2027-03-02,2027-03-31
+B2,B2|B2-S7,act_corewall,Core Wall,Mar'27,83.7,,2027-03-02,2027-03-31
+B2,B2|B2-S7,act_corewall,Core Wall,Apr'27,0.3571,,2027-04-01,2027-04-30
+B2,B2|B2-S7,act_corewall,Core Wall,Apr'27,83.7,,2027-04-01,2027-04-30
+B2,B2|B2-S7,act_corewall,Core Wall,May'27,0.2858,,2027-05-01,2027-05-24
+B2,B2|B2-S7,act_corewall,Core Wall,May'27,83.7,,2027-05-01,2027-05-24
 B2,B2|B2-S7,col,Columns,,,,,
 B2,B2|B2-S7,pile,Pile Caps,,,,,
 B2,B2|B2-S7,mbeam,Steel Main Beams,,,,,
@@ -478,44 +478,44 @@ B2,B2|B2-S7,slab,Cast Slab,,,,,
 B2,B2|B2-S7,act_wall,Wall,,,,,
 B2,B2|B2-S7,act_corewall,Core Wall,,,,,
 B2,B2|B2-S7,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S6,demo,Demolition,Oct'26,,,21/10/2026,23/10/2026
-B2,B2|B2-S6,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S6,exc,Excavation,Oct'26,,,24/10/2026,31/10/2026
-B2,B2|B2-S6,exc,Excavation,Oct'26,83.7,,24/10/2026,31/10/2026
-B2,B2|B2-S6,exc,Excavation,Nov'26,,,1/11/2026,13/11/2026
-B2,B2|B2-S6,exc,Excavation,Nov'26,83.7,,1/11/2026,13/11/2026
-B2,B2|B2-S6,slab,Cast Slab,Nov'26,5.8333,,16/11/2026,30/11/2026
-B2,B2|B2-S6,slab,Cast Slab,Nov'26,83.7,,16/11/2026,30/11/2026
-B2,B2|B2-S6,slab,Cast Slab,Dec'26,1.1667,,1/12/2026,3/12/2026
-B2,B2|B2-S6,slab,Cast Slab,Dec'26,83.7,,1/12/2026,3/12/2026
-B2,B2|B2-S6,demo,Demolition,Nov'26,,,16/11/2026,18/11/2026
-B2,B2|B2-S6,demo,Demolition,Nov'26,83.7,,16/11/2026,18/11/2026
-B2,B2|B2-S6,exc,Excavation,Nov'26,,,19/11/2026,30/11/2026
-B2,B2|B2-S6,exc,Excavation,Nov'26,83.7,,19/11/2026,30/11/2026
-B2,B2|B2-S6,exc,Excavation,Dec'26,,,1/12/2026,17/12/2026
-B2,B2|B2-S6,exc,Excavation,Dec'26,83.7,,1/12/2026,17/12/2026
-B2,B2|B2-S6,col,Columns,Dec'26,3.2667,,4/12/2026,31/12/2026
-B2,B2|B2-S6,col,Columns,Dec'26,83.7,,4/12/2026,31/12/2026
-B2,B2|B2-S6,col,Columns,Jan'27,3.6167,,1/1/2027,31/1/2027
-B2,B2|B2-S6,col,Columns,Jan'27,83.7,,1/1/2027,31/1/2027
-B2,B2|B2-S6,col,Columns,Feb'27,0.1166,,1/2/2027,1/2/2027
-B2,B2|B2-S6,col,Columns,Feb'27,83.7,,1/2/2027,1/2/2027
-B2,B2|B2-S6,slab,Cast Slab,Dec'26,2.8,,18/12/2026,31/12/2026
-B2,B2|B2-S6,slab,Cast Slab,Dec'26,83.7,,18/12/2026,31/12/2026
-B2,B2|B2-S6,slab,Cast Slab,Jan'27,1.2,,1/1/2027,6/1/2027
-B2,B2|B2-S6,slab,Cast Slab,Jan'27,83.7,,1/1/2027,6/1/2027
-B2,B2|B2-S6,col,Columns,Jan'27,1.7241,,7/1/2027,31/1/2027
-B2,B2|B2-S6,col,Columns,Jan'27,83.7,,7/1/2027,31/1/2027
-B2,B2|B2-S6,col,Columns,Feb'27,1.931,,1/2/2027,28/2/2027
-B2,B2|B2-S6,col,Columns,Feb'27,83.7,,1/2/2027,28/2/2027
-B2,B2|B2-S6,col,Columns,Mar'27,0.3449,,1/3/2027,5/3/2027
-B2,B2|B2-S6,col,Columns,Mar'27,83.7,,1/3/2027,5/3/2027
-B2,B2|B2-S6,act_wall,Wall,Mar'27,0.2927,,8/3/2027,31/3/2027
-B2,B2|B2-S6,act_wall,Wall,Mar'27,83.7,,8/3/2027,31/3/2027
-B2,B2|B2-S6,act_wall,Wall,Apr'27,0.3659,,1/4/2027,30/4/2027
-B2,B2|B2-S6,act_wall,Wall,Apr'27,83.7,,1/4/2027,30/4/2027
-B2,B2|B2-S6,act_wall,Wall,May'27,0.3414,,1/5/2027,28/5/2027
-B2,B2|B2-S6,act_wall,Wall,May'27,83.7,,1/5/2027,28/5/2027
+B2,B2|B2-S6,demo,Demolition,Oct'26,,,2026-10-21,2026-10-23
+B2,B2|B2-S6,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S6,exc,Excavation,Oct'26,,,2026-10-24,2026-10-31
+B2,B2|B2-S6,exc,Excavation,Oct'26,83.7,,2026-10-24,2026-10-31
+B2,B2|B2-S6,exc,Excavation,Nov'26,,,2026-11-01,2026-11-13
+B2,B2|B2-S6,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-13
+B2,B2|B2-S6,slab,Cast Slab,Nov'26,5.8333,,2026-11-16,2026-11-30
+B2,B2|B2-S6,slab,Cast Slab,Nov'26,83.7,,2026-11-16,2026-11-30
+B2,B2|B2-S6,slab,Cast Slab,Dec'26,1.1667,,2026-12-01,2026-12-03
+B2,B2|B2-S6,slab,Cast Slab,Dec'26,83.7,,2026-12-01,2026-12-03
+B2,B2|B2-S6,demo,Demolition,Nov'26,,,2026-11-16,2026-11-18
+B2,B2|B2-S6,demo,Demolition,Nov'26,83.7,,2026-11-16,2026-11-18
+B2,B2|B2-S6,exc,Excavation,Nov'26,,,2026-11-19,2026-11-30
+B2,B2|B2-S6,exc,Excavation,Nov'26,83.7,,2026-11-19,2026-11-30
+B2,B2|B2-S6,exc,Excavation,Dec'26,,,2026-12-01,2026-12-17
+B2,B2|B2-S6,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-17
+B2,B2|B2-S6,col,Columns,Dec'26,3.2667,,2026-12-04,2026-12-31
+B2,B2|B2-S6,col,Columns,Dec'26,83.7,,2026-12-04,2026-12-31
+B2,B2|B2-S6,col,Columns,Jan'27,3.6167,,2027-01-01,2027-01-31
+B2,B2|B2-S6,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-31
+B2,B2|B2-S6,col,Columns,Feb'27,0.1166,,2027-02-01,2027-02-01
+B2,B2|B2-S6,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-01
+B2,B2|B2-S6,slab,Cast Slab,Dec'26,2.8,,2026-12-18,2026-12-31
+B2,B2|B2-S6,slab,Cast Slab,Dec'26,83.7,,2026-12-18,2026-12-31
+B2,B2|B2-S6,slab,Cast Slab,Jan'27,1.2,,2027-01-01,2027-01-06
+B2,B2|B2-S6,slab,Cast Slab,Jan'27,83.7,,2027-01-01,2027-01-06
+B2,B2|B2-S6,col,Columns,Jan'27,1.7241,,2027-01-07,2027-01-31
+B2,B2|B2-S6,col,Columns,Jan'27,83.7,,2027-01-07,2027-01-31
+B2,B2|B2-S6,col,Columns,Feb'27,1.931,,2027-02-01,2027-02-28
+B2,B2|B2-S6,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-28
+B2,B2|B2-S6,col,Columns,Mar'27,0.3449,,2027-03-01,2027-03-05
+B2,B2|B2-S6,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-05
+B2,B2|B2-S6,act_wall,Wall,Mar'27,0.2927,,2027-03-08,2027-03-31
+B2,B2|B2-S6,act_wall,Wall,Mar'27,83.7,,2027-03-08,2027-03-31
+B2,B2|B2-S6,act_wall,Wall,Apr'27,0.3659,,2027-04-01,2027-04-30
+B2,B2|B2-S6,act_wall,Wall,Apr'27,83.7,,2027-04-01,2027-04-30
+B2,B2|B2-S6,act_wall,Wall,May'27,0.3414,,2027-05-01,2027-05-28
+B2,B2|B2-S6,act_wall,Wall,May'27,83.7,,2027-05-01,2027-05-28
 B2,B2|B2-S6,col,Columns,,,,,
 B2,B2|B2-S6,pile,Pile Caps,,,,,
 B2,B2|B2-S6,mbeam,Steel Main Beams,,,,,
@@ -527,44 +527,44 @@ B2,B2|B2-S6,slab,Cast Slab,,,,,
 B2,B2|B2-S6,act_wall,Wall,,,,,
 B2,B2|B2-S6,act_corewall,Core Wall,,,,,
 B2,B2|B2-S6,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S6a,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S6a,demo,Demolition,Oct'26,83.7,,21/10/2026,23/10/2026
-B2,B2|B2-S6a,exc,Excavation,Oct'26,83.7,,24/10/2026,31/10/2026
-B2,B2|B2-S6a,exc,Excavation,Oct'26,83.7,,24/10/2026,31/10/2026
-B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,1/11/2026,13/11/2026
-B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,1/11/2026,13/11/2026
-B2,B2|B2-S6a,slab,Cast Slab,Nov'26,83.7,,16/11/2026,30/11/2026
-B2,B2|B2-S6a,slab,Cast Slab,Nov'26,83.7,,16/11/2026,30/11/2026
-B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,1/12/2026,3/12/2026
-B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,1/12/2026,3/12/2026
-B2,B2|B2-S6a,demo,Demolition,Nov'26,83.7,,16/11/2026,18/11/2026
-B2,B2|B2-S6a,demo,Demolition,Nov'26,83.7,,16/11/2026,18/11/2026
-B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,19/11/2026,30/11/2026
-B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,19/11/2026,30/11/2026
-B2,B2|B2-S6a,exc,Excavation,Dec'26,83.7,,1/12/2026,17/12/2026
-B2,B2|B2-S6a,exc,Excavation,Dec'26,83.7,,1/12/2026,17/12/2026
-B2,B2|B2-S6a,col,Columns,Dec'26,83.7,,4/12/2026,31/12/2026
-B2,B2|B2-S6a,col,Columns,Dec'26,83.7,,4/12/2026,31/12/2026
-B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,1/1/2027,31/1/2027
-B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,1/1/2027,31/1/2027
-B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,1/2/2027,1/2/2027
-B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,1/2/2027,1/2/2027
-B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,18/12/2026,31/12/2026
-B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,18/12/2026,31/12/2026
-B2,B2|B2-S6a,slab,Cast Slab,Jan'27,83.7,,1/1/2027,6/1/2027
-B2,B2|B2-S6a,slab,Cast Slab,Jan'27,83.7,,1/1/2027,6/1/2027
-B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,7/1/2027,31/1/2027
-B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,7/1/2027,31/1/2027
-B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,1/2/2027,28/2/2027
-B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,1/2/2027,28/2/2027
-B2,B2|B2-S6a,col,Columns,Mar'27,83.7,,1/3/2027,5/3/2027
-B2,B2|B2-S6a,col,Columns,Mar'27,83.7,,1/3/2027,5/3/2027
-B2,B2|B2-S6a,act_wall,Wall,Mar'27,83.7,,8/3/2027,31/3/2027
-B2,B2|B2-S6a,act_wall,Wall,Mar'27,83.7,,8/3/2027,31/3/2027
-B2,B2|B2-S6a,act_wall,Wall,Apr'27,83.7,,1/4/2027,30/4/2027
-B2,B2|B2-S6a,act_wall,Wall,Apr'27,83.7,,1/4/2027,30/4/2027
-B2,B2|B2-S6a,act_wall,Wall,May'27,83.7,,1/5/2027,28/5/2027
-B2,B2|B2-S6a,act_wall,Wall,May'27,83.7,,1/5/2027,28/5/2027
+B2,B2|B2-S6a,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S6a,demo,Demolition,Oct'26,83.7,,2026-10-21,2026-10-23
+B2,B2|B2-S6a,exc,Excavation,Oct'26,83.7,,2026-10-24,2026-10-31
+B2,B2|B2-S6a,exc,Excavation,Oct'26,83.7,,2026-10-24,2026-10-31
+B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-13
+B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,2026-11-01,2026-11-13
+B2,B2|B2-S6a,slab,Cast Slab,Nov'26,83.7,,2026-11-16,2026-11-30
+B2,B2|B2-S6a,slab,Cast Slab,Nov'26,83.7,,2026-11-16,2026-11-30
+B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,2026-12-01,2026-12-03
+B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,2026-12-01,2026-12-03
+B2,B2|B2-S6a,demo,Demolition,Nov'26,83.7,,2026-11-16,2026-11-18
+B2,B2|B2-S6a,demo,Demolition,Nov'26,83.7,,2026-11-16,2026-11-18
+B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,2026-11-19,2026-11-30
+B2,B2|B2-S6a,exc,Excavation,Nov'26,83.7,,2026-11-19,2026-11-30
+B2,B2|B2-S6a,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-17
+B2,B2|B2-S6a,exc,Excavation,Dec'26,83.7,,2026-12-01,2026-12-17
+B2,B2|B2-S6a,col,Columns,Dec'26,83.7,,2026-12-04,2026-12-31
+B2,B2|B2-S6a,col,Columns,Dec'26,83.7,,2026-12-04,2026-12-31
+B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-31
+B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,2027-01-01,2027-01-31
+B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-01
+B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-01
+B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,2026-12-18,2026-12-31
+B2,B2|B2-S6a,slab,Cast Slab,Dec'26,83.7,,2026-12-18,2026-12-31
+B2,B2|B2-S6a,slab,Cast Slab,Jan'27,83.7,,2027-01-01,2027-01-06
+B2,B2|B2-S6a,slab,Cast Slab,Jan'27,83.7,,2027-01-01,2027-01-06
+B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,2027-01-07,2027-01-31
+B2,B2|B2-S6a,col,Columns,Jan'27,83.7,,2027-01-07,2027-01-31
+B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-28
+B2,B2|B2-S6a,col,Columns,Feb'27,83.7,,2027-02-01,2027-02-28
+B2,B2|B2-S6a,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-05
+B2,B2|B2-S6a,col,Columns,Mar'27,83.7,,2027-03-01,2027-03-05
+B2,B2|B2-S6a,act_wall,Wall,Mar'27,83.7,,2027-03-08,2027-03-31
+B2,B2|B2-S6a,act_wall,Wall,Mar'27,83.7,,2027-03-08,2027-03-31
+B2,B2|B2-S6a,act_wall,Wall,Apr'27,83.7,,2027-04-01,2027-04-30
+B2,B2|B2-S6a,act_wall,Wall,Apr'27,83.7,,2027-04-01,2027-04-30
+B2,B2|B2-S6a,act_wall,Wall,May'27,83.7,,2027-05-01,2027-05-28
+B2,B2|B2-S6a,act_wall,Wall,May'27,83.7,,2027-05-01,2027-05-28
 B2,B2|B2-S6a,col,Columns,,,,,
 B2,B2|B2-S6a,pile,Pile Caps,,,,,
 B2,B2|B2-S6a,mbeam,Steel Main Beams,,,,,
@@ -576,30 +576,30 @@ B2,B2|B2-S6a,slab,Cast Slab,,,,,
 B2,B2|B2-S6a,act_wall,Wall,,,,,
 B2,B2|B2-S6a,act_corewall,Core Wall,,,,,
 B2,B2|B2-S6a,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S3,demo,Demolition,Aug'26,,,4/8/2026,6/8/2026
-B2,B2|B2-S3,exc,Excavation,Aug'26,,,7/8/2026,31/8/2026
-B2,B2|B2-S3,exc,Excavation,Sep'26,,,1/9/2026,15/9/2026
-B2,B2|B2-S3,slab,Cast Slab,Sep'26,5.1724,,16/9/2026,30/9/2026
-B2,B2|B2-S3,slab,Cast Slab,Oct'26,4.8276,,1/10/2026,14/10/2026
-B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,15/10/2026,31/10/2026
-B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,1/12/2026,11/12/2026
-B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,15/10/2026,31/10/2026
-B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,1/12/2026,11/12/2026
-B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,15/10/2026,31/10/2026
-B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,1/12/2026,11/12/2026
-B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,15/10/2026,31/10/2026
-B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,1/12/2026,11/12/2026
-B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,15/10/2026,31/10/2026
-B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,1/12/2026,11/12/2026
-B2,B2|B2-S3,act_corewall,Core Wall,Dec'26,0.2195,,14/12/2026,31/12/2026
-B2,B2|B2-S3,act_corewall,Core Wall,Jan'27,0.378,,1/1/2027,31/1/2027
-B2,B2|B2-S3,act_corewall,Core Wall,Feb'27,0.3415,,1/2/2027,28/2/2027
-B2,B2|B2-S3,act_corewall,Core Wall,Mar'27,0.061,,1/3/2027,5/3/2027
+B2,B2|B2-S3,demo,Demolition,Aug'26,,,2026-08-04,2026-08-06
+B2,B2|B2-S3,exc,Excavation,Aug'26,,,2026-08-07,2026-08-31
+B2,B2|B2-S3,exc,Excavation,Sep'26,,,2026-09-01,2026-09-15
+B2,B2|B2-S3,slab,Cast Slab,Sep'26,5.1724,,2026-09-16,2026-09-30
+B2,B2|B2-S3,slab,Cast Slab,Oct'26,4.8276,,2026-10-01,2026-10-14
+B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,2026-10-15,2026-10-31
+B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,2026-12-01,2026-12-11
+B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,2026-10-15,2026-10-31
+B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,2026-12-01,2026-12-11
+B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,2026-10-15,2026-10-31
+B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,2026-12-01,2026-12-11
+B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,2026-10-15,2026-10-31
+B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,2026-12-01,2026-12-11
+B2,B2|B2-S3,col,Columns,Oct'26,0.2931,,2026-10-15,2026-10-31
+B2,B2|B2-S3,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S3,col,Columns,Dec'26,0.1897,,2026-12-01,2026-12-11
+B2,B2|B2-S3,act_corewall,Core Wall,Dec'26,0.2195,,2026-12-14,2026-12-31
+B2,B2|B2-S3,act_corewall,Core Wall,Jan'27,0.378,,2027-01-01,2027-01-31
+B2,B2|B2-S3,act_corewall,Core Wall,Feb'27,0.3415,,2027-02-01,2027-02-28
+B2,B2|B2-S3,act_corewall,Core Wall,Mar'27,0.061,,2027-03-01,2027-03-05
 B2,B2|B2-S3,col,Columns,,,,,
 B2,B2|B2-S3,pile,Pile Caps,,,,,
 B2,B2|B2-S3,mbeam,Steel Main Beams,,,,,
@@ -611,42 +611,42 @@ B2,B2|B2-S3,slab,Cast Slab,,,,,
 B2,B2|B2-S3,act_wall,Wall,,,,,
 B2,B2|B2-S3,act_corewall,Core Wall,,,,,
 B2,B2|B2-S3,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S4,demo,Demolition,Oct'26,,,5/10/2026,7/10/2026
-B2,B2|B2-S4,exc,Excavation,Oct'26,,,8/10/2026,31/10/2026
-B2,B2|B2-S4,exc,Excavation,Nov'26,,,1/11/2026,5/11/2026
-B2,B2|B2-S4,slab,Cast Slab,Nov'26,6.8966,,11/11/2026,30/11/2026
-B2,B2|B2-S4,slab,Cast Slab,Dec'26,3.1034,,1/12/2026,9/12/2026
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,10/12/2026,31/12/2026
-B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,1/1/2027,31/1/2027
-B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,1/2/2027,5/2/2027
-B2,B2|B2-S4,act_corewall,Core Wall,Dec'26,0.2619,,10/12/2026,31/12/2026
-B2,B2|B2-S4,act_corewall,Core Wall,Jan'27,0.369,,1/1/2027,31/1/2027
-B2,B2|B2-S4,act_corewall,Core Wall,Feb'27,0.3333,,1/2/2027,28/2/2027
-B2,B2|B2-S4,act_corewall,Core Wall,Mar'27,0.0358,,1/3/2027,3/3/2027
+B2,B2|B2-S4,demo,Demolition,Oct'26,,,2026-10-05,2026-10-07
+B2,B2|B2-S4,exc,Excavation,Oct'26,,,2026-10-08,2026-10-31
+B2,B2|B2-S4,exc,Excavation,Nov'26,,,2026-11-01,2026-11-05
+B2,B2|B2-S4,slab,Cast Slab,Nov'26,6.8966,,2026-11-11,2026-11-30
+B2,B2|B2-S4,slab,Cast Slab,Dec'26,3.1034,,2026-12-01,2026-12-09
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,col,Columns,Dec'26,0.3793,,2026-12-10,2026-12-31
+B2,B2|B2-S4,col,Columns,Jan'27,0.5345,,2027-01-01,2027-01-31
+B2,B2|B2-S4,col,Columns,Feb'27,0.0862,,2027-02-01,2027-02-05
+B2,B2|B2-S4,act_corewall,Core Wall,Dec'26,0.2619,,2026-12-10,2026-12-31
+B2,B2|B2-S4,act_corewall,Core Wall,Jan'27,0.369,,2027-01-01,2027-01-31
+B2,B2|B2-S4,act_corewall,Core Wall,Feb'27,0.3333,,2027-02-01,2027-02-28
+B2,B2|B2-S4,act_corewall,Core Wall,Mar'27,0.0358,,2027-03-01,2027-03-03
 B2,B2|B2-S4,col,Columns,,,,,
 B2,B2|B2-S4,pile,Pile Caps,,,,,
 B2,B2|B2-S4,mbeam,Steel Main Beams,,,,,
@@ -658,23 +658,23 @@ B2,B2|B2-S4,slab,Cast Slab,,,,,
 B2,B2|B2-S4,act_wall,Wall,,,,,
 B2,B2|B2-S4,act_corewall,Core Wall,,,,,
 B2,B2|B2-S4,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S5,demo,Demolition,Oct'26,,,9/10/2026,11/10/2026
-B2,B2|B2-S5,exc,Excavation,Oct'26,,,12/10/2026,31/10/2026
-B2,B2|B2-S5,exc,Excavation,Nov'26,,,1/11/2026,10/11/2026
-B2,B2|B2-S5,slab,Cast Slab,Nov'26,14.2857,,11/11/2026,30/11/2026
-B2,B2|B2-S5,slab,Cast Slab,Dec'26,0.7143,,1/12/2026,1/12/2026
-B2,B2|B2-S5,col,Columns,Dec'26,0.5172,,2/12/2026,31/12/2026
-B2,B2|B2-S5,col,Columns,Jan'27,0.4828,,1/1/2027,28/1/2027
-B2,B2|B2-S5,col,Columns,Dec'26,0.5172,,2/12/2026,31/12/2026
-B2,B2|B2-S5,col,Columns,Jan'27,0.4828,,1/1/2027,28/1/2027
-B2,B2|B2-S5,col,Columns,Dec'26,0.5172,,2/12/2026,31/12/2026
-B2,B2|B2-S5,col,Columns,Jan'27,0.4828,,1/1/2027,28/1/2027
-B2,B2|B2-S5,act_corewall,Core Wall,Dec'26,0.3571,,2/12/2026,31/12/2026
-B2,B2|B2-S5,act_corewall,Core Wall,Jan'27,0.369,,1/1/2027,31/1/2027
-B2,B2|B2-S5,act_corewall,Core Wall,Feb'27,0.2739,,1/2/2027,23/2/2027
-B2,B2|B2-S5,act_corewall,Core Wall,Dec'26,0.3571,,2/12/2026,31/12/2026
-B2,B2|B2-S5,act_corewall,Core Wall,Jan'27,0.369,,1/1/2027,31/1/2027
-B2,B2|B2-S5,act_corewall,Core Wall,Feb'27,0.2739,,1/2/2027,23/2/2027
+B2,B2|B2-S5,demo,Demolition,Oct'26,,,2026-10-09,2026-10-11
+B2,B2|B2-S5,exc,Excavation,Oct'26,,,2026-10-12,2026-10-31
+B2,B2|B2-S5,exc,Excavation,Nov'26,,,2026-11-01,2026-11-10
+B2,B2|B2-S5,slab,Cast Slab,Nov'26,14.2857,,2026-11-11,2026-11-30
+B2,B2|B2-S5,slab,Cast Slab,Dec'26,0.7143,,2026-12-01,2026-12-01
+B2,B2|B2-S5,col,Columns,Dec'26,0.5172,,2026-12-02,2026-12-31
+B2,B2|B2-S5,col,Columns,Jan'27,0.4828,,2027-01-01,2027-01-28
+B2,B2|B2-S5,col,Columns,Dec'26,0.5172,,2026-12-02,2026-12-31
+B2,B2|B2-S5,col,Columns,Jan'27,0.4828,,2027-01-01,2027-01-28
+B2,B2|B2-S5,col,Columns,Dec'26,0.5172,,2026-12-02,2026-12-31
+B2,B2|B2-S5,col,Columns,Jan'27,0.4828,,2027-01-01,2027-01-28
+B2,B2|B2-S5,act_corewall,Core Wall,Dec'26,0.3571,,2026-12-02,2026-12-31
+B2,B2|B2-S5,act_corewall,Core Wall,Jan'27,0.369,,2027-01-01,2027-01-31
+B2,B2|B2-S5,act_corewall,Core Wall,Feb'27,0.2739,,2027-02-01,2027-02-23
+B2,B2|B2-S5,act_corewall,Core Wall,Dec'26,0.3571,,2026-12-02,2026-12-31
+B2,B2|B2-S5,act_corewall,Core Wall,Jan'27,0.369,,2027-01-01,2027-01-31
+B2,B2|B2-S5,act_corewall,Core Wall,Feb'27,0.2739,,2027-02-01,2027-02-23
 B2,B2|B2-S5,col,Columns,,,,,
 B2,B2|B2-S5,pile,Pile Caps,,,,,
 B2,B2|B2-S5,mbeam,Steel Main Beams,,,,,
@@ -686,29 +686,29 @@ B2,B2|B2-S5,slab,Cast Slab,,,,,
 B2,B2|B2-S5,act_wall,Wall,,,,,
 B2,B2|B2-S5,act_corewall,Core Wall,,,,,
 B2,B2|B2-S5,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S8a,demo,Demolition,Jul'26,,,20/7/2026,22/7/2026
-B2,B2|B2-S8a,exc,Excavation,Jul'26,,,23/7/2026,31/7/2026
-B2,B2|B2-S8a,exc,Excavation,Aug'26,,,1/8/2026,11/8/2026
-B2,B2|B2-S8a,slab,Cast Slab,Aug'26,8,,12/8/2026,31/8/2026
-B2,B2|B2-S8a,demo,Demolition,Aug'26,,,12/8/2026,14/8/2026
-B2,B2|B2-S8a,exc,Excavation,Aug'26,,,17/8/2026,26/8/2026
-B2,B2|B2-S8a,slab,Cast Slab,Aug'26,1.25,,27/8/2026,31/8/2026
-B2,B2|B2-S8a,slab,Cast Slab,Sep'26,3.75,,1/9/2026,15/9/2026
-B2,B2|B2-S8a,demo,Demolition,Aug'26,,,27/8/2026,31/8/2026
-B2,B2|B2-S8a,col,Columns,Sep'26,3.6207,,1/9/2026,30/9/2026
-B2,B2|B2-S8a,col,Columns,Oct'26,3.3793,,1/10/2026,28/10/2026
-B2,B2|B2-S8a,exc,Excavation,Sep'26,,,1/9/2026,14/9/2026
-B2,B2|B2-S8a,slab,Cast Slab,Sep'26,4.4138,,15/9/2026,30/9/2026
-B2,B2|B2-S8a,slab,Cast Slab,Oct'26,3.5862,,1/10/2026,13/10/2026
-B2,B2|B2-S8a,col,Columns,Sep'26,1.2931,,16/9/2026,30/9/2026
-B2,B2|B2-S8a,col,Columns,Oct'26,2.6724,,1/10/2026,31/10/2026
-B2,B2|B2-S8a,col,Columns,Nov'26,1.0345,,1/11/2026,12/11/2026
-B2,B2|B2-S8a,col,Columns,Oct'26,0.3103,,14/10/2026,31/10/2026
-B2,B2|B2-S8a,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S8a,col,Columns,Dec'26,0.1725,,1/12/2026,10/12/2026
-B2,B2|B2-S8a,col,Columns,Oct'26,0.3103,,14/10/2026,31/10/2026
-B2,B2|B2-S8a,col,Columns,Nov'26,0.5172,,1/11/2026,30/11/2026
-B2,B2|B2-S8a,col,Columns,Dec'26,0.1725,,1/12/2026,10/12/2026
+B2,B2|B2-S8a,demo,Demolition,Jul'26,,,2026-07-20,2026-07-22
+B2,B2|B2-S8a,exc,Excavation,Jul'26,,,2026-07-23,2026-07-31
+B2,B2|B2-S8a,exc,Excavation,Aug'26,,,2026-08-01,2026-08-11
+B2,B2|B2-S8a,slab,Cast Slab,Aug'26,8,,2026-08-12,2026-08-31
+B2,B2|B2-S8a,demo,Demolition,Aug'26,,,2026-08-12,2026-08-14
+B2,B2|B2-S8a,exc,Excavation,Aug'26,,,2026-08-17,2026-08-26
+B2,B2|B2-S8a,slab,Cast Slab,Aug'26,1.25,,2026-08-27,2026-08-31
+B2,B2|B2-S8a,slab,Cast Slab,Sep'26,3.75,,2026-09-01,2026-09-15
+B2,B2|B2-S8a,demo,Demolition,Aug'26,,,2026-08-27,2026-08-31
+B2,B2|B2-S8a,col,Columns,Sep'26,3.6207,,2026-09-01,2026-09-30
+B2,B2|B2-S8a,col,Columns,Oct'26,3.3793,,2026-10-01,2026-10-28
+B2,B2|B2-S8a,exc,Excavation,Sep'26,,,2026-09-01,2026-09-14
+B2,B2|B2-S8a,slab,Cast Slab,Sep'26,4.4138,,2026-09-15,2026-09-30
+B2,B2|B2-S8a,slab,Cast Slab,Oct'26,3.5862,,2026-10-01,2026-10-13
+B2,B2|B2-S8a,col,Columns,Sep'26,1.2931,,2026-09-16,2026-09-30
+B2,B2|B2-S8a,col,Columns,Oct'26,2.6724,,2026-10-01,2026-10-31
+B2,B2|B2-S8a,col,Columns,Nov'26,1.0345,,2026-11-01,2026-11-12
+B2,B2|B2-S8a,col,Columns,Oct'26,0.3103,,2026-10-14,2026-10-31
+B2,B2|B2-S8a,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S8a,col,Columns,Dec'26,0.1725,,2026-12-01,2026-12-10
+B2,B2|B2-S8a,col,Columns,Oct'26,0.3103,,2026-10-14,2026-10-31
+B2,B2|B2-S8a,col,Columns,Nov'26,0.5172,,2026-11-01,2026-11-30
+B2,B2|B2-S8a,col,Columns,Dec'26,0.1725,,2026-12-01,2026-12-10
 B2,B2|B2-S8a,col,Columns,,,,,
 B2,B2|B2-S8a,pile,Pile Caps,,,,,
 B2,B2|B2-S8a,mbeam,Steel Main Beams,,,,,
@@ -720,29 +720,29 @@ B2,B2|B2-S8a,slab,Cast Slab,,,,,
 B2,B2|B2-S8a,act_wall,Wall,,,,,
 B2,B2|B2-S8a,act_corewall,Core Wall,,,,,
 B2,B2|B2-S8a,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S14a,demo,Demolition,Jul'26,83.7,,20/7/2026,22/7/2026
-B2,B2|B2-S14a,exc,Excavation,Jul'26,83.7,,23/7/2026,31/7/2026
-B2,B2|B2-S14a,exc,Excavation,Aug'26,83.7,,1/8/2026,11/8/2026
-B2,B2|B2-S14a,slab,Cast Slab,Aug'26,83.7,,12/8/2026,31/8/2026
-B2,B2|B2-S14a,demo,Demolition,Aug'26,83.7,,12/8/2026,14/8/2026
-B2,B2|B2-S14a,exc,Excavation,Aug'26,83.7,,17/8/2026,26/8/2026
-B2,B2|B2-S14a,slab,Cast Slab,Aug'26,83.7,,27/8/2026,31/8/2026
-B2,B2|B2-S14a,slab,Cast Slab,Sep'26,83.7,,1/9/2026,15/9/2026
-B2,B2|B2-S14a,demo,Demolition,Aug'26,83.7,,27/8/2026,31/8/2026
-B2,B2|B2-S14a,col,Columns,Sep'26,83.7,,1/9/2026,30/9/2026
-B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,1/10/2026,28/10/2026
-B2,B2|B2-S14a,exc,Excavation,Sep'26,83.7,,1/9/2026,14/9/2026
-B2,B2|B2-S14a,slab,Cast Slab,Sep'26,83.7,,15/9/2026,30/9/2026
-B2,B2|B2-S14a,slab,Cast Slab,Oct'26,83.7,,1/10/2026,13/10/2026
-B2,B2|B2-S14a,col,Columns,Sep'26,83.7,,16/9/2026,30/9/2026
-B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,1/10/2026,31/10/2026
-B2,B2|B2-S14a,col,Columns,Nov'26,83.7,,1/11/2026,12/11/2026
-B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,14/10/2026,31/10/2026
-B2,B2|B2-S14a,col,Columns,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S14a,col,Columns,Dec'26,83.7,,1/12/2026,10/12/2026
-B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,14/10/2026,31/10/2026
-B2,B2|B2-S14a,col,Columns,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S14a,col,Columns,Dec'26,83.7,,1/12/2026,10/12/2026
+B2,B2|B2-S14a,demo,Demolition,Jul'26,83.7,,2026-07-20,2026-07-22
+B2,B2|B2-S14a,exc,Excavation,Jul'26,83.7,,2026-07-23,2026-07-31
+B2,B2|B2-S14a,exc,Excavation,Aug'26,83.7,,2026-08-01,2026-08-11
+B2,B2|B2-S14a,slab,Cast Slab,Aug'26,83.7,,2026-08-12,2026-08-31
+B2,B2|B2-S14a,demo,Demolition,Aug'26,83.7,,2026-08-12,2026-08-14
+B2,B2|B2-S14a,exc,Excavation,Aug'26,83.7,,2026-08-17,2026-08-26
+B2,B2|B2-S14a,slab,Cast Slab,Aug'26,83.7,,2026-08-27,2026-08-31
+B2,B2|B2-S14a,slab,Cast Slab,Sep'26,83.7,,2026-09-01,2026-09-15
+B2,B2|B2-S14a,demo,Demolition,Aug'26,83.7,,2026-08-27,2026-08-31
+B2,B2|B2-S14a,col,Columns,Sep'26,83.7,,2026-09-01,2026-09-30
+B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,2026-10-01,2026-10-28
+B2,B2|B2-S14a,exc,Excavation,Sep'26,83.7,,2026-09-01,2026-09-14
+B2,B2|B2-S14a,slab,Cast Slab,Sep'26,83.7,,2026-09-15,2026-09-30
+B2,B2|B2-S14a,slab,Cast Slab,Oct'26,83.7,,2026-10-01,2026-10-13
+B2,B2|B2-S14a,col,Columns,Sep'26,83.7,,2026-09-16,2026-09-30
+B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,2026-10-01,2026-10-31
+B2,B2|B2-S14a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-12
+B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,2026-10-14,2026-10-31
+B2,B2|B2-S14a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S14a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-10
+B2,B2|B2-S14a,col,Columns,Oct'26,83.7,,2026-10-14,2026-10-31
+B2,B2|B2-S14a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S14a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-10
 B2,B2|B2-S14a,col,Columns,,,,,
 B2,B2|B2-S14a,pile,Pile Caps,,,,,
 B2,B2|B2-S14a,mbeam,Steel Main Beams,,,,,
@@ -754,29 +754,29 @@ B2,B2|B2-S14a,slab,Cast Slab,,,,,
 B2,B2|B2-S14a,act_wall,Wall,,,,,
 B2,B2|B2-S14a,act_corewall,Core Wall,,,,,
 B2,B2|B2-S14a,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S13a,demo,Demolition,Jul'26,83.7,,20/7/2026,22/7/2026
-B2,B2|B2-S13a,exc,Excavation,Jul'26,83.7,,23/7/2026,31/7/2026
-B2,B2|B2-S13a,exc,Excavation,Aug'26,83.7,,1/8/2026,11/8/2026
-B2,B2|B2-S13a,slab,Cast Slab,Aug'26,83.7,,12/8/2026,31/8/2026
-B2,B2|B2-S13a,demo,Demolition,Aug'26,83.7,,12/8/2026,14/8/2026
-B2,B2|B2-S13a,exc,Excavation,Aug'26,83.7,,17/8/2026,26/8/2026
-B2,B2|B2-S13a,slab,Cast Slab,Aug'26,83.7,,27/8/2026,31/8/2026
-B2,B2|B2-S13a,slab,Cast Slab,Sep'26,83.7,,1/9/2026,15/9/2026
-B2,B2|B2-S13a,demo,Demolition,Aug'26,83.7,,27/8/2026,31/8/2026
-B2,B2|B2-S13a,col,Columns,Sep'26,83.7,,1/9/2026,30/9/2026
-B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,1/10/2026,28/10/2026
-B2,B2|B2-S13a,exc,Excavation,Sep'26,83.7,,1/9/2026,14/9/2026
-B2,B2|B2-S13a,slab,Cast Slab,Sep'26,83.7,,15/9/2026,30/9/2026
-B2,B2|B2-S13a,slab,Cast Slab,Oct'26,83.7,,1/10/2026,13/10/2026
-B2,B2|B2-S13a,col,Columns,Sep'26,83.7,,16/9/2026,30/9/2026
-B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,1/10/2026,31/10/2026
-B2,B2|B2-S13a,col,Columns,Nov'26,83.7,,1/11/2026,12/11/2026
-B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,14/10/2026,31/10/2026
-B2,B2|B2-S13a,col,Columns,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S13a,col,Columns,Dec'26,83.7,,1/12/2026,10/12/2026
-B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,14/10/2026,31/10/2026
-B2,B2|B2-S13a,col,Columns,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S13a,col,Columns,Dec'26,83.7,,1/12/2026,10/12/2026
+B2,B2|B2-S13a,demo,Demolition,Jul'26,83.7,,2026-07-20,2026-07-22
+B2,B2|B2-S13a,exc,Excavation,Jul'26,83.7,,2026-07-23,2026-07-31
+B2,B2|B2-S13a,exc,Excavation,Aug'26,83.7,,2026-08-01,2026-08-11
+B2,B2|B2-S13a,slab,Cast Slab,Aug'26,83.7,,2026-08-12,2026-08-31
+B2,B2|B2-S13a,demo,Demolition,Aug'26,83.7,,2026-08-12,2026-08-14
+B2,B2|B2-S13a,exc,Excavation,Aug'26,83.7,,2026-08-17,2026-08-26
+B2,B2|B2-S13a,slab,Cast Slab,Aug'26,83.7,,2026-08-27,2026-08-31
+B2,B2|B2-S13a,slab,Cast Slab,Sep'26,83.7,,2026-09-01,2026-09-15
+B2,B2|B2-S13a,demo,Demolition,Aug'26,83.7,,2026-08-27,2026-08-31
+B2,B2|B2-S13a,col,Columns,Sep'26,83.7,,2026-09-01,2026-09-30
+B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,2026-10-01,2026-10-28
+B2,B2|B2-S13a,exc,Excavation,Sep'26,83.7,,2026-09-01,2026-09-14
+B2,B2|B2-S13a,slab,Cast Slab,Sep'26,83.7,,2026-09-15,2026-09-30
+B2,B2|B2-S13a,slab,Cast Slab,Oct'26,83.7,,2026-10-01,2026-10-13
+B2,B2|B2-S13a,col,Columns,Sep'26,83.7,,2026-09-16,2026-09-30
+B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,2026-10-01,2026-10-31
+B2,B2|B2-S13a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-12
+B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,2026-10-14,2026-10-31
+B2,B2|B2-S13a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S13a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-10
+B2,B2|B2-S13a,col,Columns,Oct'26,83.7,,2026-10-14,2026-10-31
+B2,B2|B2-S13a,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S13a,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-10
 B2,B2|B2-S13a,col,Columns,,,,,
 B2,B2|B2-S13a,pile,Pile Caps,,,,,
 B2,B2|B2-S13a,mbeam,Steel Main Beams,,,,,
@@ -788,18 +788,18 @@ B2,B2|B2-S13a,slab,Cast Slab,,,,,
 B2,B2|B2-S13a,act_wall,Wall,,,,,
 B2,B2|B2-S13a,act_corewall,Core Wall,,,,,
 B2,B2|B2-S13a,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S8,demo,Demolition,Sep'26,,,15/9/2026,17/9/2026
-B2,B2|B2-S8,demo,Demolition,Sep'26,83.7,,15/9/2026,17/9/2026
-B2,B2|B2-S8,exc,Excavation,Sep'26,,,18/9/2026,30/9/2026
-B2,B2|B2-S8,exc,Excavation,Sep'26,83.7,,18/9/2026,30/9/2026
-B2,B2|B2-S8,exc,Excavation,Oct'26,,,1/10/2026,1/10/2026
-B2,B2|B2-S8,exc,Excavation,Oct'26,83.7,,1/10/2026,1/10/2026
-B2,B2|B2-S8,slab,Cast Slab,Oct'26,12,,2/10/2026,30/10/2026
-B2,B2|B2-S8,slab,Cast Slab,Oct'26,83.7,,2/10/2026,30/10/2026
-B2,B2|B2-S8,col,Columns,Nov'26,6,,2/11/2026,30/11/2026
-B2,B2|B2-S8,col,Columns,Nov'26,83.7,,2/11/2026,30/11/2026
-B2,B2|B2-S8,col,Columns,Dec'26,6,,1/12/2026,29/12/2026
-B2,B2|B2-S8,col,Columns,Dec'26,83.7,,1/12/2026,29/12/2026
+B2,B2|B2-S8,demo,Demolition,Sep'26,,,2026-09-15,2026-09-17
+B2,B2|B2-S8,demo,Demolition,Sep'26,83.7,,2026-09-15,2026-09-17
+B2,B2|B2-S8,exc,Excavation,Sep'26,,,2026-09-18,2026-09-30
+B2,B2|B2-S8,exc,Excavation,Sep'26,83.7,,2026-09-18,2026-09-30
+B2,B2|B2-S8,exc,Excavation,Oct'26,,,2026-10-01,2026-10-01
+B2,B2|B2-S8,exc,Excavation,Oct'26,83.7,,2026-10-01,2026-10-01
+B2,B2|B2-S8,slab,Cast Slab,Oct'26,12,,2026-10-02,2026-10-30
+B2,B2|B2-S8,slab,Cast Slab,Oct'26,83.7,,2026-10-02,2026-10-30
+B2,B2|B2-S8,col,Columns,Nov'26,6,,2026-11-02,2026-11-30
+B2,B2|B2-S8,col,Columns,Nov'26,83.7,,2026-11-02,2026-11-30
+B2,B2|B2-S8,col,Columns,Dec'26,6,,2026-12-01,2026-12-29
+B2,B2|B2-S8,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-29
 B2,B2|B2-S8,col,Columns,,,,,
 B2,B2|B2-S8,pile,Pile Caps,,,,,
 B2,B2|B2-S8,mbeam,Steel Main Beams,,,,,
@@ -811,20 +811,20 @@ B2,B2|B2-S8,slab,Cast Slab,,,,,
 B2,B2|B2-S8,act_wall,Wall,,,,,
 B2,B2|B2-S8,act_corewall,Core Wall,,,,,
 B2,B2|B2-S8,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S14,demo,Demolition,Jul'26,,,1/7/2026,3/7/2026
-B2,B2|B2-S14,demo,Demolition,Jul'26,83.7,,1/7/2026,3/7/2026
-B2,B2|B2-S14,exc,Excavation,Jul'26,,,6/7/2026,31/7/2026
-B2,B2|B2-S14,exc,Excavation,Jul'26,83.7,,6/7/2026,31/7/2026
-B2,B2|B2-S14,exc,Excavation,Aug'26,,,1/8/2026,3/8/2026
-B2,B2|B2-S14,exc,Excavation,Aug'26,83.7,,1/8/2026,3/8/2026
-B2,B2|B2-S14,slab,Cast Slab,Aug'26,8.6897,,4/8/2026,31/8/2026
-B2,B2|B2-S14,slab,Cast Slab,Aug'26,83.7,,4/8/2026,31/8/2026
-B2,B2|B2-S14,slab,Cast Slab,Sep'26,0.3103,,1/9/2026,1/9/2026
-B2,B2|B2-S14,slab,Cast Slab,Sep'26,83.7,,1/9/2026,1/9/2026
-B2,B2|B2-S14,col,Columns,Sep'26,4.5,,2/9/2026,30/9/2026
-B2,B2|B2-S14,col,Columns,Sep'26,83.7,,2/9/2026,30/9/2026
-B2,B2|B2-S14,col,Columns,Oct'26,4.5,,1/10/2026,29/10/2026
-B2,B2|B2-S14,col,Columns,Oct'26,83.7,,1/10/2026,29/10/2026
+B2,B2|B2-S14,demo,Demolition,Jul'26,,,2026-07-01,2026-07-03
+B2,B2|B2-S14,demo,Demolition,Jul'26,83.7,,2026-07-01,2026-07-03
+B2,B2|B2-S14,exc,Excavation,Jul'26,,,2026-07-06,2026-07-31
+B2,B2|B2-S14,exc,Excavation,Jul'26,83.7,,2026-07-06,2026-07-31
+B2,B2|B2-S14,exc,Excavation,Aug'26,,,2026-08-01,2026-08-03
+B2,B2|B2-S14,exc,Excavation,Aug'26,83.7,,2026-08-01,2026-08-03
+B2,B2|B2-S14,slab,Cast Slab,Aug'26,8.6897,,2026-08-04,2026-08-31
+B2,B2|B2-S14,slab,Cast Slab,Aug'26,83.7,,2026-08-04,2026-08-31
+B2,B2|B2-S14,slab,Cast Slab,Sep'26,0.3103,,2026-09-01,2026-09-01
+B2,B2|B2-S14,slab,Cast Slab,Sep'26,83.7,,2026-09-01,2026-09-01
+B2,B2|B2-S14,col,Columns,Sep'26,4.5,,2026-09-02,2026-09-30
+B2,B2|B2-S14,col,Columns,Sep'26,83.7,,2026-09-02,2026-09-30
+B2,B2|B2-S14,col,Columns,Oct'26,4.5,,2026-10-01,2026-10-29
+B2,B2|B2-S14,col,Columns,Oct'26,83.7,,2026-10-01,2026-10-29
 B2,B2|B2-S14,col,Columns,,,,,
 B2,B2|B2-S14,pile,Pile Caps,,,,,
 B2,B2|B2-S14,mbeam,Steel Main Beams,,,,,
@@ -836,18 +836,18 @@ B2,B2|B2-S14,slab,Cast Slab,,,,,
 B2,B2|B2-S14,act_wall,Wall,,,,,
 B2,B2|B2-S14,act_corewall,Core Wall,,,,,
 B2,B2|B2-S14,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S13,demo,Demolition,Aug'26,,,4/8/2026,6/8/2026
-B2,B2|B2-S13,demo,Demolition,Aug'26,83.7,,4/8/2026,6/8/2026
-B2,B2|B2-S13,exc,Excavation,Aug'26,,,7/8/2026,17/8/2026
-B2,B2|B2-S13,exc,Excavation,Aug'26,83.7,,7/8/2026,17/8/2026
-B2,B2|B2-S13,slab,Cast Slab,Sep'26,9,,1/9/2026,29/9/2026
-B2,B2|B2-S13,slab,Cast Slab,Sep'26,83.7,,1/9/2026,29/9/2026
-B2,B2|B2-S13,col,Columns,Sep'26,0.1552,,30/9/2026,30/9/2026
-B2,B2|B2-S13,col,Columns,Sep'26,83.7,,30/9/2026,30/9/2026
-B2,B2|B2-S13,col,Columns,Oct'26,4.8103,,1/10/2026,31/10/2026
-B2,B2|B2-S13,col,Columns,Oct'26,83.7,,1/10/2026,31/10/2026
-B2,B2|B2-S13,col,Columns,Nov'26,4.0345,,1/11/2026,26/11/2026
-B2,B2|B2-S13,col,Columns,Nov'26,83.7,,1/11/2026,26/11/2026
+B2,B2|B2-S13,demo,Demolition,Aug'26,,,2026-08-04,2026-08-06
+B2,B2|B2-S13,demo,Demolition,Aug'26,83.7,,2026-08-04,2026-08-06
+B2,B2|B2-S13,exc,Excavation,Aug'26,,,2026-08-07,2026-08-17
+B2,B2|B2-S13,exc,Excavation,Aug'26,83.7,,2026-08-07,2026-08-17
+B2,B2|B2-S13,slab,Cast Slab,Sep'26,9,,2026-09-01,2026-09-29
+B2,B2|B2-S13,slab,Cast Slab,Sep'26,83.7,,2026-09-01,2026-09-29
+B2,B2|B2-S13,col,Columns,Sep'26,0.1552,,2026-09-30,2026-09-30
+B2,B2|B2-S13,col,Columns,Sep'26,83.7,,2026-09-30,2026-09-30
+B2,B2|B2-S13,col,Columns,Oct'26,4.8103,,2026-10-01,2026-10-31
+B2,B2|B2-S13,col,Columns,Oct'26,83.7,,2026-10-01,2026-10-31
+B2,B2|B2-S13,col,Columns,Nov'26,4.0345,,2026-11-01,2026-11-26
+B2,B2|B2-S13,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-26
 B2,B2|B2-S13,col,Columns,,,,,
 B2,B2|B2-S13,pile,Pile Caps,,,,,
 B2,B2|B2-S13,mbeam,Steel Main Beams,,,,,
@@ -859,14 +859,14 @@ B2,B2|B2-S13,slab,Cast Slab,,,,,
 B2,B2|B2-S13,act_wall,Wall,,,,,
 B2,B2|B2-S13,act_corewall,Core Wall,,,,,
 B2,B2|B2-S13,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S9,demo,Demolition,Aug'26,,,18/8/2026,20/8/2026
-B2,B2|B2-S9,exc,Excavation,Aug'26,,,21/8/2026,31/8/2026
-B2,B2|B2-S9,exc,Excavation,Sep'26,,,1/9/2026,18/9/2026
-B2,B2|B2-S9,slab,Cast Slab,Sep'26,4.1379,,21/9/2026,30/9/2026
-B2,B2|B2-S9,slab,Cast Slab,Oct'26,7.8621,,1/10/2026,19/10/2026
-B2,B2|B2-S9,col,Columns,Oct'26,2.4828,,20/10/2026,31/10/2026
-B2,B2|B2-S9,col,Columns,Nov'26,6.2069,,1/11/2026,30/11/2026
-B2,B2|B2-S9,col,Columns,Dec'26,3.3103,,1/12/2026,16/12/2026
+B2,B2|B2-S9,demo,Demolition,Aug'26,,,2026-08-18,2026-08-20
+B2,B2|B2-S9,exc,Excavation,Aug'26,,,2026-08-21,2026-08-31
+B2,B2|B2-S9,exc,Excavation,Sep'26,,,2026-09-01,2026-09-18
+B2,B2|B2-S9,slab,Cast Slab,Sep'26,4.1379,,2026-09-21,2026-09-30
+B2,B2|B2-S9,slab,Cast Slab,Oct'26,7.8621,,2026-10-01,2026-10-19
+B2,B2|B2-S9,col,Columns,Oct'26,2.4828,,2026-10-20,2026-10-31
+B2,B2|B2-S9,col,Columns,Nov'26,6.2069,,2026-11-01,2026-11-30
+B2,B2|B2-S9,col,Columns,Dec'26,3.3103,,2026-12-01,2026-12-16
 B2,B2|B2-S9,col,Columns,,,,,
 B2,B2|B2-S9,pile,Pile Caps,,,,,
 B2,B2|B2-S9,mbeam,Steel Main Beams,,,,,
@@ -878,12 +878,12 @@ B2,B2|B2-S9,slab,Cast Slab,,,,,
 B2,B2|B2-S9,act_wall,Wall,,,,,
 B2,B2|B2-S9,act_corewall,Core Wall,,,,,
 B2,B2|B2-S9,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S10,demo,Demolition,Sep'26,,,21/9/2026,23/9/2026
-B2,B2|B2-S10,exc,Excavation,Sep'26,,,24/9/2026,30/9/2026
-B2,B2|B2-S10,slab,Cast Slab,Oct'26,11,,1/10/2026,29/10/2026
-B2,B2|B2-S10,col,Columns,Oct'26,0.3667,,30/10/2026,31/10/2026
-B2,B2|B2-S10,col,Columns,Nov'26,5.5,,1/11/2026,30/11/2026
-B2,B2|B2-S10,col,Columns,Dec'26,5.1333,,1/12/2026,28/12/2026
+B2,B2|B2-S10,demo,Demolition,Sep'26,,,2026-09-21,2026-09-23
+B2,B2|B2-S10,exc,Excavation,Sep'26,,,2026-09-24,2026-09-30
+B2,B2|B2-S10,slab,Cast Slab,Oct'26,11,,2026-10-01,2026-10-29
+B2,B2|B2-S10,col,Columns,Oct'26,0.3667,,2026-10-30,2026-10-31
+B2,B2|B2-S10,col,Columns,Nov'26,5.5,,2026-11-01,2026-11-30
+B2,B2|B2-S10,col,Columns,Dec'26,5.1333,,2026-12-01,2026-12-28
 B2,B2|B2-S10,col,Columns,,,,,
 B2,B2|B2-S10,pile,Pile Caps,,,,,
 B2,B2|B2-S10,mbeam,Steel Main Beams,,,,,
@@ -895,30 +895,30 @@ B2,B2|B2-S10,slab,Cast Slab,,,,,
 B2,B2|B2-S10,act_wall,Wall,,,,,
 B2,B2|B2-S10,act_corewall,Core Wall,,,,,
 B2,B2|B2-S10,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S12,demo,Demolition,Aug'26,,,3/8/2026,5/8/2026
-B2,B2|B2-S12,demo,Demolition,Aug'26,83.7,,3/8/2026,5/8/2026
-B2,B2|B2-S12,exc,Excavation,Aug'26,,,6/8/2026,31/8/2026
-B2,B2|B2-S12,exc,Excavation,Aug'26,83.7,,6/8/2026,31/8/2026
-B2,B2|B2-S12,exc,Excavation,Sep'26,,,1/9/2026,3/9/2026
-B2,B2|B2-S12,exc,Excavation,Sep'26,83.7,,1/9/2026,3/9/2026
-B2,B2|B2-S12,slab,Cast Slab,Sep'26,13.0345,,4/9/2026,30/9/2026
-B2,B2|B2-S12,slab,Cast Slab,Sep'26,83.7,,4/9/2026,30/9/2026
-B2,B2|B2-S12,slab,Cast Slab,Oct'26,0.9655,,1/10/2026,2/10/2026
-B2,B2|B2-S12,slab,Cast Slab,Oct'26,83.7,,1/10/2026,2/10/2026
-B2,B2|B2-S12,col,Columns,Oct'26,6.5172,,5/10/2026,31/10/2026
-B2,B2|B2-S12,col,Columns,Oct'26,83.7,,5/10/2026,31/10/2026
-B2,B2|B2-S12,col,Columns,Nov'26,7.2414,,1/11/2026,30/11/2026
-B2,B2|B2-S12,col,Columns,Nov'26,83.7,,1/11/2026,30/11/2026
-B2,B2|B2-S12,col,Columns,Dec'26,0.2414,,1/12/2026,1/12/2026
-B2,B2|B2-S12,col,Columns,Dec'26,83.7,,1/12/2026,1/12/2026
-B2,B2|B2-S12,act_corewall,Core Wall,Oct'26,0.675,,5/10/2026,31/10/2026
-B2,B2|B2-S12,act_corewall,Core Wall,Oct'26,83.7,,5/10/2026,31/10/2026
-B2,B2|B2-S12,act_corewall,Core Wall,Nov'26,0.325,,1/11/2026,13/11/2026
-B2,B2|B2-S12,act_corewall,Core Wall,Nov'26,83.7,,1/11/2026,13/11/2026
-B2,B2|B2-S12,act_wall,Wall,Nov'26,0.375,,16/11/2026,30/11/2026
-B2,B2|B2-S12,act_wall,Wall,Nov'26,83.7,,16/11/2026,30/11/2026
-B2,B2|B2-S12,act_wall,Wall,Dec'26,0.625,,1/12/2026,25/12/2026
-B2,B2|B2-S12,act_wall,Wall,Dec'26,83.7,,1/12/2026,25/12/2026
+B2,B2|B2-S12,demo,Demolition,Aug'26,,,2026-08-03,2026-08-05
+B2,B2|B2-S12,demo,Demolition,Aug'26,83.7,,2026-08-03,2026-08-05
+B2,B2|B2-S12,exc,Excavation,Aug'26,,,2026-08-06,2026-08-31
+B2,B2|B2-S12,exc,Excavation,Aug'26,83.7,,2026-08-06,2026-08-31
+B2,B2|B2-S12,exc,Excavation,Sep'26,,,2026-09-01,2026-09-03
+B2,B2|B2-S12,exc,Excavation,Sep'26,83.7,,2026-09-01,2026-09-03
+B2,B2|B2-S12,slab,Cast Slab,Sep'26,13.0345,,2026-09-04,2026-09-30
+B2,B2|B2-S12,slab,Cast Slab,Sep'26,83.7,,2026-09-04,2026-09-30
+B2,B2|B2-S12,slab,Cast Slab,Oct'26,0.9655,,2026-10-01,2026-10-02
+B2,B2|B2-S12,slab,Cast Slab,Oct'26,83.7,,2026-10-01,2026-10-02
+B2,B2|B2-S12,col,Columns,Oct'26,6.5172,,2026-10-05,2026-10-31
+B2,B2|B2-S12,col,Columns,Oct'26,83.7,,2026-10-05,2026-10-31
+B2,B2|B2-S12,col,Columns,Nov'26,7.2414,,2026-11-01,2026-11-30
+B2,B2|B2-S12,col,Columns,Nov'26,83.7,,2026-11-01,2026-11-30
+B2,B2|B2-S12,col,Columns,Dec'26,0.2414,,2026-12-01,2026-12-01
+B2,B2|B2-S12,col,Columns,Dec'26,83.7,,2026-12-01,2026-12-01
+B2,B2|B2-S12,act_corewall,Core Wall,Oct'26,0.675,,2026-10-05,2026-10-31
+B2,B2|B2-S12,act_corewall,Core Wall,Oct'26,83.7,,2026-10-05,2026-10-31
+B2,B2|B2-S12,act_corewall,Core Wall,Nov'26,0.325,,2026-11-01,2026-11-13
+B2,B2|B2-S12,act_corewall,Core Wall,Nov'26,83.7,,2026-11-01,2026-11-13
+B2,B2|B2-S12,act_wall,Wall,Nov'26,0.375,,2026-11-16,2026-11-30
+B2,B2|B2-S12,act_wall,Wall,Nov'26,83.7,,2026-11-16,2026-11-30
+B2,B2|B2-S12,act_wall,Wall,Dec'26,0.625,,2026-12-01,2026-12-25
+B2,B2|B2-S12,act_wall,Wall,Dec'26,83.7,,2026-12-01,2026-12-25
 B2,B2|B2-S12,col,Columns,,,,,
 B2,B2|B2-S12,pile,Pile Caps,,,,,
 B2,B2|B2-S12,mbeam,Steel Main Beams,,,,,
@@ -930,17 +930,17 @@ B2,B2|B2-S12,slab,Cast Slab,,,,,
 B2,B2|B2-S12,act_wall,Wall,,,,,
 B2,B2|B2-S12,act_corewall,Core Wall,,,,,
 B2,B2|B2-S12,act_colcorbel,Columns Corbel,,,,,
-B2,B2|B2-S11,demo,Demolition,Jun'26,,,19/6/2026,23/6/2026
-B2,B2|B2-S11,exc,Excavation,Jun'26,,,24/6/2026,30/6/2026
-B2,B2|B2-S11,exc,Excavation,Jul'26,,,1/7/2026,13/7/2026
-B2,B2|B2-S11,slab,Cast Slab,Jul'26,,,14/7/2026,31/7/2026
-B2,B2|B2-S11,slab,Cast Slab,Aug'26,,,1/8/2026,11/8/2026
-B2,B2|B2-S11,col,Columns,Aug'26,2.7586,,12/8/2026,31/8/2026
-B2,B2|B2-S11,col,Columns,Sep'26,4.1379,,1/9/2026,30/9/2026
-B2,B2|B2-S11,col,Columns,Oct'26,1.1035,,1/10/2026,8/10/2026
-B2,B2|B2-S11,act_wall,Wall,Oct'26,0.2738,,9/10/2026,31/10/2026
-B2,B2|B2-S11,act_wall,Wall,Nov'26,0.3571,,1/11/2026,30/11/2026
-B2,B2|B2-S11,act_wall,Wall,Dec'26,0.3691,,1/12/2026,31/12/2026
+B2,B2|B2-S11,demo,Demolition,Jun'26,,,2026-06-19,2026-06-23
+B2,B2|B2-S11,exc,Excavation,Jun'26,,,2026-06-24,2026-06-30
+B2,B2|B2-S11,exc,Excavation,Jul'26,,,2026-07-01,2026-07-13
+B2,B2|B2-S11,slab,Cast Slab,Jul'26,,,2026-07-14,2026-07-31
+B2,B2|B2-S11,slab,Cast Slab,Aug'26,,,2026-08-01,2026-08-11
+B2,B2|B2-S11,col,Columns,Aug'26,2.7586,,2026-08-12,2026-08-31
+B2,B2|B2-S11,col,Columns,Sep'26,4.1379,,2026-09-01,2026-09-30
+B2,B2|B2-S11,col,Columns,Oct'26,1.1035,,2026-10-01,2026-10-08
+B2,B2|B2-S11,act_wall,Wall,Oct'26,0.2738,,2026-10-09,2026-10-31
+B2,B2|B2-S11,act_wall,Wall,Nov'26,0.3571,,2026-11-01,2026-11-30
+B2,B2|B2-S11,act_wall,Wall,Dec'26,0.3691,,2026-12-01,2026-12-31
 B2,B2|B2-S11,col,Columns,,,,,
 B2,B2|B2-S11,pile,Pile Caps,,,,,
 B2,B2|B2-S11,mbeam,Steel Main Beams,,,,,
