@@ -97,10 +97,13 @@ if za_files:
                     adm[f'{lv}||{zmk}||{aid}||{mon}'] = dv
                 s, e = (row.get('活动开始') or '').strip(), (row.get('活动结束') or '').strip()
                 if s or e:
-                    o = {}
-                    if s: o['start'] = s
-                    if e: o['end'] = e
-                    ad[f'{lv}||{zmk}||{aid}'] = o
+                    # 同一分区+活动可能跨多行/多月份 -- 取所有行里最早的开始日 + 最晚的结束日,
+                    # 而不是让后面的行覆盖前面的日期(否则前面月份段的日期会丢失)
+                    k = f'{lv}||{zmk}||{aid}'
+                    o = ad.get(k, {})
+                    if s and (not o.get('start') or s < o['start']): o['start'] = s
+                    if e and (not o.get('end') or e > o['end']): o['end'] = e
+                    ad[k] = o
     if ap: seed['actPlan'] = ap
     if ad: seed['actDate'] = ad
     if adm: seed['actDoneM'] = adm
