@@ -1,7 +1,7 @@
 
 /* ---- Supabase cloud sync: accounts, per-record sync, offline queue ---- */
-const SUPABASE_URL = 'https://rxarahrcsylkkqbcatxw.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_f_DTCZskL9aCdMdn0KTHsg_AsCdQ1tB';
+const SUPABASE_URL = 'https://qjdmcvbagozoyebjbwyh.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ARZCPR5OQxq_Xa3_CbGT6g_yzKG47ni';
 const rwsSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 // Hidden admin entry: open this file with #zradmin92 in the URL. Change this
 // string to your own private one before you hand the file to anyone else —
