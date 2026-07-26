@@ -1,90 +1,90 @@
 ﻿楼层,分区,活动,活动名称(参考),月份,计划量,完成量,活动开始,活动结束
-B1M,B1M|S7,col,Columns,Jan'27,9,1,1/1/2027,1/3/2027
-B1M,B1M|S7,col,Columns,Feb'27,9,,1/1/2027,1/3/2027
-B1M,B1M|S7,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S7,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S6,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S5,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S8,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S4,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S3,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S1,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,col,Columns,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,pile,Pile Caps,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,mbeam,Steel Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,cbeam,Cast S Main Beams,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,ls,Lift / Stairs,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,exc,Excavation,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,demo,Demolition,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,slab,Cast Slab,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,act_wall,Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,act_corewall,Core Wall,Dec'26,9,6,1/11/2026,20/12/2026
-B1M,B1M|S2,act_colcorbel,Columns Corbel,Dec'26,9,6,1/11/2026,20/12/2026
+B1M,B1M|S7,col,Columns,Jan'27,9,1,2027-01-01,2027-03-01
+B1M,B1M|S7,col,Columns,Feb'27,9,,2027-01-01,2027-03-01
+B1M,B1M|S7,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S7,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S6,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S5,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S8,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S4,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S3,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S1,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,col,Columns,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,pile,Pile Caps,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,mbeam,Steel Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,cbeam,Cast S Main Beams,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,ls,Lift / Stairs,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,exc,Excavation,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,demo,Demolition,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,slab,Cast Slab,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,act_wall,Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,act_corewall,Core Wall,Dec'26,9,6,2026-11-01,2026-12-20
+B1M,B1M|S2,act_colcorbel,Columns Corbel,Dec'26,9,6,2026-11-01,2026-12-20
