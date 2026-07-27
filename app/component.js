@@ -1836,19 +1836,71 @@ class Component extends DCLogic {
     let t='<table border="1"><tr>'+heads.map(h=>`<th style="background:#dfe6f2;font-weight:bold">${h}</th>`).join('')+'</tr>';
     rows.forEach(r=>{t+='<tr>'+keys.map(k=>esc(r[k])).join('')+'</tr>';});
     t+='</table>';
-    // Element-level detail (every marked element)
+    // Element-level detail (every element, including not-yet-started ones)
     const lmap={},zmap={};this.DATA.order.forEach(lv=>this.DATA.levels[lv].zones.forEach(z=>{if(z.mk){zmap[z.mk]=z.label;lmap[z.mk]=lmap[z.mk]||lv;}}));
-    const stLbl={wip:'In progress',done:'Complete'};
-    const eRows=Object.keys(this.elem).map(k=>{const[lv,mk,type,id]=k.split('||');return{lv,zone:zmap[mk]||mk,type,id,status:stLbl[this.elem[k]]||this.elem[k]};})
-      .sort((a,b)=>a.lv.localeCompare(b.lv)||a.zone.localeCompare(b.zone)||a.type.localeCompare(b.type));
+    const stLbl={wip:'In progress',done:'Complete',todo:'Not started'};
+    const eRows=[];
+    this.DATA.order.forEach(lv=>{
+      const seen={};
+      this.DATA.levels[lv].zones.forEach(z=>{
+        const zk=z.mk||('_'+z.lid); if(seen[zk])return; seen[zk]=1;
+        this.zoneElems(lv,z).forEach(it=>{
+          const id=it.key.split('||')[3];
+          eRows.push({lv,zone:z.label,type:it.type,id,status:stLbl[this.elemStatus(it.key)]||this.elemStatus(it.key),date:this.elemDate(it.key)||''});
+        });
+      });
+    });
+    eRows.sort((a,b)=>a.lv.localeCompare(b.lv)||a.zone.localeCompare(b.zone)||a.type.localeCompare(b.type)||String(a.id).localeCompare(String(b.id)));
     let et='';
     if(eRows.length){
-      const eh=['Level','Zone','ElementType','ElementID','Status'];
-      et='<br><table border="1"><tr><td colspan="5" style="font-weight:bold;background:#e6efe0">Element Detail (marked '+eRows.length+')</td></tr><tr>'+eh.map(h=>`<th style="background:#dfe6f2;font-weight:bold">${h}</th>`).join('')+'</tr>';
-      eRows.forEach(r=>{et+='<tr>'+[r.lv,r.zone,r.type,r.id,r.status].map(esc).join('')+'</tr>';});
+      const eh=['Level','Zone','ElementType','ElementID','Status','CompletionDate'];
+      et='<br><table border="1"><tr><td colspan="6" style="font-weight:bold;background:#e6efe0">Element Detail (all '+eRows.length+' elements, incl. not-started)</td></tr><tr>'+eh.map(h=>`<th style="background:#dfe6f2;font-weight:bold">${h}</th>`).join('')+'</tr>';
+      eRows.forEach(r=>{et+='<tr>'+[r.lv,r.zone,r.type,r.id,r.status,r.date].map(esc).join('')+'</tr>';});
       et+='</table>';
     }
     t+=et;
+
+    // Activity quantities: planned vs actual, by month, for every zone/activity that has data
+    const AM=this.ACT_MONTHS;
+    const act3=new Set();
+    Object.keys(this._actTotal||{}).forEach(k=>act3.add(k));
+    Object.keys(this._actHidden||{}).forEach(k=>act3.add(k));
+    Object.keys(this._actDate||{}).forEach(k=>act3.add(k));
+    Object.keys(this._actPlan||{}).forEach(k=>act3.add(k.split('||').slice(0,3).join('||')));
+    Object.keys(this._actDoneM||{}).forEach(k=>act3.add(k.split('||').slice(0,3).join('||')));
+    let at='';
+    if(act3.size){
+      const actMeta=this._actMeta();
+      const ah=['Level','Zone','Activity','Unit','Total','Hidden','PlanStart','PlanEnd'].concat(AM.map(m=>'Plan_'+m)).concat(AM.map(m=>'Done_'+m));
+      at='<br><table border="1"><tr><td colspan="'+ah.length+'" style="font-weight:bold;background:#eef2e6">Activity Quantities (planned vs actual, by month)</td></tr><tr>'+ah.map(h=>`<th style="background:#dfe6f2;font-weight:bold">${h}</th>`).join('')+'</tr>';
+      [...act3].sort().forEach(k3=>{
+        const p=k3.split('||'),lv=p[0],zmk=p[1],aid=p[2];
+        const def=actMeta.find(a=>a.id===aid)||{label:aid,unit:''};
+        const d=(this._actDate||{})[k3]||{};
+        const row=[lv,zmap[zmk]||zmk,def.label,def.unit||'',this.actTotal(lv,zmk,aid,null),(this._actHidden||{})[k3]||'',d.start||'',d.end||''];
+        AM.forEach(m=>row.push(this.actPlan(lv,zmk,aid,m)));
+        AM.forEach(m=>row.push(this.actDoneMonth(lv,zmk,aid,m)));
+        at+='<tr>'+row.map(esc).join('')+'</tr>';
+      });
+      at+='</table>';
+    }
+    t+=at;
+
+    // Zone update history: every site update ever logged (not just the latest per zone)
+    let ut='';
+    const uCount=this.updateCount?this.updateCount():0;
+    if(uCount){
+      const uh=['Level','Zone','Date','Crew','Status','Pct','Note'];
+      ut='<br><table border="1"><tr><td colspan="7" style="font-weight:bold;background:#eef0f8">Zone Update History (all '+uCount+' entries)</td></tr><tr>'+uh.map(h=>`<th style="background:#dfe6f2;font-weight:bold">${h}</th>`).join('')+'</tr>';
+      Object.keys(this.updates||{}).forEach(mk=>{
+        (this.updates[mk]||[]).forEach(u=>{
+          ut+='<tr>'+[u.level||lmap[mk]||'',u.zone||zmap[mk]||mk,u.date||'',u.crew||'',u.status||'',u.pct==null?'':u.pct,u.note||''].map(esc).join('')+'</tr>';
+        });
+      });
+      ut+='</table>';
+    }
+    t+=ut;
+
     const stamp=new Date().toISOString().slice(0,10);
     const meta=`<tr><td colspan="${heads.length}">RWS P1 CJ · Zone Progress Register · exported ${stamp} · project ${this.projPct}%</td></tr>`;
     const doc=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Zone Register</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>${meta}</table>${t}</body></html>`;
@@ -1935,8 +1987,9 @@ class Component extends DCLogic {
         if(trs.length){
           let cols=null;
           trs.forEach(tr=>{const cells=[...tr.children].map(td=>td.textContent.trim());
-            if(cells.some(c=>/elementid/i.test(c))){cols={lv:cells.findIndex(c=>/^level$/i.test(c)),zone:cells.findIndex(c=>/^zone$/i.test(c)),type:cells.findIndex(c=>/elementtype/i.test(c)),id:cells.findIndex(c=>/elementid/i.test(c)),st:cells.findIndex(c=>/^status$/i.test(c))};return;}
-            if(cols&&cells.length>=5&&cells[cols.id]){const idp=this.labelMap[cells[cols.lv]+'||'+cells[cols.zone]];if(!idp)return;const st=codeOf(cells[cols.st]);const key=cells[cols.lv]+'||'+idp+'||'+cells[cols.type]+'||'+cells[cols.id];if(st==='todo')delete this.elem[key];else{this.elem[key]=st;}elemN++;}});
+            if(cells.some(c=>/elementid/i.test(c))){cols={lv:cells.findIndex(c=>/^level$/i.test(c)),zone:cells.findIndex(c=>/^zone$/i.test(c)),type:cells.findIndex(c=>/elementtype/i.test(c)),id:cells.findIndex(c=>/elementid/i.test(c)),st:cells.findIndex(c=>/^status$/i.test(c)),dt:cells.findIndex(c=>/completiondate/i.test(c))};return;}
+            if(cells.length===1){cols=null;return;} // section-divider row (e.g. Activity Quantities / Zone Update History headers) — stop applying the Element Detail column map to it
+            if(cols&&cells.length>=5&&cells[cols.id]){const idp=this.labelMap[cells[cols.lv]+'||'+cells[cols.zone]];if(!idp)return;const st=codeOf(cells[cols.st]);const key=cells[cols.lv]+'||'+idp+'||'+cells[cols.type]+'||'+cells[cols.id];if(st==='todo')delete this.elem[key];else{this.elem[key]=st;}if(cols.dt>=0&&cells[cols.dt])this.setElemDate(key,cells[cols.dt]);elemN++;}});
         } else {
           // CSV fallback
           txt.split(/\r?\n/).forEach(line=>{const c=line.split(',').map(x=>x.replace(/^"|"$/g,'').trim());if(c.length>=5&&/elementid/i.test(line)===false&&c[3]){const idp=this.labelMap[c[0]+'||'+c[1]];if(!idp)return;const st=codeOf(c[4]);const key=c[0]+'||'+idp+'||'+c[2]+'||'+c[3];if(st!=='todo'){this.elem[key]=st;elemN++;}}});
