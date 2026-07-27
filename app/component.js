@@ -80,9 +80,6 @@ class Component extends DCLogic {
   centroid(r,H){let x=0,y=0;r.forEach(p=>{x+=p[0];y+=H-p[1];});return[x/r.length,y/r.length];}
   ml(m){const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return names[((m%12)+12)%12]+' '+(2024+Math.floor(m/12));}
   _fmtD(iso){if(!iso)return '';const q=String(iso).split('-');if(q.length<3)return iso;const M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (+q[2])+' '+M[+q[1]]+" '"+q[0].slice(2);}
-  zd(lv,z){const v=(this._zdate||{})[lv+'||'+(z.mk||z.lid)];return v&&v.start?v:null;}
-  ad(lv,zmk,aid){const v=(this._actDate||{})[lv+'||'+zmk+'||'+aid];return (v&&(v.start||v.end))?v:null;}
-  colMon(lv,zmk,id){return (this._colMonth||{})[lv+'||'+zmk+'||col||'+id]||'';}
   /* Zone plan start/end derived from the earliest start / latest end across all of that zone's activities (_actDate) */
   _zoneActSpan(lv,zmk){const pre=lv+'||'+zmk+'||';let start=null,end=null;
     Object.keys(this._actDate||{}).forEach(k=>{if(!k.startsWith(pre))return;const v=this._actDate[k];
@@ -292,7 +289,6 @@ class Component extends DCLogic {
   customCats(){return this._catAdd||(this._catAdd=[]);}
   customItemsFor(lv,zmk,type){return (this._elemAdd&&this._elemAdd[lv+'||'+zmk+'||'+type])||[];}
   saveCustom(){try{localStorage.setItem('rws_cat_add',JSON.stringify(this._catAdd||[]));localStorage.setItem('rws_elem_add',JSON.stringify(this._elemAdd||{}));}catch(e){}}
-  addStatusCat(label,act){if(!this.rwsIsAdmin()){this.rwsDeny('Not allowed.');return;}label=(label||'').trim();if(!label)return;const slug=label.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,20)+'_'+Math.random().toString(36).slice(2,5);const code=act?('cst~'+act+'~'+slug):('cst_'+slug);this._catAdd=this.customCats();this._catAdd.push(act?{code,label,act}:{code,label});this.saveCustom();rwsAddCat(code,label);this._actRerender(this._selZone());}
   _catAct(ct){if(!ct)return null;if(ct.act)return ct.act;const c=ct.code||'';return c.indexOf('cst~')===0?c.split('~')[1]||null:null;}
   _actItemsCode(aid){return 'cst~'+aid+'~items';}
   _ensureActItemsCat(aid){const code=this._actItemsCode(aid);this._catAdd=this.customCats();if(!this._catAdd.some(c=>c.code===code)){this._catAdd.push({code,label:'Status',act:aid});this.saveCustom();rwsAddCat(code,'Status');}return code;}
@@ -430,16 +426,10 @@ class Component extends DCLogic {
   /* Map a YYYY-MM-DD completion date to one of the activity month buckets */
   dateToActMonth(iso){const M=this.ACT_MONTHS;if(!iso)return M[M.length-1];const y=+iso.slice(0,4),mo=+iso.slice(5,7);const val=y*12+mo;const aprVal=2026*12+4;if(val<aprVal)return "Before Apr'26";const nm=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];if(y===2026&&mo>=4&&mo<=12)return nm[mo]+"'26";return M[M.length-1];}
   /* Columns completed in a given month bucket for a zone (drives the Columns activity) */
-  colDoneInMonth(lv,zmk,m){const z=(this.DATA.levels[lv]?this.DATA.levels[lv].zones:[]).find(x=>(x.mk||x.lid)===zmk);if(!z||!z.cols)return null;let n=0;z.cols.forEach(x=>{const k=this.ekey(lv,z,'col',x.id);if(this.elemStatus(k)==='done'){const d=this.elemDate(k)||this.todayISOStr();if(this.dateToActMonth(d)===m)n++;}});return n>0?n:null;}
   /* Activities whose monthly Done is derived from an element checklist (in sync with the list below) */
   _elemAct(id){return {col:{types:['col'],sec:'col',label:'columns'},pile:{types:['pile'],sec:'pile',label:'pile caps'},mbeam:{types:['beam'],sec:'beam',label:'steel main beams'},cbeam:{types:['cbeam'],sec:'cbeam',label:'cast s main beams'}}[id]||null;}
   _zoneElemList(z,tp){return ({col:z.cols,pile:z.piles,beam:z.beams,cbeam:z.beams,lift:z.lifts,stair:z.stairs,core:z.cores})[tp]||[];}
   _zoneHasElems(lv,zmk,types){const z=(this.DATA.levels[lv]?this.DATA.levels[lv].zones:[]).find(x=>(x.mk||x.lid)===zmk);if(!z)return false;return types.some(tp=>this._zoneElemList(z,tp).length>0);}
-  _actTotalFor(lv,z,aid,c){c=c||z.counts||{};const zmk=z.mk||z.lid;
-    switch(aid){case 'col':return c.columns||0;case 'pile':return c.pilecap||0;case 'mbeam':return c.mainbeam||0;case 'cbeam':return c.mainbeam||0;
-      case 'sbeam':return c.steelbeam||0;case 'ls':return this.lsAll(c);case 'exc':return this.excTotal(lv,z)||0;
-      case 'demo':return this.actTotal(lv,zmk,'demo',null)||0;case 'slab':return z.area||0;
-      default:return this.actTotal(lv,zmk,aid,null)||0;}}
   /* Zone overall % = average of each applicable activity's cumulative done/total.
      Activities with no data at all (total<=0 and nothing done) do NOT participate. */
   _pw(){return {demo:8,pilewall:22,exc:11,pilecap:1,baseslab:1,beamslab:32,wallcol:25};}
@@ -715,7 +705,6 @@ class Component extends DCLogic {
 
   elemStatus(k){return this.elem[k]||'todo';}
   doneCount(){return Object.values(this.elem).filter(v=>v==='done').length;}
-  elemMarked(){return Object.keys(this.elem).length;}
   ekey(lv,z,type,id){return lv+'||'+(z.mk||z.lid)+'||'+type+'||'+id;}
   levelTypeStats(){const seen={},st={col:{total:0,done:0,wip:0},pile:{total:0,done:0,wip:0},beam:{total:0,done:0,wip:0},lift:{total:0,done:0,wip:0},stair:{total:0,done:0,wip:0},core:{total:0,done:0,wip:0}};this.DATA.levels[this.curLevel].zones.forEach(z=>{if(!this.zoneVisible(z))return;const k=this.zid(z);if(seen[k])return;seen[k]=1;this.zoneElems(this.curLevel,z).forEach(it=>{const o=st[it.type];if(!o)return;o.total++;const s2=this.elemStatus(it.key);if(s2==='done')o.done++;else if(s2==='wip')o.wip++;});});return st;}
   zoneElems(lv,z){
@@ -736,11 +725,6 @@ class Component extends DCLogic {
     if(!this.rwsCanEditElement(key)){this.rwsDeny('You can only update status inside your assigned zones.');return;}
     const o=['todo','wip','done'];const nx=o[(o.indexOf(this.elemStatus(key))+1)%3];if(nx==='todo')delete this.elem[key];else this.elem[key]=nx;this._syncElemDate(key,nx);this.commitElem();
     rwsSyncElementStatus(key,nx);
-  }
-  setElem(key,st){
-    if(!this.rwsCanEditElement(key)){this.rwsDeny('You can only update status inside your assigned zones.');return;}
-    if(st==='todo')delete this.elem[key];else this.elem[key]=st;this._syncElemDate(key,st);this.commitElem();
-    rwsSyncElementStatus(key,st);
   }
   setZoneElems(lv,z,st){
     const isAdmin=this.rwsIsAdmin(), zmk=z.mk||z.lid;
@@ -1124,49 +1108,6 @@ class Component extends DCLogic {
   // Clean outer boundary + between-area seams for the three big areas, via a coverage grid
   // (robust to imperfect shared vertices). Cached per level. Neutral bold dividing lines.
   ptIn(ring,x,y){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
-  buildAreaGrid(lv){
-    const L=this.DATA.levels[lv],W=L.w,H=L.h;
-    if(!L.zones.length)return {segs:[]};
-    const cols=210,cw=W/cols,rows=Math.max(1,Math.round(H/cw)),chh=H/rows;
-    const zb=L.zones.map(z=>{let x0=1e18,y0=1e18,x1=-1e18,y1=-1e18;z.ring.forEach(p=>{if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0];if(p[1]<y0)y0=p[1];if(p[1]>y1)y1=p[1];});return{z,x0,y0,x1,y1};});
-    const cat=[];
-    for(let r=0;r<rows;r++){cat[r]=[];const py=(r+0.5)*chh;
-      for(let c=0;c<cols;c++){const px=(c+0.5)*cw;let cc=null;
-        for(let i=0;i<zb.length;i++){const b=zb[i];if(px<b.x0||px>b.x1||py<b.y0||py>b.y1)continue;if(this.ptIn(b.z.ring,px,py)){cc=b.z.cat||'NB';break;}}
-        cat[r][c]=cc;}}
-    const get=(r,c)=>(r>=0&&r<rows&&c>=0&&c<cols)?cat[r][c]:null;
-    // close thin inter-zone gaps so only true outer edges & inter-area seams remain
-    for(let pass=0;pass<5;pass++){const nc=cat.map(row=>row.slice());
-      for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){if(cat[r][c]!=null)continue;
-        const l=get(r,c-1),rt=get(r,c+1),u=get(r-1,c),d=get(r+1,c);
-        if(l&&l===rt)nc[r][c]=l;else if(u&&u===d)nc[r][c]=u;}
-      for(let r=0;r<rows;r++)cat[r]=nc[r];}
-    const proj=(x,y)=>[x,H-y];const segs=[];
-    for(let r=0;r<rows;r++)for(let c=0;c<=cols;c++){const a=get(r,c-1),b=get(r,c);if(a!==b){const x=c*cw;segs.push({p:[proj(x,r*chh),proj(x,(r+1)*chh)],a,b});}}
-    for(let r=0;r<=rows;r++)for(let c=0;c<cols;c++){const a=get(r-1,c),b=get(r,c);if(a!==b){const y=r*chh;segs.push({p:[proj(c*cw,y),proj((c+1)*cw,y)],a,b});}}
-    return {segs};
-  }
-
-  smoothBounds(segs){
-    const fc=this.filterCat, K=p=>Math.round(p[0])+','+Math.round(p[1]), groups={};
-    segs.forEach(g=>{ if(fc!=='all' && g.a!==fc && g.b!==fc)return;
-      const solo=g.a&&g.b?null:(g.a||g.b); const key=solo?('o:'+solo):'seam';
-      (groups[key]=groups[key]||{solo,list:[]}).list.push([g.p[0],g.p[1]]); });
-    const out=[];
-    for(const key in groups){ const solo=groups[key].solo, list=groups[key].list, used=new Array(list.length).fill(false), adj={};
-      list.forEach((sg,i)=>{[K(sg[0]),K(sg[1])].forEach(k=>{(adj[k]=adj[k]||[]).push(i);});});
-      for(let i=0;i<list.length;i++){ if(used[i])continue; used[i]=true; let poly=[list[i][0],list[i][1]]; let go=true;
-        while(go){go=false;const e=poly[poly.length-1];const c=(adj[K(e)]||[]).find(j=>!used[j]);if(c!=null){const sg=list[c];poly.push(K(sg[0])===K(e)?sg[1]:sg[0]);used[c]=true;go=true;}}
-        go=true; while(go){go=false;const st=poly[0];const c=(adj[K(st)]||[]).find(j=>!used[j]);if(c!=null){const sg=list[c];poly.unshift(K(sg[0])===K(st)?sg[1]:sg[0]);used[c]=true;go=true;}}
-        out.push({solo,pts:this.chaikin(poly,3)}); } }
-    return out;
-  }
-  chaikin(pts,iter){ let p=pts;
-    for(let k=0;k<iter;k++){ if(p.length<3)break; const np=[p[0]];
-      for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];np.push([a[0]*0.75+b[0]*0.25,a[1]*0.75+b[1]*0.25]);np.push([a[0]*0.25+b[0]*0.75,a[1]*0.25+b[1]*0.75]);}
-      np.push(p[p.length-1]); p=np; }
-    return p;
-  }
   buildList(){
     const L=this.DATA.levels[this.curLevel],seen={},arr=[];
     L.zones.forEach(z=>{if(!this.zoneVisible(z))return;const k=this.zid(z);if(!seen[k]){seen[k]=1;arr.push(z);}});
@@ -1192,7 +1133,6 @@ class Component extends DCLogic {
     this.setSummaryVis();
   }
 
-  idList(items,render,empty){if(!items||!items.length)return `<div class="empty">${empty}</div>`;return items.map(render).join('');}
   elChip(key){const s=this.elemStatus(key);const m={todo:['Not started','--todo'],wip:['In progress','--wip'],done:['Complete','--done']}[s];return `<span class="elchip s-${s}" data-key="${this.esc(key)}" style="--c:var(${m[1]})" title="Click to cycle: Not started → In progress → Complete">${m[0]}</span>`;}
   elDateCtl(key){const done=this.elemStatus(key)==='done';const d=this.elemDate(key);const bucket=done?this.dateToActMonth(d||this.todayISOStr()):'';return `<input type="date" class="eldate" data-key="${this.esc(key)}" value="${d}" title="Completion date → counts in ${bucket}" ${done?'':'style="display:none"'}><span class="elbkt" ${done?'':'style="display:none"'}>${bucket}</span>`;}
   /* Generic collapsible element checklist section (same look as Column List), reusable anywhere
@@ -1207,7 +1147,6 @@ class Component extends DCLogic {
 
   /* ---------- schedule-record (ZP) integration — enriches the detail panel only; map unchanged ---------- */
   zpNorm(s){return String(s).replace(/[^a-z0-9]/gi,'').toLowerCase();}
-  zpMi(m){return this.ZP.months.indexOf(m);}
   zpSetup(){
     if(!this.ZP)return;
     this.ZWT=[
@@ -1328,11 +1267,6 @@ class Component extends DCLogic {
   zpIsCrit(name){ if(!this.ZP)return false; const set=this._critPlanSet||(this._critPlanSet=this.buildCritPlanSet()); if(set.has(name))return true; const p=this.zpResolvePlan(name); return p?set.has(p):false; }
   buildCritPlanSet(){ const s=new Set(); if(!this.ZP)return s; this.DATA.order.forEach(lv=>this.DATA.levels[lv].zones.forEach(z=>{ if(!z.crit)return; const n=z.label; s.add(n); const pz=this.ZP.plan[n]?n:this.zpResolvePlan(n); if(pz)s.add(pz); })); return s; }
   jumpToZone(name){ const r=this._zpRev&&this._zpRev[name]; this.root.querySelector('#schedpage').classList.remove('open'); this._schEdit=null; if(r){ if(r.lv!==this.curLevel){this.curLevel=r.lv;this._applyOvlForLevel(r.lv);this.syncRail();this.buildMetrics();} this.selKey=r.mk; this.render(); const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===r.mk); if(z){this.selectZone(z);this.paintSel();} } }
-  schedDrawer(){ if(!this._schEdit)return ''; const z=this._schEdit.z,m=this._schEdit.m; const zd=this.ZP.plan[z]; const items=zd&&zd[m]; if(!items)return ''; const short=s=>s.replace(' 20',"'");
-    const rows=items.map((it,idx)=>{ const wt=this.zpClassify(it.w); const pct=it.pct; const bc=pct>=100?'#35c08e':(pct>0?wt.color:'var(--faint)');
-      return `<div class="zsd-row"><span class="zsd-sw" style="background:${wt.color}"></span><span class="zsd-w" title="${this.esc(it.w)}">${this.esc(it.w)}</span><span class="zsd-plan">plan ${it.p!=null?this.fmt(it.p):'—'} ${this.esc(it.u||'')}</span><input class="zsd-in zp-done" data-z="${this.esc(z)}" data-m="${this.esc(m)}" data-i="${idx}" value="${it.d==null?'':it.d}" placeholder="done"><span class="zsd-pct" style="color:${pct==null?'var(--faint)':bc}">${pct==null?'—':pct+'%'}</span></div>`; }).join('');
-    return `<div class="zsd"><div class="zsd-hd"><div><b class="mono" style="font-family:'Consolas',monospace">${this.esc(z)}</b> <span style="color:var(--dim);font-size:11px">${short(m)}</span></div><button class="hbtn" id="zsdClose">Close ✕</button></div><div class="zsd-note">Enter the completed quantity for each work package — the % updates automatically and is saved into this file.</div>${rows}</div>`; }
-
   statCell(lv,zmk,field,label,value){
     if(!this.rwsIsAdmin()){ if(value==0||value==null||value==='') return ''; return `<div class="stat"><div class="n">${value}</div><div class="l">${label}</div></div>`; }
     return `<div class="stat"><input class="qty-ov-in" data-lv="${this.esc(lv)}" data-zmk="${this.esc(zmk)}" data-field="${field}" value="${value}" title="Edit ${label} (admin)" style="width:100%;background:transparent;border:1px dashed var(--accent);border-radius:5px;font-size:15px;font-weight:700;color:var(--accent);padding:1px 3px;font-family:inherit"><div class="l">${label}</div></div>`;
@@ -1679,18 +1613,6 @@ class Component extends DCLogic {
       rail.appendChild(b);});
   }
 
-  metricTotals(){
-    const seen={},uniq=[];this.DATA.levels[this.curLevel].zones.forEach(z=>{if(!this.zoneVisible(z))return;const k=this.zid(z);if(!seen[k]){seen[k]=1;uniq.push(z);}});
-    const t={columns:0,pilecap:0,mainbeam:0,steelbeam:0,liftstairAll:0,area:0};
-    uniq.forEach(z=>{const c=z.counts;t.columns+=c.columns||0;t.pilecap+=c.pilecap||0;t.mainbeam+=c.mainbeam||0;t.steelbeam+=c.steelbeam||0;t.liftstairAll+=this.lsAll(c);t.area+=z.area||0;});
-    /* 楼层汇总覆盖: data-csv/fixed/level-summary.csv 填了覆盖值时优先 (经 embeds.bundle 注入 window.__LEVELSUM) */
-    const OVm=(window.__LEVELSUM||{})[this.curLevel]||{};
-    if(OVm.columns!=null)t.columns=OVm.columns; if(OVm.pilecap!=null)t.pilecap=OVm.pilecap;
-    if(OVm.mainbeam!=null)t.mainbeam=OVm.mainbeam; if(OVm.steelbeam!=null)t.steelbeam=OVm.steelbeam;
-    if(OVm.liftstair!=null)t.liftstairAll=OVm.liftstair; if(OVm.area!=null)t.area=OVm.area;
-    return t;
-  }
-
   buildMetrics(){
     const mc=this.root.querySelector('#metrics');mc.innerHTML='';
     const mkLbl=t=>{const s=document.createElement('span');s.className='mlbl';s.textContent=t;return s;};
@@ -1771,42 +1693,6 @@ class Component extends DCLogic {
     return rows;
   }
 
-  openHow(){
-    const dc=this.cssvar('--done'),wc=this.cssvar('--wip'),tc=this.cssvar('--todo'),cr=this.cssvar('--crit'),ln=this.cssvar('--line'),tx=this.cssvar('--txt'),dm=this.cssvar('--dim');
-    const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul'];
-    let ticks='';for(let i=0;i<7;i++){const x=48+i*98;ticks+=`<line x1="${x}" y1="34" x2="${x}" y2="140" stroke="${ln}" stroke-width="1"/><text x="${x}" y="158" fill="${dm}" font-size="11" text-anchor="middle">${mn[i]}</text>`;}
-    const svg=`<svg viewBox="0 0 700 172" style="width:100%;height:auto;background:var(--panel2);border:1px solid ${ln};border-radius:10px">
-      ${ticks}
-      <text x="48" y="24" fill="${dm}" font-size="11">← Timeline (months, left → right) →</text>
-      <text x="12" y="96" fill="${tx}" font-size="12" font-weight="700">L1</text>
-      <rect x="78" y="80" width="104" height="24" rx="4" fill="${dc}"/>
-      <rect x="250" y="80" width="156" height="24" rx="4" fill="${wc}"/>
-      <rect x="470" y="80" width="150" height="24" rx="4" fill="${tc}"/>
-      <line x1="368" y1="34" x2="368" y2="140" stroke="${cr}" stroke-width="2"/>
-      <text x="374" y="46" fill="${cr}" font-size="11" font-weight="800">Today</text>
-      <text x="250" y="72" fill="${tx}" font-size="11" text-anchor="middle" font-weight="700">1 Plan start</text>
-      <text x="406" y="72" fill="${tx}" font-size="11" text-anchor="middle" font-weight="700">2 Plan end</text>
-      <text x="328" y="97" fill="#1b1e26" font-size="10.5" text-anchor="middle" font-weight="800">4 Colour = status</text>
-      <line x1="250" y1="116" x2="406" y2="116" stroke="${tx}" stroke-width="1"/>
-      <text x="328" y="130" fill="${tx}" font-size="11" text-anchor="middle" font-weight="700">3 Length = duration</text>
-    </svg>`;
-    const chip=(c,t)=>`<span class="pill2" style="background:${c}">${t}</span>`;
-    this.root.querySelector('#howbody').innerHTML=`
-      <div class="lead">This schedule is a <b>timeline of zones by month</b>. Each row is a zone; each month cell shows that month's work packages, coloured by trade and filled by % complete.</div>
-      ${svg}
-      <div class="hsec">How to read each cell</div>
-      <ul>
-        <li><span class="num">1</span><span>A coloured bar in a month = that trade is scheduled that month.</span></li>
-        <li><span class="num">2</span><span>Solid fill = % complete for that trade.</span></li>
-        <li><span class="num">3</span><span>A red-edged bar = due or behind (past month, nothing reported).</span></li>
-        <li><span class="num">4</span><span>Click any cell to enter completed quantities.</span></li>
-      </ul>
-      <div class="hsec">Filters</div>
-      <div class="note">The current month is highlighted. Use the Area chips (New / Existing / Marine), the zone search and Critical-only to narrow the view.</div>
-      <div class="hsec">Tips</div>
-      <div class="note">Click a zone name to show it on the map. Entered quantities are saved into this file.</div>`;
-    this.root.querySelector('#howmodal').classList.add('open');
-  }
 
   openTable(){
     const rows=this.registerRows();
