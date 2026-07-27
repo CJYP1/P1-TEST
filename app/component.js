@@ -1489,8 +1489,11 @@ class Component extends DCLogic {
     const inCss='width:60px;text-align:right;font-size:11px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:3px 6px;flex:0 0 auto';
     const dcss='font-size:9.5px;font-family:inherit;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 4px;color:#2e3a59';
     // switcher lives in the top "PROGRESS AS OF" bar (drives this._schMode) — drawer just shows a small reminder
-    const modeChip=`<div style="margin-bottom:10px;font-size:9.5px;color:#7d8ea0;font-weight:700">Showing <b style="color:#2e3a59">${isTotal?'TOTAL (whole zone)':this.esc(mode)}</b> — switch using the bar at the top.</div>`;
-    const rows=acts.map(a=>{
+    const modeChip=`<div style="margin-bottom:10px;font-size:9.5px;color:#7d8ea0;font-weight:700">Showing <b style="color:#2e3a59">${isTotal?'TOTAL (whole zone)':this.esc(mode)}</b> — switch using the bar at the top. Activities in use are on top; unused ones are dimmed below.</div>`;
+    // which activities are "in use" for the current view → sort them up front, dim the rest
+    const _has=a=>{ if(isTotal){ const t=this.actTotal(lv,zmk,a.id,a.total); let c=0;M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m);if(v!=null)c+=v;}); return (t!=null&&t>0)||c>0; } const p=this.actPlan(lv,zmk,a.id,mode),d=this.actDoneMonth(lv,zmk,a.id,mode); return p!=null||d!=null; };
+    const ordered=acts.map((a,i)=>({a,i,has:_has(a)})).sort((x,y)=>(y.has-x.has)||(x.i-y.i));
+    const rows=ordered.map(({a,has})=>{
       const totalVal=this.actTotal(lv,zmk,a.id,a.total); let cum=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m);if(v!=null)cum+=v;});
       let pct, qtyCells;
       if(isTotal){
@@ -1507,8 +1510,9 @@ class Component extends DCLogic {
       const bc=pct==null?'#c3ccd6':(pct>=100?'#35c08e':(pct>0?'#d98a2a':'#c3ccd6'));
       const av=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{};
       const dateCell=admin?`<input type="date" class="actdate-in" data-a="${a.id}" data-which="start" value="${av.start||''}" style="${dcss}"><span style="color:#9aa6b6;font-size:9px">→</span><input type="date" class="actdate-in" data-a="${a.id}" data-which="end" value="${av.end||''}" style="${dcss}">`:`<span style="font-size:9.5px;color:#4b5566;font-family:'IBM Plex Mono',monospace">${av.start||'—'} → ${av.end||'—'}</span>`;
-      return `<div style="border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6;padding:9px 11px;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="flex:1;font-size:11.5px;color:#2e3a59;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span><span style="width:38px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:10.5px;font-weight:800;width:34px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>
+      const tag=has?'':`<span style="font-size:8px;font-weight:700;color:#9aa6b6;background:#e4e9f1;border-radius:4px;padding:1px 5px;flex:0 0 auto">${isTotal?'no data':'not this month'}</span>`;
+      return `<div style="border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6;padding:9px 11px;margin-bottom:8px;opacity:${has?'1':'.5'}">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="flex:1;font-size:11.5px;color:#2e3a59;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span>${tag}<span style="width:38px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:10.5px;font-weight:800;width:34px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">${qtyCells}</div>
         <div style="display:flex;align-items:center;gap:6px"><span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">Dates</span>${dateCell}</div>
       </div>`;
