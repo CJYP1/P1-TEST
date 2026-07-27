@@ -1473,12 +1473,24 @@ class Component extends DCLogic {
     return out; }
   schedDrawer(){ if(!this._schEdit||!this._schEdit.zone)return ''; const name=this._schEdit.zone;
     const pz=this.ZP.plan[name]?name:this.zpResolvePlan(name); const zd=pz?this.ZP.plan[pz]:null; if(!zd)return '';
-    const cur=this.ZP.current; const short=m=>m.replace(' 20',"'"); let blocks='';
+    const admin=this.rwsIsAdmin(); const cur=this.ZP.current; const short=m=>m.replace(' 20',"'"); let blocks='';
+    const inCss='width:52px;text-align:right;font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 5px;flex:0 0 auto';
     this.ZP.months.forEach(m=>{ const items=zd[m]; if(!items||!items.length)return;
       const rowsH=items.map((it,idx)=>{ const wt=this.zpClassify(it.w); const pct=it.pct; const bc=pct>=100?'#35c08e':(pct>0?wt.color:'#c3ccd6');
-        return `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="width:7px;height:7px;border-radius:2px;background:${wt.color};flex:0 0 auto"></span><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${this.esc(it.w)}">${this.esc(it.w)}</span><span style="width:44px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="width:48px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${it.d==null?'—':(Math.round(it.d*100)/100).toLocaleString('en-US')}</span><span style="font-size:8.5px;color:#9aa6b6;width:24px;flex:0 0 auto">${this.esc(it.u||'')}</span><span style="font-size:10px;font-weight:700;width:34px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`; }).join('');
+        const planCell=admin
+          ? `<input class="zsd-plan-in" data-z="${this.esc(pz)}" data-m="${this.esc(m)}" data-i="${idx}" value="${it.p==null?'':it.p}" placeholder="plan" title="Planned qty (${this.esc(it.u||'')})" style="${inCss}">`
+          : `<span style="width:52px;text-align:right;font-size:10.5px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${it.p==null?'—':this.fmt(it.p)}</span>`;
+        const doneCell=admin
+          ? `<input class="zsd-done-in" data-z="${this.esc(pz)}" data-m="${this.esc(m)}" data-i="${idx}" value="${it.d==null?'':it.d}" placeholder="done" title="Completed qty (${this.esc(it.u||'')})" style="${inCss}">`
+          : `<span style="width:52px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${it.d==null?'—':(Math.round(it.d*100)/100).toLocaleString('en-US')}</span>`;
+        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="width:7px;height:7px;border-radius:2px;background:${wt.color};flex:0 0 auto"></span><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(it.w)}">${this.esc(it.w)}</span><span style="width:40px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8.5px;color:#9aa6b6;width:22px;flex:0 0 auto">${this.esc(it.u||'')}</span><span style="font-size:10px;font-weight:700;width:34px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`; }).join('');
       blocks+=`<div style="margin-bottom:9px;border-radius:12px;padding:10px 11px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6${m===cur?';outline:1.5px solid #4a90e2':''}"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;margin-bottom:7px">${short(m)}${m===cur?' · current':''}</div>${rowsH}</div>`; });
-    return `<div class="zsd" style="background:#eef1f7;color:#2e3a59;border-left:1px solid #cdd8e6"><div class="zsd-hd"><div><b style="font-family:'IBM Plex Mono',monospace">${this.esc(name)}</b></div><button id="zsdClose" style="border:none;background:#e4e9f1;color:#5b6472;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:15px">✕</button></div><div class="zsd-note">Planned schedule (view only). Actual progress is driven by checking off elements on the map — open this zone on the map and mark its columns / beams done.</div>${blocks||'<div style="color:#aab4c2;font-size:11px">No scheduled work.</div>'}</div>`; }
+    const btn='border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;padding:0 12px;height:28px;font-family:Archivo,sans-serif';
+    const saveBtn=admin?`<button id="zsdSave" data-pz="${this.esc(pz)}" data-name="${this.esc(name)}" style="${btn};display:none;background:#f5a623;color:#3a2b06;align-items:center">Save changes</button>`:'';
+    const note=admin
+      ? 'Edit the <b>P</b>lanned and <b>D</b>one quantity for each work package — % recalculates automatically. Click <b>Save changes</b> to store and sync to the map & register. (Element-driven activities like columns/beams are still updated by ticking them on the map.)'
+      : 'Planned schedule (view only). Actual progress is driven by checking off elements on the map.';
+    return `<div class="zsd" style="background:#eef1f7;color:#2e3a59;border-left:1px solid #cdd8e6"><div class="zsd-hd"><div><b style="font-family:'IBM Plex Mono',monospace">${this.esc(name)}</b></div><div style="display:flex;gap:6px;align-items:center">${saveBtn}<button id="zsdJump" data-zone="${this.esc(name)}" style="${btn};background:#e4e9f1;color:#3a4560" title="Open this zone on the map">Open on map</button><button id="zsdClose" style="border:none;background:#e4e9f1;color:#5b6472;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:15px">✕</button></div></div><div class="zsd-note">${note}</div>${blocks||'<div style="color:#aab4c2;font-size:11px">No scheduled work.</div>'}</div>`; }
   buildSchedule(){
     const host=this.root.querySelector('#schedbody');
     if(!this.ZP){ host.innerHTML='<div style="padding:44px;text-align:center;color:#8a94a6">No schedule data.</div>'; return; }
@@ -1538,6 +1550,35 @@ class Component extends DCLogic {
     host.querySelectorAll('.zs-levhd').forEach(el=>el.onclick=()=>{this._schLevClosed=this._schLevClosed||{};const k=el.dataset.lk;this._schLevClosed[k]=!this._schLevClosed[k];this.buildSchedule();});
     const cl=this.root.querySelector('#zsdClose'); if(cl)cl.onclick=()=>{this._schEdit=null;this.buildSchedule();};
     const jb=this.root.querySelector('#zsdJump'); if(jb)jb.onclick=()=>this.jumpToZone(jb.dataset.zone);
+    // editable drawer: mark dirty + reveal Save; commit plan/done to overrides, cloud-sync, refresh
+    const drawer=this.root.querySelector('.zsd'); const sv=this.root.querySelector('#zsdSave');
+    if(drawer&&sv){
+      const markDirty=el=>{el.dataset.dirty='1';sv.style.display='inline-flex';};
+      drawer.querySelectorAll('.zsd-plan-in,.zsd-done-in').forEach(el=>{
+        el.addEventListener('input',()=>markDirty(el));
+        el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();});
+      });
+      sv.onclick=()=>{
+        const gr=this._zpRev&&(this._zpRev[sv.dataset.pz]||this._zpRev[sv.dataset.name]);
+        const lv=gr?gr.lv:null, zmk=gr?gr.mk:null;
+        drawer.querySelectorAll('.zsd-plan-in').forEach(el=>{ if(el.dataset.dirty!=='1')return;
+          const z=el.dataset.z,m=el.dataset.m,i=+el.dataset.i;
+          this.zpSetPlan(z,m,i,el.value);
+          const raw=String(el.value||'').replace(/,/g,'').trim();
+          if(lv&&typeof rwsSyncPlanQty==='function')rwsSyncPlanQty(z+'||'+m+'||'+i,lv,zmk,raw===''?null:parseFloat(raw));
+        });
+        drawer.querySelectorAll('.zsd-done-in').forEach(el=>{ if(el.dataset.dirty!=='1')return;
+          const z=el.dataset.z,m=el.dataset.m,i=+el.dataset.i;
+          this.zpSetDone(z,m,i,el.value);
+          const raw=String(el.value||'').replace(/,/g,'').trim();
+          if(lv&&typeof rwsSyncSlabQty==='function')rwsSyncSlabQty(z+'||'+m+'||'+i,lv,zmk,raw===''?null:parseFloat(raw));
+        });
+        // reflect on the map / register straight away, then refresh the schedule
+        if(this.applyUpdates)this.applyUpdates(); if(this.buildRail)this.buildRail(); if(this.render)this.render();
+        sv.textContent='✓ Saved'; sv.style.background='#35c08e';
+        setTimeout(()=>this.buildSchedule(),650);
+      };
+    }
   }
   paintTimelineSel(){this.root.querySelectorAll('#schedbody .gbar').forEach(el=>el.classList.toggle('sel',this.selKey&&el.dataset.k===this.selKey));}
 
