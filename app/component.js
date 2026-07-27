@@ -1195,6 +1195,10 @@ class Component extends DCLogic {
   idList(items,render,empty){if(!items||!items.length)return `<div class="empty">${empty}</div>`;return items.map(render).join('');}
   elChip(key){const s=this.elemStatus(key);const m={todo:['Not started','--todo'],wip:['In progress','--wip'],done:['Complete','--done']}[s];return `<span class="elchip s-${s}" data-key="${this.esc(key)}" style="--c:var(${m[1]})" title="Click to cycle: Not started → In progress → Complete">${m[0]}</span>`;}
   elDateCtl(key){const done=this.elemStatus(key)==='done';const d=this.elemDate(key);const bucket=done?this.dateToActMonth(d||this.todayISOStr()):'';return `<input type="date" class="eldate" data-key="${this.esc(key)}" value="${d}" title="Completion date → counts in ${bucket}" ${done?'':'style="display:none"'}><span class="elbkt" ${done?'':'style="display:none"'}>${bucket}</span>`;}
+  /* Generic collapsible element checklist section (same look as Column List), reusable anywhere
+     without needing the closure vars from selectZone — used to embed the Core Walls checklist
+     inside the Core Wall activity card. */
+  collSecFor(lv,z,title,cnt,type,items,html){const ck=(items||[]).map(x=>this.ekey(lv,z,type,typeof x==='string'?x:x.id));const nd=ck.filter(k=>this.elemStatus(k)==='done').length;return `<details class="sec" data-sec="${type}"><summary class="t">${title} <span>${nd}/${cnt} done · <span class="allbtn" data-bulk="${type}">All ✓</span></span></summary>${html}</details>`;}
   elRows(lv,z,type,items,metaFn,empty,critFn){if(!items||!items.length)return `<div class="empty">${empty}</div>`;
     return items.map(x=>{const id=(typeof x==='string')?x:x.id;const key=this.ekey(lv,z,type,id);const crit=critFn&&critFn(x);
       const dc=this.elDateCtl(key);
@@ -1248,12 +1252,11 @@ class Component extends DCLogic {
     try{localStorage.setItem('rws_zp_plan_ov',JSON.stringify(this._zpPlanOv));}catch(e){}
     this.zpApplyOv();
   }
-  zpSection(z){
-    const lv=this.curLevel, zmk=z.mk||z.lid;
-    const canEdit=this.rwsIsAdmin()||this.rwsScopeOk(lv,zmk), admin=this.rwsIsAdmin();
-    const c=z.counts||{}, M=this.visMonths();
-    if(!this._actMonth||M.indexOf(this._actMonth)<0)this._actMonth=this.actDefaultMonthVis();
-    const sm=this._actMonth, mi=M.indexOf(sm), curL=this.actCurLabel();
+  /* Single source of truth for the fixed + custom activity list -- used by BOTH the top stat-grid
+     total boxes and the Activities cards below, so they can never drift out of sync (adding a new
+     fixed activity here automatically gets a total box up top and a card down below). */
+  _actList(lv,z){
+    const zmk=z.mk||z.lid, c=z.counts||{};
     const acts=[
       {id:'col',label:'Columns',unit:'nos',total:c.columns||0},
       {id:'pile',label:'Pile Caps',unit:'nos',total:c.pilecap||0},
@@ -1268,7 +1271,21 @@ class Component extends DCLogic {
       {id:'act_colcorbel',label:'Columns Corbel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',null)},
     ];
     (this._actDefs||[]).forEach(d=>acts.push({id:d.id,label:d.label,unit:d.unit||'',custom:true,total:this.actTotal(lv,zmk,d.id,null)}));
-    const rows=acts.filter(a=>a.custom||this._actApplies(a.id,lv,z)).map(a=>{
+    return acts;
+  }
+  zpSection(z){
+    const lv=this.curLevel, zmk=z.mk||z.lid;
+    const canEdit=this.rwsIsAdmin()||this.rwsScopeOk(lv,zmk), admin=this.rwsIsAdmin();
+    const c=z.counts||{}, M=this.visMonths();
+    if(!this._actMonth||M.indexOf(this._actMonth)<0)this._actMonth=this.actDefaultMonthVis();
+    const sm=this._actMonth, mi=M.indexOf(sm), curL=this.actCurLabel();
+    const acts=this._actList(lv,z);
+    /* 把本月有 Plan 或 Done 数据的活动排到前面,方便一眼看到这个月要做什么 — 稳定排序,同组内保持原顺序 */
+    const _hasThisMonth=a=>{const p=this.actPlan(lv,zmk,a.id,sm),d=this.actDoneMonth(lv,zmk,a.id,sm);return !(p==null&&d==null);};
+    const rows=acts.filter(a=>a.custom||this._actApplies(a.id,lv,z))
+      .map((a,i)=>({a,i,has:_hasThisMonth(a)}))
+      .sort((x,y)=>(y.has-x.has)||(x.i-y.i))
+      .map(({a})=>{
       const _vis=this.actVisState(lv,zmk,a.id); const hidden=(_vis==='hide');
       const total=a.total;
       const cumThrough=M.slice(0,mi+1).reduce((sx,mm)=>{const v=this.actDoneMonth(lv,zmk,a.id,mm);return sx+(v||0);},0);
@@ -1291,9 +1308,12 @@ class Component extends DCLogic {
       const _adv=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{};
       const actDateLine=admin?`<div class="actsub actdate"><span class="am2">Dates</span> <input type="date" class="actdate-in" data-a="${a.id}" data-which="start" value="${_adv.start||''}" title="${a.label} start"> <span class="asep">→</span> <input type="date" class="actdate-in" data-a="${a.id}" data-which="end" value="${_adv.end||''}" title="${a.label} end"></div>`:((_adv.start||_adv.end)?`<div class="actsub actdate"><span class="am2">Dates</span> <b>${_adv.start?this._fmtD(_adv.start):'—'} → ${_adv.end?this._fmtD(_adv.end):'—'}</b></div>`:'');
       const _noWorkThisMonth=admin&&plan==null&&dm==null;
+      /* Core Wall activity card: embed the existing Core Walls element checklist (same list,
+         same saved status — just moved here from the old standalone bottom-of-page section) */
+      const _coreListHtml=(a.id==='act_corewall'&&z.cores&&z.cores.length)?this.collSecFor(lv,z,'Core Walls',z.cores.length,'core',z.cores,this.elRows(lv,z,'core',z.cores,null,'none')):'';
       return `<div class="actcard ${hidden?'act-off':''}${_noWorkThisMonth?' act-nowork':''}"><div class="actrow">${chk}<span class="actlbl">${a.label}${_noWorkThisMonth?' <span class="noworktag" title="No planned or done quantity for '+this.esc(sm)+' — this activity isn\'t scheduled for this zone this month">— no work this month</span>':''}${(admin&&hidden)?' <span class="hiddentag">hidden from users</span>':''}${(a.custom&&admin)?' <span class="lnk actdel" data-a="'+a.id+'" style="color:var(--crit);cursor:pointer" title="Delete custom activity">✕</span>':''}</span><span class="actbar"><i style="width:${Math.min(pct||0,100)}%;background:${bc}"></i></span><span class="actpct" style="color:${bc}">${pct==null?'—':pct+'%'}</span>${this._cmtBtn(lv,zmk,a.id)}</div>`+
         (a.info?`<div class="actinfotext">&#9432; ${this.esc(a.info)}</div>`:``)+
-        `<div class="actsub"><span class="am">${sm}</span><span class="am2">Plan</span>${planCell}${_editBadge(_planEdited)}${this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="asep">|</span><span class="am2">Done</span>${doneCell}${_editBadge(_doneEdited)}${this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="acum">${sm}: ${this.fmt(cg.done)}${plan==null?'':' / '+this.fmt(plan)} ${a.unit}</span></div>`+actDateLine+carryLine+mn+this._cmtPanel(lv,zmk,a.id)+this._actElemSecFull(lv,z,a.id)+'</div>';
+        `<div class="actsub"><span class="am">${sm}</span><span class="am2">Plan</span>${planCell}${_editBadge(_planEdited)}${this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="asep">|</span><span class="am2">Done</span>${doneCell}${_editBadge(_doneEdited)}${this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="acum">${sm}: ${this.fmt(cg.done)}${plan==null?'':' / '+this.fmt(plan)} ${a.unit}</span></div>`+actDateLine+carryLine+mn+this._cmtPanel(lv,zmk,a.id)+this._actElemSecFull(lv,z,a.id)+_coreListHtml+'</div>';
     }).join('');
     const opts=M.map(mm=>`<option value="${mm}" ${mm===sm?'selected':''}>${mm}${mm===curL?' (now)':''}</option>`).join('');
     const nav=`<div style="display:flex;align-items:center;gap:5px">
@@ -1332,7 +1352,8 @@ class Component extends DCLogic {
     const beamHtml=this.elRows(lv,z,'beam',z.beams,x=>this.esc(x.sz||''),'none listed');
     const liftHtml=this.elRows(lv,z,'lift',z.lifts,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no lifts');
     const stairHtml=this.elRows(lv,z,'stair',z.stairs,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no stairs');
-    const coreSec=z.cores&&z.cores.length?collSec('Core Walls',z.cores.length,'core',z.cores,this.elRows(lv,z,'core',z.cores,null,'none')):'';
+    /* Core Walls checklist now lives inside the Core Wall activity card (see zpSection) — no
+       longer rendered as a separate standalone section here. Same data/status, just moved. */
     const dc=this.cssvar('--done'),wc=this.cssvar('--wip'),tc=this.cssvar('--todo');
     const eltool=es.total?`<div class="eltool">
         <span class="lb">Elements done</span>
@@ -1377,18 +1398,13 @@ class Component extends DCLogic {
       </div>
       <div class="statgrid">
         ${this.statCell(lv,z.mk||z.lid,'area','Area m²',z.area||0)}
-        ${this.statCell(lv,z.mk||z.lid,'columns','Columns',c.columns||0)}
-        ${((lv==='B2')?this.statCell(lv,z.mk||z.lid,'pilecap','Pile Caps',c.pilecap||0):'')}
-        ${this.statCell(lv,z.mk||z.lid,'mainbeam','Steel Main Beams',c.mainbeam||0)}
-        ${false?`<div class="stat"><div class="n">${z.lifts.length}/${z.stairs.length}</div><div class="l">Lift or Stairs</div></div>`:''}
         ${!(z.cat==='NB'&&(lv==='B2'||lv==='B1'))?'':this.excAuto(lv,z)!=null?`<div class="stat" title="Auto-computed for new basement: area \u00d7 depth"><div class="n">${this.fmt(this.excTotal(lv,z))}</div><div class="l">Excavation m\u00b3</div><div class="statcalc">${this.fmt(z.area||0)} m\u00b2 \u00d7 ${this.excDepth(lv)} m</div></div>`:(this.rwsIsAdmin()?`<div class="stat"><input class="exc-ov-in" value="${this.actTotal(lv,z.mk||z.lid,'exc','')}" placeholder="\u2014" title="Excavation total m\u00b3 (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">Excavation m\u00b3</div></div>`:(this.actTotal(lv,z.mk||z.lid,'exc',0)?`<div class="stat"><div class="n">${this.fmt(this.actTotal(lv,z.mk||z.lid,'exc',0))}</div><div class="l">Excavation m\u00b3</div></div>`:''))}
         ${!(z.cat==='EB'&&(lv==='B2'||lv==='B1'))?'':this.rwsIsAdmin()?`<div class="stat"><input class="demo-ov-in" value="${this.actTotal(lv,z.mk||z.lid,'demo','')}" placeholder="\u2014" title="Demolition total m\u00b3 (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">Demolition m\u00b3</div></div>`:(this.actTotal(lv,z.mk||z.lid,'demo',0)?`<div class="stat"><div class="n">${this.fmt(this.actTotal(lv,z.mk||z.lid,'demo',0))}</div><div class="l">Demolition m\u00b3</div></div>`:'')}
+        ${this._actList(lv,z).filter(a=>a.id!=='exc'&&a.id!=='demo'&&(a.id!=='pile'||lv==='B2')).map(a=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,a.id);if(!this.rwsIsAdmin()&&hidden)return '';const tot=a.total;const lab=this.esc(a.label)+(a.unit?' '+this.esc(a.unit):'');if(this.rwsIsAdmin())return `<div class="stat"><input class="actot-ov-in" data-a="${this.esc(a.id)}" value="${tot==null?'':tot}" placeholder="—" title="${this.esc(a.label)} total (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">${lab}</div></div>`;return tot?`<div class="stat"><div class="n">${this.fmt(tot)}</div><div class="l">${lab}</div></div>`:'';}).join('')}
         ${(this.customCats()||[]).map(ct=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,ct.code);if(!this.rwsIsAdmin()&&hidden)return '';const ids=this.customItemsFor(lv,zmk,ct.code);if(!ids.length&&!this.rwsIsAdmin())return '';const nd=ids.filter(id=>this.elemStatus(lv+'||'+zmk+'||'+ct.code+'||'+id)==='done').length;return `<div class="stat statcust" data-jumpsec="${this.esc(ct.code)}" title="Custom category — click to open"><div class="n">${nd}/${ids.length}</div><div class="l">${this.esc(ct.label)}</div></div>`;}).join('')}
-        ${(this._actDefs||[]).map(d=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,d.id);if(!this.rwsIsAdmin()&&hidden)return '';const tot=this.actTotal(lv,zmk,d.id,null);const lab=this.esc(d.label)+(d.unit?' '+this.esc(d.unit):'');if(this.rwsIsAdmin())return `<div class="stat"><input class="actot-ov-in" data-a="${this.esc(d.id)}" value="${tot==null?'':tot}" placeholder="—" title="${this.esc(d.label)} total (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">${lab}</div></div>`;return tot?`<div class="stat"><div class="n">${this.fmt(tot)}</div><div class="l">${lab}</div></div>`:'';}).join('')}
       </div>
       ${this.rwsIsAdmin()?'<div style="font-size:9.5px;color:var(--faint);margin:-6px 0 9px">Dashed boxes above are editable (admin) — press Enter or click away to save. Lift/Stair count isn\'t editable here.</div>':''}
       ${this.zpSection(z)}
-      ${coreSec}
       ${this._custSecHtml(lv,z,this.rwsIsAdmin())}
       </div>`;
     this.setSummaryVis();
