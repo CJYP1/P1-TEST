@@ -756,7 +756,7 @@ class Component extends DCLogic {
   progCategoryActive(){const t=this.catTypesFor(this.curMetric);if(!t)return false;return this.DATA.levels[this.curLevel].zones.some(z=>this.catStats(this.curLevel,z,t).total>0);}
 
   /* ---- Monthly-plan overview: which zones have planned work in a given month ---- */
-  _actMeta(){return [{id:'col',label:'Columns',unit:'nos'},{id:'pile',label:'Pile Caps',unit:'nos'},{id:'mbeam',label:'Steel Main Beams',unit:'nos'},{id:'cbeam',label:'Cast S Main Beams',unit:'nos'},{id:'ls',label:'Lift / Stairs',unit:'nos'},{id:'exc',label:'Excavation',unit:'m³'},{id:'demo',label:'Demolition',unit:'m³'},{id:'slab',label:'Cast Slab',unit:'m²'},{id:'act_corewall',label:'Core Wall',unit:''},{id:'act_wall',label:'Wall',unit:''},{id:'act_colcorbel',label:'Columns Corbel',unit:''}].concat((this._actDefs||[]).map(d=>({id:d.id,label:d.label,unit:d.unit||''})));}
+  _actMeta(){return [{id:'earth',label:'Earthwork',unit:'m³'},{id:'exc',label:'Excavation',unit:'m³'},{id:'piling',label:'Piling',unit:'nos'},{id:'demo_wall',label:'Demolition Wall',unit:'m³'},{id:'demo',label:'Demolition Slab',unit:'m³'},{id:'slab_pile',label:'Slab + Pilecap',unit:'m²'},{id:'pile',label:'Pilecap',unit:'nos'},{id:'col',label:'Column',unit:'nos'},{id:'ls',label:'Lift/Stairs Wall',unit:'nos'},{id:'mbeam',label:'Steel Main Beam',unit:'nos'},{id:'cbeam',label:'Cast Steel Main Beam',unit:'nos'},{id:'slab',label:'Slab',unit:'m²'},{id:'slab_top',label:'Top Slab',unit:'m²'},{id:'act_corewall',label:'Core Wall',unit:''},{id:'act_wall',label:'Wall',unit:''},{id:'act_colcorbel',label:'Column Cobel',unit:''},{id:'rc',label:'RC Works',unit:'m³'},{id:'pcbeam',label:'Precast Beam Installation',unit:'nos'},{id:'temp_stair',label:'Temp Staircase',unit:'nos'},{id:'act_cyclical',label:'Cyclical Works',unit:''}].concat((this._actDefs||[]).map(d=>({id:d.id,label:d.label,unit:d.unit||''})));}
   planMonth(){if(!this._planMonth||this.visMonths().indexOf(this._planMonth)<0)this._planMonth=this.actDefaultMonthVis();return this._planMonth;}
   zonePlanItems(lv,z,m){const zmk=z.mk||z.lid;const out=[];this._actMeta().forEach(a=>{if(this.actHidden(lv,zmk,a.id))return;const p=this.actPlan(lv,zmk,a.id,m);if(p!=null&&p>0)out.push({label:a.label,qty:p,unit:a.unit});});return out;}
   zoneHasPlan(lv,z,m){return this.zonePlanItems(lv,z,m).length>0;}
@@ -1197,17 +1197,26 @@ class Component extends DCLogic {
   _actList(lv,z){
     const zmk=z.mk||z.lid, c=z.counts||{};
     const acts=[
-      {id:'col',label:'Columns',unit:'nos',total:c.columns||0},
-      {id:'pile',label:'Pile Caps',unit:'nos',total:c.pilecap||0},
-      {id:'mbeam',label:'Steel Main Beams',unit:'nos',total:c.mainbeam||0},
-      {id:'cbeam',label:'Cast S Main Beams',unit:'nos',total:c.mainbeam||0},
-      {id:'ls',label:'Lift / Stairs',unit:'nos',total:this.lsAll(c)},
+      {id:'earth',label:'Earthwork',unit:'m³',total:this.actTotal(lv,zmk,'earth',null)},
       {id:'exc',label:'Excavation',unit:'m³',total:this.excTotal(lv,z)},
-      {id:'demo',label:'Demolition',unit:'m³',total:this.actTotal(lv,zmk,'demo',null)},
-      {id:'slab',label:'Cast Slab',unit:'m²',total:z.area||0,info:'Enter the completed area under \u201cDone\u201d based on the work stage: 40% for formwork, 50% for rebar, and 10% for slab casting.'},
+      {id:'piling',label:'Piling',unit:'nos',total:this.actTotal(lv,zmk,'piling',null)},
+      {id:'demo_wall',label:'Demolition Wall',unit:'m³',total:this.actTotal(lv,zmk,'demo_wall',null)},
+      {id:'demo',label:'Demolition Slab',unit:'m³',total:this.actTotal(lv,zmk,'demo',null)},
+      {id:'slab_pile',label:'Slab + Pilecap',unit:'m²',total:this.actTotal(lv,zmk,'slab_pile',null)},
+      {id:'pile',label:'Pilecap',unit:'nos',total:c.pilecap||0},
+      {id:'col',label:'Column',unit:'nos',total:c.columns||0},
+      {id:'ls',label:'Lift/Stairs Wall',unit:'nos',total:this.lsAll(c)},
+      {id:'mbeam',label:'Steel Main Beam',unit:'nos',total:c.mainbeam||0},
+      {id:'cbeam',label:'Cast Steel Main Beam',unit:'nos',total:c.mainbeam||0},
+      {id:'slab',label:'Slab',unit:'m²',total:z.area||0,info:'Enter the completed area under \u201cDone\u201d based on the work stage: 40% for formwork, 50% for rebar, and 10% for slab casting.'},
       {id:'act_corewall',label:'Core Wall',unit:'',total:this.actTotal(lv,zmk,'act_corewall',null)},
       {id:'act_wall',label:'Wall',unit:'',total:this.actTotal(lv,zmk,'act_wall',null)},
-      {id:'act_colcorbel',label:'Columns Corbel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',null)},
+      {id:'act_colcorbel',label:'Column Cobel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',null)},
+      {id:'slab_top',label:'Top Slab',unit:'m²',total:this.actTotal(lv,zmk,'slab_top',null)},
+      {id:'rc',label:'RC Works',unit:'m³',total:this.actTotal(lv,zmk,'rc',null)},
+      {id:'pcbeam',label:'Precast Beam Installation',unit:'nos',total:this.actTotal(lv,zmk,'pcbeam',null)},
+      {id:'temp_stair',label:'Temp Staircase',unit:'nos',total:this.actTotal(lv,zmk,'temp_stair',null)},
+      {id:'act_cyclical',label:'Cyclical Works',unit:'',total:this.actTotal(lv,zmk,'act_cyclical',null)},
     ];
     (this._actDefs||[]).forEach(d=>acts.push({id:d.id,label:d.label,unit:d.unit||'',custom:true,total:this.actTotal(lv,zmk,d.id,null)}));
     return acts;
