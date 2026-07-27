@@ -1471,26 +1471,43 @@ class Component extends DCLogic {
       else { fill=0; track='background:rgba(239,95,122,.12);box-shadow:inset 0 0 0 1px #ef5f7a88'; }
       out.push({short:o.wt.short,color:o.wt.color,fill,op,trackCss:track}); });
     return out; }
-  schedDrawer(){ if(!this._schEdit||!this._schEdit.zone)return ''; const name=this._schEdit.zone;
-    const pz=this.ZP.plan[name]?name:this.zpResolvePlan(name); const zd=pz?this.ZP.plan[pz]:null; if(!zd)return '';
-    const admin=this.rwsIsAdmin(); const cur=this.ZP.current; const short=m=>m.replace(' 20',"'"); let blocks='';
-    const inCss='width:52px;text-align:right;font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 5px;flex:0 0 auto';
-    this.ZP.months.forEach(m=>{ const items=zd[m]; if(!items||!items.length)return;
-      const rowsH=items.map((it,idx)=>{ const wt=this.zpClassify(it.w); const pct=it.pct; const bc=pct>=100?'#35c08e':(pct>0?wt.color:'#c3ccd6');
-        const planCell=admin
-          ? `<input class="zsd-plan-in" data-z="${this.esc(pz)}" data-m="${this.esc(m)}" data-i="${idx}" value="${it.p==null?'':it.p}" placeholder="plan" title="Planned qty (${this.esc(it.u||'')})" style="${inCss}">`
-          : `<span style="width:52px;text-align:right;font-size:10.5px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${it.p==null?'—':this.fmt(it.p)}</span>`;
-        const doneCell=admin
-          ? `<input class="zsd-done-in" data-z="${this.esc(pz)}" data-m="${this.esc(m)}" data-i="${idx}" value="${it.d==null?'':it.d}" placeholder="done" title="Completed qty (${this.esc(it.u||'')})" style="${inCss}">`
-          : `<span style="width:52px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${it.d==null?'—':(Math.round(it.d*100)/100).toLocaleString('en-US')}</span>`;
-        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="width:7px;height:7px;border-radius:2px;background:${wt.color};flex:0 0 auto"></span><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(it.w)}">${this.esc(it.w)}</span><span style="width:40px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8.5px;color:#9aa6b6;width:22px;flex:0 0 auto">${this.esc(it.u||'')}</span><span style="font-size:10px;font-weight:700;width:34px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`; }).join('');
-      blocks+=`<div style="margin-bottom:9px;border-radius:12px;padding:10px 11px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6${m===cur?';outline:1.5px solid #4a90e2':''}"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;margin-bottom:7px">${short(m)}${m===cur?' · current':''}</div>${rowsH}</div>`; });
+  _schZoneFind(){ if(!this._schEdit||!this._schEdit.mk)return null; const lv=this._schEdit.lv; const zs=(this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]; const z=zs.find(x=>(x.mk||x.lid)===this._schEdit.mk); return z?{lv,z}:null; }
+  schedDrawer(){ const f=this._schZoneFind(); if(!f)return ''; const {lv,z}=f; const zmk=z.mk||z.lid; const admin=this.rwsIsAdmin();
+    const ap=this.zoneActPct(lv,z); const opct=ap?ap.pct:null; const bcol=opct==null?'#aab4c2':(opct>=99?'#218a5c':(opct>0?'#d98a2a':'#aab4c2'));
     const btn='border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;padding:0 12px;height:28px;font-family:Archivo,sans-serif';
-    const saveBtn=admin?`<button id="zsdSave" data-pz="${this.esc(pz)}" data-name="${this.esc(name)}" style="${btn};display:none;background:#f5a623;color:#3a2b06;align-items:center">Save changes</button>`:'';
     const note=admin
-      ? 'Edit the <b>P</b>lanned and <b>D</b>one quantity for each work package — % recalculates automatically. Click <b>Save changes</b> to store and sync to the map & register. (Element-driven activities like columns/beams are still updated by ticking them on the map.)'
-      : 'Planned schedule (view only). Actual progress is driven by checking off elements on the map.';
-    return `<div class="zsd" style="background:#eef1f7;color:#2e3a59;border-left:1px solid #cdd8e6"><div class="zsd-hd"><div><b style="font-family:'IBM Plex Mono',monospace">${this.esc(name)}</b></div><div style="display:flex;gap:6px;align-items:center">${saveBtn}<button id="zsdJump" data-zone="${this.esc(name)}" style="${btn};background:#e4e9f1;color:#3a4560" title="Open this zone on the map">Open on map</button><button id="zsdClose" style="border:none;background:#e4e9f1;color:#5b6472;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:15px">✕</button></div></div><div class="zsd-note">${note}</div>${blocks||'<div style="color:#aab4c2;font-size:11px">No scheduled work.</div>'}</div>`; }
+      ? 'Full activity detail for this zone — same as the map panel. Edit each month’s <b>P</b>lan / <b>D</b>one; column / beam / element progress is ticked in the checklists below. Everything saves and syncs automatically.'
+      : 'Activity detail (view only). Progress is entered by the site team.';
+    return `<div class="zsd" style="background:#eef1f7;color:#2e3a59;border-left:1px solid #cdd8e6"><div class="zsd-hd"><div style="min-width:0"><b style="font-family:'IBM Plex Mono',monospace">${this.esc(z.label||zmk)}</b> <span style="font-size:10px;color:#7d8ea0;font-weight:700">${this.esc(lv)}${z.crit?' · CRIT':''}</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;color:${bcol};margin-right:2px">${opct==null?'—':opct+'%'}</span><button id="zsdJump" style="${btn};background:#e4e9f1;color:#3a4560" title="Open this zone on the map">Open on map</button><button id="zsdClose" style="border:none;background:#e4e9f1;color:#5b6472;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:15px">✕</button></div></div><div class="zsd-note">${note}</div>${this.schedZoneBody(lv,z)}</div>`; }
+  schedZoneBody(lv,z){
+    const zmk=z.mk||z.lid, admin=this.rwsIsAdmin();
+    const M=admin?this.ACT_MONTHS:this.visMonths(); const curL=this.actCurLabel();
+    const acts=this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z));
+    this._schMoOpen=this._schMoOpen||{};
+    const inCss='width:54px;text-align:right;font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 5px;flex:0 0 auto';
+    let blocks='';
+    M.forEach(m=>{
+      const rows=[];
+      acts.forEach(a=>{ const plan=this.actPlan(lv,zmk,a.id,m), dm=this.actDoneMonth(lv,zmk,a.id,m);
+        if(plan==null && (dm==null||dm===0)) return; // only activities scheduled / worked this month
+        const pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
+        const bc=pct==null?'#c3ccd6':(pct>=100?'#35c08e':(pct>0?'#d98a2a':'#c3ccd6'));
+        const _ea=this._elemAct(a.id); const _derived=_ea&&this._zoneHasElems(lv,zmk,_ea.types);
+        const planCell=admin?`<input class="sch-plan" data-a="${a.id}" data-m="${this.esc(m)}" value="${plan==null?'':plan}" placeholder="plan" style="${inCss}">`:`<span style="width:54px;text-align:right;font-size:10.5px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${plan==null?'—':this.fmt(plan)}</span>`;
+        const doneCell=_derived?`<span title="Auto-counted from the checklist below" style="width:54px;text-align:right;font-size:10.5px;color:#4b5566;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?0:this.fmt(dm)}⚙</span>`:(admin?`<input class="sch-done" data-a="${a.id}" data-m="${this.esc(m)}" value="${dm==null?'':dm}" placeholder="done" style="${inCss}">`:`<span style="width:54px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?'—':this.fmt(dm)}</span>`);
+        rows.push(`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span><span style="width:34px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8px;color:#9aa6b6;width:20px;flex:0 0 auto">${this.esc(a.unit||'')}</span><span style="font-size:10px;font-weight:700;width:32px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`);
+      });
+      if(!rows.length && m!==curL) return; // skip empty months except the current one
+      const okey=zmk+'||'+m; const open=(okey in this._schMoOpen)?this._schMoOpen[okey]:(m===curL);
+      blocks+=`<details class="schmo" data-mo="${this.esc(okey)}"${open?' open':''} style="margin-bottom:8px;border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6${m===curL?';outline:1.5px solid #4a90e2':''}"><summary style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;padding:9px 11px;list-style:none">${this.esc(m)}${m===curL?' · now':''}</summary><div style="padding:0 11px 10px">${rows.join('')||'<div style="font-size:10px;color:#aab4c2">no work this month</div>'}</div></details>`;
+    });
+    // Elements & checklists — full detail, same as the map panel (ticking columns/beams etc.)
+    let elem='';
+    acts.forEach(a=>{ const s=this._actElemSecFull(lv,z,a.id); if(s)elem+=`<div style="margin-bottom:2px"><div style="font-size:9.5px;font-weight:800;color:#7d8ea0;text-transform:uppercase;letter-spacing:.4px;margin:6px 0 2px">${this.esc(a.label)}</div>${s}</div>`; });
+    const custom=this._custSecHtml(lv,z,admin);
+    const elemBlock=(elem||custom)?`<details class="sec schelemwrap" data-sec="__schelem" open style="margin-top:6px"><summary class="t" style="cursor:pointer">Elements &amp; checklists</summary><div style="padding-top:4px">${elem}${custom}</div></details>`:'';
+    return (blocks||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No scheduled work.</div>')+elemBlock;
+  }
   buildSchedule(){
     const host=this.root.querySelector('#schedbody');
     if(!this.ZP){ host.innerHTML='<div style="padding:44px;text-align:center;color:#8a94a6">No schedule data.</div>'; return; }
@@ -1504,81 +1521,73 @@ class Component extends DCLogic {
     aHost.innerHTML=chips.map(([k,l,c])=>{const on=k===filt;return `<button data-cat="${k}" style="white-space:nowrap;border:none;cursor:pointer;font-family:Archivo;font-weight:800;border-radius:10px;padding:7px 13px;font-size:12px;color:#2e3a59;display:inline-flex;align-items:center;gap:6px;background:#eef2f7;${on?'box-shadow:inset 0 0 0 1px #bccadb,inset 2px 2px 5px #aebccf,inset -2px -2px 5px #ffffff':'box-shadow:0 0 0 1px #b6c3d5,3px 3px 8px #aebccf,-3px -3px 7px #ffffff'}"><span style="width:9px;height:9px;border-radius:3px;background:${c}"></span>${l}</button>`;}).join('');
     aHost.querySelectorAll('button').forEach(el=>el.onclick=()=>{this._schFilter=el.dataset.cat;this._schEdit=null;this.buildSchedule();});
     this.root.querySelector('#schedlegend').innerHTML=this.ZWT.slice().reverse().map(w=>`<div class="sl-item"><span class="sl-sw" style="background:${w.color}"></span>${w.label}</div>`).join('')+'<div class="sl-item"><span class="sl-fill"></span>Solid = % done</div><div class="sl-item"><span class="sl-lag"></span>Red = due / behind</div>';
-    const bldMap={NB:'NB',EB:'EB',MA:'M'}; const areas=(filt==='all'?['NB','EB','MA']:[filt]);
-    const levOrder=['Roof','L5','L4','L3','L2','L1','B1M','B1','B2','Piling','Other']; let outHtml='';
-    areas.forEach(aK=>{ const bld=Z.buildings.find(b=>b.key===bldMap[aK]); if(!bld)return; const cc=this.CAT[aK];
-      const cardBg={NB:'#f3e8ef',EB:'#f6f0e4',MA:'#e7f0fa'}[aK]||'#eef1f7';
-      const zones=bld.zones.filter(n=>{ if(critOnly&&!this.zpIsCrit(n))return false; if(q&&n.toLowerCase().indexOf(q)<0)return false; return true; });
-      if(!zones.length)return;
-      const byLev={}, doneCards=[]; let pctSum=0,pctN=0,crit=0,tasks=0;
-      zones.forEach(n=>{ const pz=Z.plan[n]?n:this.zpResolvePlan(n); const zd=pz?Z.plan[pz]:null; const ov=this.zoneOverallPct(n); if(ov!=null){pctSum+=ov;pctN++;} if(this.zpIsCrit(n))crit++;
-        const levs=new Set(); if(zd){for(const m in zd)zd[m].forEach(it=>{tasks++;levs.add(this.zpLevel(it.w)||'Other');});} if(!levs.size)levs.add('Other');
-        if(ov!=null&&ov>=99){doneCards.push({n,pz});} else { levs.forEach(L=>{(byLev[L]||(byLev[L]=[])).push({n,pz});}); } });
-      const bpct=pctN?Math.round(pctSum/pctN):0;
+    // ---- geo-zone listing: one card per MAP zone (combined "+" pour-groups are naturally split) ----
+    { const _ms=this.root.querySelector('#schedMonths'); if(_ms)_ms.innerHTML='<span style="font-size:10.5px;color:#8a94a6;font-weight:700">Click a zone to open its full monthly detail — same as the map panel.</span>'; }
+    { const _lg=this.root.querySelector('#schedlegend'); if(_lg)_lg.innerHTML='<div class="sl-item"><span class="sl-fill"></span>Solid bar = % done</div>'; }
+    const areas=(filt==='all'?['NB','EB','MA']:[filt]); let outHtml='';
+    areas.forEach(aK=>{ const cc=this.CAT[aK]; if(!cc)return;
+      const byLev={},seen={}; let zN=0,crit=0,pctSum=0,pctN=0;
+      this.DATA.order.forEach(lv=>{ ((this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]).forEach(z=>{
+        if((z.cat||'NB')!==aK)return; const mk=z.mk||z.lid; const dk=lv+'||'+mk; if(seen[dk])return; seen[dk]=1;
+        const label=z.label||mk; if(q&&label.toLowerCase().indexOf(q)<0)return; if(critOnly&&!z.crit)return;
+        const ap=this.zoneActPct(lv,z); const pct=ap?ap.pct:null; if(pct!=null){pctSum+=pct;pctN++;} if(z.crit)crit++; zN++;
+        (byLev[lv]=byLev[lv]||[]).push({lv,mk,label,pct,crit:!!z.crit});
+      }); });
+      if(!zN)return; const bpct=pctN?Math.round(pctSum/pctN):0;
       outHtml+=`<section style="background:#eef1f7;border-radius:20px;box-shadow:0 0 0 1px #aebdd1,10px 10px 22px #a8b6cb,-8px -8px 20px #ffffff;overflow:hidden;margin-bottom:20px">
         <div style="display:flex;align-items:center;gap:15px;padding:15px 18px;border-bottom:1px solid #e2e8f1;flex-wrap:wrap">
           <div style="width:6px;height:38px;border-radius:3px;background:${cc.c}"></div>
-          <div style="min-width:150px"><div style="font-size:16px;font-weight:800">${cc.label}</div><div style="font-size:11px;color:#7d8ea0;font-weight:600">${zones.length} zones · as of ${short(this._schMonth||cur)}</div></div>
+          <div style="min-width:150px"><div style="font-size:16px;font-weight:800">${cc.label}</div><div style="font-size:11px;color:#7d8ea0;font-weight:600">${zN} zones</div></div>
           <div style="flex:1;min-width:180px"><div style="display:flex;justify-content:space-between;font-size:9.5px;font-weight:800;color:#7d8ea0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px"><span>Overall</span><span style="font-family:'IBM Plex Mono',monospace;color:#2e3a59">${bpct}%</span></div><div style="height:10px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb,inset 2px 2px 4px #aebccf,inset -2px -2px 4px #ffffff;border-radius:6px;overflow:hidden"><div style="height:100%;width:${bpct}%;background:${this.progColor(bpct)};border-radius:6px"></div></div></div>
           <div style="display:flex;gap:7px;flex-wrap:wrap">
-            <div style="background:#eef1f7;box-shadow:0 0 0 1px #b6c3d5,4px 4px 9px #aebccf,-3px -3px 8px #ffffff;border-radius:11px;padding:6px 11px;text-align:center;min-width:48px"><div style="font-size:14px;font-weight:800;font-family:'IBM Plex Mono',monospace">${tasks}</div><div style="font-size:8.5px;color:#7d8ea0;font-weight:700;text-transform:uppercase">Tasks</div></div>
+            <div style="background:#eef1f7;box-shadow:0 0 0 1px #b6c3d5,4px 4px 9px #aebccf,-3px -3px 8px #ffffff;border-radius:11px;padding:6px 11px;text-align:center;min-width:48px"><div style="font-size:14px;font-weight:800;font-family:'IBM Plex Mono',monospace">${zN}</div><div style="font-size:8.5px;color:#7d8ea0;font-weight:700;text-transform:uppercase">Zones</div></div>
             <div style="background:rgba(239,95,122,.1);border-radius:11px;padding:6px 11px;text-align:center;min-width:48px"><div style="font-size:14px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:#ef5f7a">${crit}</div><div style="font-size:8.5px;color:#ef5f7a;font-weight:700;text-transform:uppercase">Critical</div></div>
           </div>
         </div>`;
-      levOrder.filter(L=>byLev[L]).forEach(L=>{ const cards=byLev[L]; const lopen=!(this._schLevClosed&&this._schLevClosed[aK+'|'+L]);
-        outHtml+=`<div class="zs-levhd" data-lk="${aK}|${L}" style="padding:11px 16px 4px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none"><span style="font-size:10px;color:#8a94a6;width:12px;text-align:center">${lopen?'▾':'▸'}</span><span style="font-size:12.5px;font-weight:800;color:#2e3a59">${L}</span><span style="font-size:10px;color:#8a94a6;font-weight:600">${cards.length} zones</span><span style="flex:1;height:1px;background:#dbe2ec"></span></div>`;
-        if(lopen){ outHtml+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:9px;padding:6px 16px 14px">`;
-        cards.forEach(o=>{ const n=o.n, pz=o.pz; const bars=this.schedBars(pz,L,n); const eAt=this.zpElemAggAt(n,L); const pct=eAt.total?eAt.pct:this.zpAgg(n).pct; const isC=this.zpIsCrit(n);
-          const badge=pct==null?'—':pct+'%'; const bcol=pct==null?'#aab4c2':(pct>=99?'#218a5c':(pct>0?'#d98a2a':'#aab4c2'));
-          const sel=this._schEdit&&this._schEdit.zone===n;
-          const barsH=bars.length?bars.map(b=>`<div style="display:flex;align-items:center;gap:7px"><span style="flex:0 0 42px;font-size:8px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:${b.color};text-align:right">${b.short}</span><div style="flex:1;height:8px;border-radius:5px;${b.trackCss}"><div style="height:100%;border-radius:5px;width:${b.fill}%;background:${b.color};opacity:${b.op}"></div></div></div>`).join(''):`<div style="font-size:10px;color:#b9c3ce;font-weight:600;padding:3px 0">not scheduled</div>`;
-          outHtml+=`<div data-zone="${this.esc(n)}" class="zsc-card" style="background:${this.zoneTint(n)};border-radius:13px;box-shadow:${isC?'0 0 0 3px #ef2d55,':''}${sel?'0 0 0 1px #b6c3d5,4px 4px 10px #aebccf,-3px -3px 8px #ffffff,inset 0 0 0 1.5px #4a90e2':'0 0 0 1px #c6d1de,3px 3px 8px #b3c1d3,-3px -3px 7px #ffffff'};padding:10px 12px;cursor:pointer">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px"><span style="display:flex;align-items:center;gap:5px;min-width:0">${isC?'<span style="font-size:8px;font-weight:800;color:#fff;background:#ef2d55;border-radius:4px;padding:1px 5px;flex:0 0 auto;letter-spacing:.4px">CRIT</span>':''}<span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:#2e3a59;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${this.esc(n)}</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;color:${bcol}">${badge}</span></div>
-            <div style="display:flex;flex-direction:column;gap:4px">${barsH}</div></div>`; });
-        outHtml+=`</div>`; } });
-      if(doneCards.length){ const dopen=!!(this._schDoneOpen&&this._schDoneOpen[aK]);
-        outHtml+=`<div class="zs-donehd" data-area="${aK}" style="margin:6px 16px ${dopen?'2px':'14px'};padding:9px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;border-radius:12px;background:rgba(53,192,142,.12);box-shadow:inset 0 0 0 1px #b3d9c4"><span style="color:#218a5c;font-weight:800;font-size:12.5px">✓ Completed</span><span style="font-size:10.5px;color:#4e8a6f;font-weight:700">${doneCards.length} zones</span><span style="flex:1"></span><span style="font-size:11px;color:#218a5c;font-weight:800">${dopen?'Hide ▾':'Show ▸'}</span></div>`;
-        if(dopen){ outHtml+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:9px;padding:6px 16px 14px">`;
-          doneCards.forEach(o=>{ const n=o.n; const isC=this.zpIsCrit(n); const sel=this._schEdit&&this._schEdit.zone===n;
-            outHtml+=`<div data-zone="${this.esc(n)}" class="zsc-card" style="background:${this.zoneTint(n)};border-radius:13px;box-shadow:${isC?'0 0 0 3px #ef2d55,':''}${sel?'0 0 0 1px #9fceb5,inset 0 0 0 1.5px #4a90e2':'0 0 0 1px #bfe0cd'};padding:9px 12px;cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><span style="display:flex;align-items:center;gap:5px;min-width:0">${isC?'<span style="font-size:8px;font-weight:800;color:#fff;background:#ef2d55;border-radius:4px;padding:1px 5px;flex:0 0 auto;letter-spacing:.4px">CRIT</span>':''}<span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:#2e3a59;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${this.esc(n)}</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;color:#218a5c">✓ 100%</span></div></div>`; });
-          outHtml+=`</div>`; } }
+      this.DATA.order.filter(lv=>byLev[lv]).forEach(lv=>{ const cards=byLev[lv]; const lk=aK+'|'+lv; const lopen=!(this._schLevClosed&&this._schLevClosed[lk]);
+        outHtml+=`<div class="zs-levhd" data-lk="${lk}" style="padding:11px 16px 4px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none"><span style="font-size:10px;color:#8a94a6;width:12px;text-align:center">${lopen?'▾':'▸'}</span><span style="font-size:12.5px;font-weight:800;color:#2e3a59">${this.esc(lv)}</span><span style="font-size:10px;color:#8a94a6;font-weight:600">${cards.length} zones</span><span style="flex:1;height:1px;background:#dbe2ec"></span></div>`;
+        if(lopen){ outHtml+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;padding:6px 16px 14px">`;
+          cards.forEach(o=>{ const isC=o.crit; const pct=o.pct; const badge=pct==null?'—':pct+'%'; const bcol=pct==null?'#aab4c2':(pct>=99?'#218a5c':(pct>0?'#d98a2a':'#aab4c2'));
+            const sel=this._schEdit&&this._schEdit.lv===o.lv&&this._schEdit.mk===o.mk;
+            outHtml+=`<div data-lv="${this.esc(o.lv)}" data-mk="${this.esc(o.mk)}" class="zsc-card" style="background:${this.zoneTint(o.label)};border-radius:13px;box-shadow:${isC?'0 0 0 3px #ef2d55,':''}${sel?'0 0 0 1px #b6c3d5,4px 4px 10px #aebccf,-3px -3px 8px #ffffff,inset 0 0 0 1.5px #4a90e2':'0 0 0 1px #c6d1de,3px 3px 8px #b3c1d3,-3px -3px 7px #ffffff'};padding:10px 12px;cursor:pointer">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px"><span style="display:flex;align-items:center;gap:5px;min-width:0">${isC?'<span style="font-size:8px;font-weight:800;color:#fff;background:#ef2d55;border-radius:4px;padding:1px 5px;flex:0 0 auto;letter-spacing:.4px">CRIT</span>':''}<span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:#2e3a59;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${this.esc(o.label)}</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;color:${bcol}">${badge}</span></div>
+              <div style="height:7px;border-radius:5px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden"><div style="height:100%;border-radius:5px;width:${Math.min(pct||0,100)}%;background:${bcol}"></div></div></div>`; });
+          outHtml+=`</div>`; } });
       outHtml+=`</section>`; });
     if(!outHtml)outHtml='<div style="padding:44px;text-align:center;color:#8a94a6;font-weight:600">No zones match this filter.</div>';
     host.innerHTML=`<div style="max-width:1180px;margin:0 auto;padding-top:14px">${outHtml}</div>`+this.schedDrawer();
-    host.querySelectorAll('.zsc-card').forEach(el=>el.onclick=()=>{this._schEdit={zone:el.dataset.zone};this.buildSchedule();});
-    host.querySelectorAll('.zs-donehd').forEach(el=>el.onclick=()=>{this._schDoneOpen=this._schDoneOpen||{};const k=el.dataset.area;this._schDoneOpen[k]=!this._schDoneOpen[k];this.buildSchedule();});
+    host.querySelectorAll('.zsc-card').forEach(el=>el.onclick=()=>{ const lv=el.dataset.lv, mk=el.dataset.mk;
+      if(this.curLevel!==lv){this.curLevel=lv;if(this._applyOvlForLevel)this._applyOvlForLevel(lv);if(this.syncRail)this.syncRail();if(this.buildMetrics)this.buildMetrics();this.render();}
+      this.selKey=mk; this._schEdit={lv,mk}; this.buildSchedule(); });
     host.querySelectorAll('.zs-levhd').forEach(el=>el.onclick=()=>{this._schLevClosed=this._schLevClosed||{};const k=el.dataset.lk;this._schLevClosed[k]=!this._schLevClosed[k];this.buildSchedule();});
     const cl=this.root.querySelector('#zsdClose'); if(cl)cl.onclick=()=>{this._schEdit=null;this.buildSchedule();};
-    const jb=this.root.querySelector('#zsdJump'); if(jb)jb.onclick=()=>this.jumpToZone(jb.dataset.zone);
-    // editable drawer: mark dirty + reveal Save; commit plan/done to overrides, cloud-sync, refresh
-    const drawer=this.root.querySelector('.zsd'); const sv=this.root.querySelector('#zsdSave');
-    if(drawer&&sv){
-      const markDirty=el=>{el.dataset.dirty='1';sv.style.display='inline-flex';};
-      drawer.querySelectorAll('.zsd-plan-in,.zsd-done-in').forEach(el=>{
-        el.addEventListener('input',()=>markDirty(el));
-        el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();});
-      });
-      sv.onclick=()=>{
-        const gr=this._zpRev&&(this._zpRev[sv.dataset.pz]||this._zpRev[sv.dataset.name]);
-        const lv=gr?gr.lv:null, zmk=gr?gr.mk:null;
-        drawer.querySelectorAll('.zsd-plan-in').forEach(el=>{ if(el.dataset.dirty!=='1')return;
-          const z=el.dataset.z,m=el.dataset.m,i=+el.dataset.i;
-          this.zpSetPlan(z,m,i,el.value);
-          const raw=String(el.value||'').replace(/,/g,'').trim();
-          if(lv&&typeof rwsSyncPlanQty==='function')rwsSyncPlanQty(z+'||'+m+'||'+i,lv,zmk,raw===''?null:parseFloat(raw));
-        });
-        drawer.querySelectorAll('.zsd-done-in').forEach(el=>{ if(el.dataset.dirty!=='1')return;
-          const z=el.dataset.z,m=el.dataset.m,i=+el.dataset.i;
-          this.zpSetDone(z,m,i,el.value);
-          const raw=String(el.value||'').replace(/,/g,'').trim();
-          if(lv&&typeof rwsSyncSlabQty==='function')rwsSyncSlabQty(z+'||'+m+'||'+i,lv,zmk,raw===''?null:parseFloat(raw));
-        });
-        // reflect on the map / register straight away, then refresh the schedule
-        if(this.applyUpdates)this.applyUpdates(); if(this.buildRail)this.buildRail(); if(this.render)this.render();
-        sv.textContent='✓ Saved'; sv.style.background='#35c08e';
-        setTimeout(()=>this.buildSchedule(),650);
-      };
-    }
+    const jb=this.root.querySelector('#zsdJump'); if(jb)jb.onclick=()=>{ const f=this._schZoneFind(); this.root.querySelector('#schedpage').classList.remove('open'); this._schEdit=null; if(f){ if(this.curLevel!==f.lv){this.curLevel=f.lv;if(this._applyOvlForLevel)this._applyOvlForLevel(f.lv);if(this.syncRail)this.syncRail();if(this.buildMetrics)this.buildMetrics();} this.selKey=f.z.mk||f.z.lid; this.render(); this.selectZone(f.z); if(this.paintSel)this.paintSel(); } };
+    { const f=this._schZoneFind(); const drawer=this.root.querySelector('.zsd'); if(drawer&&f)this._bindSchedZone(drawer,f.lv,f.z); }
+  }
+  _bindSchedZone(host,lv,z){
+    const zmk=z.mk||z.lid;
+    // month-block open/close persistence
+    host.querySelectorAll('details.schmo').forEach(d=>d.addEventListener('toggle',()=>{this._schMoOpen=this._schMoOpen||{};this._schMoOpen[d.dataset.mo]=d.open;}));
+    // checklist section open/close persistence (so ticking an element doesn't collapse the list)
+    this._schSecOpen=this._schSecOpen||{};
+    host.querySelectorAll('details.sec').forEach(d=>{const k=d.dataset.sec;if(!k)return;if(k in this._schSecOpen)d.open=this._schSecOpen[k];d.addEventListener('toggle',()=>{this._schSecOpen[d.dataset.sec]=d.open;});});
+    // per-month plan / done → routes through the same setters the map panel uses (auto sync + refresh)
+    host.querySelectorAll('.sch-plan').forEach(el=>{ const c=()=>this.setActPlan(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
+    host.querySelectorAll('.sch-done').forEach(el=>{ const c=()=>this.setActDoneMonth(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
+    // element checklists (columns / beams / piles / lifts / stairs / cores / custom items)
+    host.querySelectorAll('.elchip').forEach(el=>el.addEventListener('click',()=>this.cycleElem(el.dataset.key)));
+    host.querySelectorAll('.eldate').forEach(el=>{el.addEventListener('click',e=>e.stopPropagation());el.addEventListener('change',()=>{const key=el.dataset.key;if(!this.rwsCanEditElement(key)){this.rwsDeny('You can only update items inside your assigned zones.');return;}this.setElemDate(key,el.value);this.commitElem();});});
+    host.querySelectorAll('[data-bulk]').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();ev.preventDefault();
+      if(!this.rwsIsAdmin() && !this.rwsScopeOk(lv,zmk)){this.rwsDeny('Outside your assigned zones.');return;}
+      const type=el.dataset.bulk; const items=({col:z.cols,pile:z.piles,beam:z.beams,lift:z.lifts,stair:z.stairs,core:z.cores})[type]||[];
+      items.forEach(x=>{const key=this.ekey(lv,z,type,typeof x==='string'?x:x.id);this.elem[key]='done';rwsSyncElementStatus(key,'done');});this.commitElem();}));
+    host.querySelectorAll('[data-bulk-all]').forEach(el=>el.addEventListener('click',()=>this.setZoneElems(lv,z,el.dataset.bulkAll)));
+    // custom "+add" lists
+    host.querySelectorAll('.cnewcat-act').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const aid=el.dataset.a;const lab=el.dataset.lab||'status';this._inputModal({title:'Add to '+lab+' list',label:lab+' item ID / Area / Vol / Nos. etc',placeholder:'e.g. CX19-CY41',ok:'Add',onOk:(id)=>{const code=this._ensureActItemsCat(aid);this.addCustomItem(lv,zmk,code,id);}});}));
+    host.querySelectorAll('.cadd').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();this._inputModal({title:'Add item',label:'Item ID / mark',placeholder:'e.g. W-1',ok:'Add',onOk:(id)=>this.addCustomItem(lv,zmk,el.dataset.cat,id)});}));
+    host.querySelectorAll('.cdel').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const p=el.dataset.del.split('||');if(confirm('Delete '+p[1]+'?'))this.delCustomItem(lv,zmk,p[0],p[1]);}));
+    host.querySelectorAll('.cdelcat').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();this.delCustomCat(el.dataset.cat);}));
+    host.querySelectorAll('.catvis').forEach(el=>{el.addEventListener('click',ev=>ev.stopPropagation());el.addEventListener('change',()=>this.setActVis(lv,zmk,el.dataset.a,el.checked,z));});
   }
   paintTimelineSel(){this.root.querySelectorAll('#schedbody .gbar').forEach(el=>el.classList.toggle('sel',this.selKey&&el.dataset.k===this.selKey));}
 
