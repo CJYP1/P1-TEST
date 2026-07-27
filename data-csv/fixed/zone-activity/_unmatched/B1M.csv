@@ -1,0 +1,17 @@
+﻿楼层,分区,活动,活动名称(参考),月份,计划量,完成量,活动开始,活动结束
+B1M,B1M|S1,slab_top,Top Slab,Dec'26,8,,2026-09-24,2026-10-22
+B1M,B1M|S1,col,Column,Jun'26,14,,2026-10-23,2026-11-20
+B1M,B1M|S2,slab_top,Top Slab,Jun'26,,,2026-08-12,2026-09-09
+B1M,B1M|S2,col,Column,Jul'26,12,,2026-09-10,2026-10-08
+B1M,B1M|S3,slab_top,Top Slab,Jun'26,45,,2026-08-28,2026-09-25
+B1M,B1M|S3,col,Column,Jul'26,25,,2026-10-27,2026-11-24
+B1M,B1M|S4,slab_top,Top Slab,Aug'26,5,,2026-09-28,2026-10-26
+B1M,B1M|S4,col,Column,Sep'26,19,,2026-10-27,2026-11-24
+B1M,B1M|S5,slab_top,Top Slab,Oct'26,30,,2026-12-08,2027-01-05
+B1M,B1M|S5,col,Column,Jun'26,5,,2027-01-06,2027-02-03
+B1M,B1M|S6,slab_top,Top Slab,Jul'26,22,,2026-12-10,2027-01-07
+B1M,B1M|S6,col,Column,Jul'26,5,,2027-01-08,2027-02-05
+B1M,B1M|S7,slab_top,Top Slab,Aug'26,33,,2026-11-27,2026-12-25
+B1M,B1M|S7,col,Column,Aug'26,12,,2026-12-28,2027-01-25
+B1M,B1M|S8,slab_top,Top Slab,Sep'26,,,2027-02-08,2027-02-19
+B1M,B1M|S8,col,Column,Sep'26,9,,2027-02-22,2027-04-20

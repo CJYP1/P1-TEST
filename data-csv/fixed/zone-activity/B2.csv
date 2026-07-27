@@ -1,136 +1,136 @@
 ﻿楼层,分区,活动,活动名称(参考),月份,计划量,完成量,活动开始,活动结束
-B2,B2-S1,earth,Earthwork,Jun'26,,,2026-08-27,2026-10-23
-B2,B2-S1,exc,Excavation,Jun'26,,,2026-08-30,2026-12-02
-B2,B2-S1,demo_wall,Demolition Wall,Jul'26,,,2026-09-20,2026-10-03
-B2,B2-S1,slab_pile,Slab + Pilecap,Jun'26,13,,2026-10-04,2026-12-14
-B2,B2-S1,col,Column,Jul'26,7,,2026-11-03,2027-01-04
-B2,B2-S1,act_corewall,Core Wall,Aug'26,1,,2026-11-03,2027-01-25
-B2,B2-S10,earth,Earthwork,Sep'26,,,2026-09-21,2026-09-23
-B2,B2-S10,exc,Excavation,Oct'26,,,2026-09-24,2026-09-30
-B2,B2-S10,slab_pile,Slab + Pilecap,Jun'26,11,,2026-10-01,2026-10-29
-B2,B2-S10,col,Column,Jul'26,11,,2026-10-30,2026-12-28
-B2,B2-S11,earth,Earthwork,Jul'26,,,2026-06-19,2026-06-23
-B2,B2-S11,exc,Excavation,Aug'26,,,2026-06-24,2026-07-13
-B2,B2-S11,slab_pile,Slab + Pilecap,Aug'26,,,2026-07-14,2026-08-11
-B2,B2-S11,col,Column,Sep'26,8,,2026-08-12,2026-10-08
-B2,B2-S11,ls,Lift/Stairs Wall,Sep'26,1,,2026-10-09,2026-12-31
-B2,B2-S12,earth,Earthwork,Sep'26,,,2026-08-03,2026-08-05
-B2,B2-S12,exc,Excavation,Sep'26,,,2026-08-06,2026-09-03
-B2,B2-S12,slab_pile,Slab + Pilecap,Sep'26,14,,2026-09-04,2026-10-02
-B2,B2-S12,col,Column,Sep'26,14,,2026-10-05,2026-12-01
-B2,B2-S12,act_corewall,Core Wall,Oct'26,1,,2026-10-05,2026-11-13
-B2,B2-S12,ls,Lift/Stairs Wall,Nov'26,1,,2026-11-16,2026-12-25
-B2,B2-S13,earth,Earthwork,Sep'26,,,2026-08-04,2026-08-06
-B2,B2-S13,exc,Excavation,Sep'26,,,2026-08-07,2026-08-17
-B2,B2-S13,slab_pile,Slab + Pilecap,Oct'26,9,,2026-09-01,2026-09-29
-B2,B2-S13,col,Column,Nov'26,9,,2026-09-30,2026-11-26
-B2,B2-S13a,earth,Earthwork,Jul'26,,,2026-08-04,2026-08-06
-B2,B2-S13a,exc,Excavation,Jul'26,,,2026-08-07,2026-08-17
-B2,B2-S13a,slab_pile,Slab + Pilecap,Jul'26,9,,2026-09-01,2026-09-29
-B2,B2-S13a,col,Column,Jul'26,9,,2026-09-30,2026-11-26
-B2,B2-S14,earth,Earthwork,Aug'26,,,2026-07-01,2026-07-03
-B2,B2-S14,exc,Excavation,Aug'26,,,2026-07-06,2026-08-03
-B2,B2-S14,slab_pile,Slab + Pilecap,Sep'26,9,,2026-08-04,2026-09-01
-B2,B2-S14,col,Column,Sep'26,9,,2026-09-02,2026-10-29
-B2,B2-S14a,earth,Earthwork,Oct'26,,,2026-07-01,2026-07-03
-B2,B2-S14a,exc,Excavation,Oct'26,,,2026-07-06,2026-08-03
-B2,B2-S14a,slab_pile,Slab + Pilecap,Oct'26,9,,2026-08-04,2026-09-01
-B2,B2-S14a,col,Column,Oct'26,9,,2026-09-02,2026-10-29
-B2,B2-S1a,earth,Earthwork,Nov'26,,,2026-08-27,2026-10-23
-B2,B2-S1a,exc,Excavation,Nov'26,,,2026-08-30,2026-12-02
-B2,B2-S1a,demo_wall,Demolition Wall,Oct'26,,,2026-09-20,2026-10-03
-B2,B2-S1a,slab_pile,Slab + Pilecap,Oct'26,13,,2026-10-04,2026-12-14
-B2,B2-S1a,col,Column,Nov'26,7,,2026-11-03,2027-01-04
-B2,B2-S1a,act_corewall,Core Wall,Nov'26,1,,2026-11-03,2027-01-25
-B2,B2-S2-1,earth,Earthwork,Dec'26,,,2026-07-17,2026-12-05
-B2,B2-S2-1,exc,Excavation,Dec'26,,,2026-07-31,2027-01-02
-B2,B2-S2-1,demo_wall,Demolition Wall,Jan'27,,,2026-08-31,2026-09-08
-B2,B2-S2-1,slab_pile,Slab + Pilecap,Jan'27,14,,2026-09-09,2027-02-01
-B2,B2-S2-1,col,Column,Dec'26,5,,2026-10-21,2027-03-31
-B2,B2-S2-1,ls,Lift/Stairs Wall,Dec'26,1,,2026-10-21,2027-01-12
-B2,B2-S2-2,earth,Earthwork,Dec'26,,,2026-07-17,2026-12-05
-B2,B2-S2-2,exc,Excavation,Dec'26,,,2026-07-31,2027-01-02
-B2,B2-S2-2,demo_wall,Demolition Wall,Jan'27,,,2026-08-31,2026-09-08
-B2,B2-S2-2,slab_pile,Slab + Pilecap,Jan'27,14,,2026-09-09,2027-02-01
-B2,B2-S2-2,col,Column,Jan'27,5,,2026-10-21,2027-03-31
-B2,B2-S2-2,ls,Lift/Stairs Wall,Jan'27,1,,2026-10-21,2027-01-12
-B2,B2-S2a,earth,Earthwork,Feb'27,,,2026-07-17,2026-12-05
-B2,B2-S2a,exc,Excavation,Feb'27,,,2026-07-31,2027-01-02
-B2,B2-S2a,demo_wall,Demolition Wall,Feb'27,,,2026-08-31,2026-09-08
-B2,B2-S2a,slab_pile,Slab + Pilecap,Feb'27,14,,2026-09-09,2027-02-01
-B2,B2-S2a,col,Column,Mar'27,5,,2026-10-21,2027-03-31
-B2,B2-S2a,ls,Lift/Stairs Wall,Mar'27,1,,2026-10-21,2027-01-12
-B2,B2-S3-1,earth,Earthwork,Jul'26,,,2026-08-04,2026-08-06
-B2,B2-S3-1,exc,Excavation,Jul'26,,,2026-08-07,2026-09-15
-B2,B2-S3-1,slab_pile,Slab + Pilecap,Aug'26,10,,2026-09-16,2026-10-14
-B2,B2-S3-1,col,Column,Sep'26,5,,2026-10-15,2026-12-11
-B2,B2-S3-1,act_corewall,Core Wall,Oct'26,1,,2026-12-14,2027-03-05
-B2,B2-S3-2,earth,Earthwork,Oct'26,,,2026-08-04,2026-08-06
-B2,B2-S3-2,exc,Excavation,Nov'26,,,2026-08-07,2026-09-15
-B2,B2-S3-2,slab_pile,Slab + Pilecap,Oct'26,10,,2026-09-16,2026-10-14
-B2,B2-S3-2,col,Column,Nov'26,5,,2026-10-15,2026-12-11
-B2,B2-S3-2,act_corewall,Core Wall,Dec'26,1,,2026-12-14,2027-03-05
-B2,B2-S4-1,earth,Earthwork,Jun'26,,,2026-10-05,2026-10-07
-B2,B2-S4-1,exc,Excavation,Jun'26,,,2026-10-08,2026-11-05
-B2,B2-S4-1,slab_pile,Slab + Pilecap,Jul'26,10,,2026-11-11,2026-12-09
-B2,B2-S4-1,col,Column,Jun'26,9,,2026-12-10,2027-02-05
-B2,B2-S4-1,act_corewall,Core Wall,Jul'26,1,,2026-12-10,2027-03-03
-B2,B2-S4-2,earth,Earthwork,Aug'26,,,2026-10-05,2026-10-07
-B2,B2-S4-2,exc,Excavation,Sep'26,,,2026-10-08,2026-11-05
-B2,B2-S4-2,slab_pile,Slab + Pilecap,Oct'26,10,,2026-11-11,2026-12-09
-B2,B2-S4-2,col,Column,Jun'26,9,,2026-12-10,2027-02-05
-B2,B2-S4-2,act_corewall,Core Wall,Jul'26,1,,2026-12-10,2027-03-03
-B2,B2-S5-1,earth,Earthwork,Jul'26,,,2026-10-09,2026-10-11
-B2,B2-S5-1,exc,Excavation,Aug'26,,,2026-10-12,2026-11-10
-B2,B2-S5-1,slab_pile,Slab + Pilecap,Aug'26,15,,2026-11-11,2026-12-01
-B2,B2-S5-1,col,Column,Sep'26,3,,2026-12-02,2027-01-28
-B2,B2-S5-1,act_corewall,Core Wall,Sep'26,2,,2026-12-02,2027-02-23
-B2,B2-S5-2,earth,Earthwork,Sep'26,,,2026-10-09,2026-10-11
-B2,B2-S5-2,exc,Excavation,Sep'26,,,2026-10-12,2026-11-10
-B2,B2-S5-2,slab_pile,Slab + Pilecap,Sep'26,15,,2026-11-11,2026-12-01
-B2,B2-S5-2,col,Column,Sep'26,3,,2026-12-02,2027-01-28
-B2,B2-S5-2,act_corewall,Core Wall,Oct'26,2,,2026-12-02,2027-02-23
-B2,B2-S6,earth,Earthwork,Nov'26,,,2026-10-21,2026-11-18
-B2,B2-S6,exc,Excavation,Sep'26,,,2026-10-24,2026-12-17
-B2,B2-S6,slab_pile,Slab + Pilecap,Sep'26,11,,2026-11-16,2027-01-06
-B2,B2-S6,col,Column,Oct'26,11,,2026-12-04,2027-03-05
-B2,B2-S6,ls,Lift/Stairs Wall,Nov'26,1,,2027-03-08,2027-05-28
-B2,B2-S6a,earth,Earthwork,Jul'26,,,2026-10-21,2026-11-18
-B2,B2-S6a,exc,Excavation,Jul'26,,,2026-10-24,2026-12-17
-B2,B2-S6a,slab_pile,Slab + Pilecap,Jul'26,11,,2026-11-16,2027-01-06
-B2,B2-S6a,col,Column,Jul'26,11,,2026-12-04,2027-03-05
-B2,B2-S6a,ls,Lift/Stairs Wall,Aug'26,1,,2027-03-08,2027-05-28
-B2,B2-S7,earth,Earthwork,Aug'26,,,2026-10-21,2026-10-23
-B2,B2-S7,exc,Excavation,Sep'26,,,2026-10-26,2026-12-02
-B2,B2-S7,slab_pile,Slab + Pilecap,Sep'26,6,,2026-12-03,2026-12-31
-B2,B2-S7,col,Column,Oct'26,6,,2027-01-01,2027-03-01
-B2,B2-S7,act_corewall,Core Wall,Oct'26,1,,2027-03-02,2027-05-24
-B2,B2-S8,earth,Earthwork,Oct'26,,,2026-09-15,2026-09-17
-B2,B2-S8,exc,Excavation,Oct'26,,,2026-09-18,2026-10-01
-B2,B2-S8,slab_pile,Slab + Pilecap,Nov'26,12,,2026-10-02,2026-10-30
-B2,B2-S8,col,Column,Nov'26,12,,2026-11-02,2026-12-29
-B2,B2-S8a,earth,Earthwork,Oct'26,,,2026-07-20,2026-08-31
-B2,B2-S8a,exc,Excavation,Oct'26,,,2026-07-23,2026-09-14
-B2,B2-S8a,slab_pile,Slab + Pilecap,Nov'26,21,,2026-08-12,2026-10-13
-B2,B2-S8a,col,Column,Nov'26,14,,2026-09-01,2026-12-10
-B2,B2-S9,earth,Earthwork,Dec'26,,,2026-08-18,2026-08-20
-B2,B2-S9,exc,Excavation,Dec'26,,,2026-08-21,2026-09-18
-B2,B2-S9,slab_pile,Slab + Pilecap,Jan'27,12,,2026-09-21,2026-10-19
-B2,B2-S9,col,Column,Jan'27,12,,2026-10-20,2026-12-16
-B2,EB2-2.1,pile,Pilecap,Oct'26,9,,2026-04-01,2026-07-10
-B2,EB2-2.1,act_corewall,Core Wall,Jun'26,1,,2026-06-17,2026-07-28
-B2,EB2-2.1,col,Column,Jul'26,5,,2026-06-17,2026-07-15
-B2,EB2-2.2,pile,Pilecap,Jul'26,4,,2026-04-09,2026-06-19
-B2,EB2-2.2,col,Column,Aug'26,4,,2026-06-22,2026-06-30
-B2,EB2-2.3,pile,Pilecap,Aug'26,6,,2026-06-22,2026-06-30
-B2,EB2-2.3,col,Column,Sep'26,6,,2026-07-01,2026-07-09
-B2,EB2-2.4,pile,Pilecap,Sep'26,4,,2026-07-13,2026-07-21
-B2,EB2-2.4,col,Column,Sep'26,3,,2026-07-22,2026-07-30
-B2,EB2-3.1A-1,pile,Pilecap,Sep'26,4,,2026-07-23,2026-07-31
-B2,EB2-3.1A-1,col,Column,Sep'26,4,,2026-08-03,2026-08-11
-B2,EB2-3.1A-2,col,Column,Sep'26,8,,2026-09-18,2026-09-28
-B2,EB2-3.1A-2,pile,Pilecap,Oct'26,2,,2027-04-21,2027-05-10
-B2,EB2-3.2-1,col,Column,Nov'26,3,,2026-08-12,2026-08-20
-B2,EB2-3.3,col,Column,Sep'26,7,,2026-09-18,2026-09-28
-B2,EB2-3.4,col,Column,Sep'26,1,,2026-09-18,2026-09-28
-B2,EB2-3.4,act_corewall,Core Wall,Oct'26,1,,2026-09-18,2026-11-19
+B2,B2|B2S1,earth,Earthwork,Jun'26,,,2026-08-27,2026-10-23
+B2,B2|B2S1,exc,Excavation,Jun'26,,,2026-08-30,2026-12-02
+B2,B2|B2S1,demo_wall,Demolition Wall,Jul'26,,,2026-09-20,2026-10-03
+B2,B2|B2S1,slab_pile,Slab + Pilecap,Jun'26,13,,2026-10-04,2026-12-14
+B2,B2|B2S1,col,Column,Jul'26,7,,2026-11-03,2027-01-04
+B2,B2|B2S1,act_corewall,Core Wall,Aug'26,1,,2026-11-03,2027-01-25
+B2,B2|B2S10,earth,Earthwork,Sep'26,,,2026-09-21,2026-09-23
+B2,B2|B2S10,exc,Excavation,Oct'26,,,2026-09-24,2026-09-30
+B2,B2|B2S10,slab_pile,Slab + Pilecap,Jun'26,11,,2026-10-01,2026-10-29
+B2,B2|B2S10,col,Column,Jul'26,11,,2026-10-30,2026-12-28
+B2,B2|B2S11,earth,Earthwork,Jul'26,,,2026-06-19,2026-06-23
+B2,B2|B2S11,exc,Excavation,Aug'26,,,2026-06-24,2026-07-13
+B2,B2|B2S11,slab_pile,Slab + Pilecap,Aug'26,,,2026-07-14,2026-08-11
+B2,B2|B2S11,col,Column,Sep'26,8,,2026-08-12,2026-10-08
+B2,B2|B2S11,ls,Lift/Stairs Wall,Sep'26,1,,2026-10-09,2026-12-31
+B2,B2|B2S12,earth,Earthwork,Sep'26,,,2026-08-03,2026-08-05
+B2,B2|B2S12,exc,Excavation,Sep'26,,,2026-08-06,2026-09-03
+B2,B2|B2S12,slab_pile,Slab + Pilecap,Sep'26,14,,2026-09-04,2026-10-02
+B2,B2|B2S12,col,Column,Sep'26,14,,2026-10-05,2026-12-01
+B2,B2|B2S12,act_corewall,Core Wall,Oct'26,1,,2026-10-05,2026-11-13
+B2,B2|B2S12,ls,Lift/Stairs Wall,Nov'26,1,,2026-11-16,2026-12-25
+B2,B2|B2S13,earth,Earthwork,Sep'26,,,2026-08-04,2026-08-06
+B2,B2|B2S13,exc,Excavation,Sep'26,,,2026-08-07,2026-08-17
+B2,B2|B2S13,slab_pile,Slab + Pilecap,Oct'26,9,,2026-09-01,2026-09-29
+B2,B2|B2S13,col,Column,Nov'26,9,,2026-09-30,2026-11-26
+B2,B2|B2S13A,earth,Earthwork,Jul'26,,,2026-08-04,2026-08-06
+B2,B2|B2S13A,exc,Excavation,Jul'26,,,2026-08-07,2026-08-17
+B2,B2|B2S13A,slab_pile,Slab + Pilecap,Jul'26,9,,2026-09-01,2026-09-29
+B2,B2|B2S13A,col,Column,Jul'26,9,,2026-09-30,2026-11-26
+B2,B2|B2S14,earth,Earthwork,Aug'26,,,2026-07-01,2026-07-03
+B2,B2|B2S14,exc,Excavation,Aug'26,,,2026-07-06,2026-08-03
+B2,B2|B2S14,slab_pile,Slab + Pilecap,Sep'26,9,,2026-08-04,2026-09-01
+B2,B2|B2S14,col,Column,Sep'26,9,,2026-09-02,2026-10-29
+B2,B2|B2S14A,earth,Earthwork,Oct'26,,,2026-07-01,2026-07-03
+B2,B2|B2S14A,exc,Excavation,Oct'26,,,2026-07-06,2026-08-03
+B2,B2|B2S14A,slab_pile,Slab + Pilecap,Oct'26,9,,2026-08-04,2026-09-01
+B2,B2|B2S14A,col,Column,Oct'26,9,,2026-09-02,2026-10-29
+B2,B2|B2S1A,earth,Earthwork,Nov'26,,,2026-08-27,2026-10-23
+B2,B2|B2S1A,exc,Excavation,Nov'26,,,2026-08-30,2026-12-02
+B2,B2|B2S1A,demo_wall,Demolition Wall,Oct'26,,,2026-09-20,2026-10-03
+B2,B2|B2S1A,slab_pile,Slab + Pilecap,Oct'26,13,,2026-10-04,2026-12-14
+B2,B2|B2S1A,col,Column,Nov'26,7,,2026-11-03,2027-01-04
+B2,B2|B2S1A,act_corewall,Core Wall,Nov'26,1,,2026-11-03,2027-01-25
+B2,B2|B2S21,earth,Earthwork,Dec'26,,,2026-07-17,2026-12-05
+B2,B2|B2S21,exc,Excavation,Dec'26,,,2026-07-31,2027-01-02
+B2,B2|B2S21,demo_wall,Demolition Wall,Jan'27,,,2026-08-31,2026-09-08
+B2,B2|B2S21,slab_pile,Slab + Pilecap,Jan'27,14,,2026-09-09,2027-02-01
+B2,B2|B2S21,col,Column,Dec'26,5,,2026-10-21,2027-03-31
+B2,B2|B2S21,ls,Lift/Stairs Wall,Dec'26,1,,2026-10-21,2027-01-12
+B2,B2|B2S22,earth,Earthwork,Dec'26,,,2026-07-17,2026-12-05
+B2,B2|B2S22,exc,Excavation,Dec'26,,,2026-07-31,2027-01-02
+B2,B2|B2S22,demo_wall,Demolition Wall,Jan'27,,,2026-08-31,2026-09-08
+B2,B2|B2S22,slab_pile,Slab + Pilecap,Jan'27,14,,2026-09-09,2027-02-01
+B2,B2|B2S22,col,Column,Jan'27,5,,2026-10-21,2027-03-31
+B2,B2|B2S22,ls,Lift/Stairs Wall,Jan'27,1,,2026-10-21,2027-01-12
+B2,B2|B2S2A,earth,Earthwork,Feb'27,,,2026-07-17,2026-12-05
+B2,B2|B2S2A,exc,Excavation,Feb'27,,,2026-07-31,2027-01-02
+B2,B2|B2S2A,demo_wall,Demolition Wall,Feb'27,,,2026-08-31,2026-09-08
+B2,B2|B2S2A,slab_pile,Slab + Pilecap,Feb'27,14,,2026-09-09,2027-02-01
+B2,B2|B2S2A,col,Column,Mar'27,5,,2026-10-21,2027-03-31
+B2,B2|B2S2A,ls,Lift/Stairs Wall,Mar'27,1,,2026-10-21,2027-01-12
+B2,B2|B2S31,earth,Earthwork,Jul'26,,,2026-08-04,2026-08-06
+B2,B2|B2S31,exc,Excavation,Jul'26,,,2026-08-07,2026-09-15
+B2,B2|B2S31,slab_pile,Slab + Pilecap,Aug'26,10,,2026-09-16,2026-10-14
+B2,B2|B2S31,col,Column,Sep'26,5,,2026-10-15,2026-12-11
+B2,B2|B2S31,act_corewall,Core Wall,Oct'26,1,,2026-12-14,2027-03-05
+B2,B2|B2S32,earth,Earthwork,Oct'26,,,2026-08-04,2026-08-06
+B2,B2|B2S32,exc,Excavation,Nov'26,,,2026-08-07,2026-09-15
+B2,B2|B2S32,slab_pile,Slab + Pilecap,Oct'26,10,,2026-09-16,2026-10-14
+B2,B2|B2S32,col,Column,Nov'26,5,,2026-10-15,2026-12-11
+B2,B2|B2S32,act_corewall,Core Wall,Dec'26,1,,2026-12-14,2027-03-05
+B2,B2|B2S41,earth,Earthwork,Jun'26,,,2026-10-05,2026-10-07
+B2,B2|B2S41,exc,Excavation,Jun'26,,,2026-10-08,2026-11-05
+B2,B2|B2S41,slab_pile,Slab + Pilecap,Jul'26,10,,2026-11-11,2026-12-09
+B2,B2|B2S41,col,Column,Jun'26,9,,2026-12-10,2027-02-05
+B2,B2|B2S41,act_corewall,Core Wall,Jul'26,1,,2026-12-10,2027-03-03
+B2,B2|B2S42,earth,Earthwork,Aug'26,,,2026-10-05,2026-10-07
+B2,B2|B2S42,exc,Excavation,Sep'26,,,2026-10-08,2026-11-05
+B2,B2|B2S42,slab_pile,Slab + Pilecap,Oct'26,10,,2026-11-11,2026-12-09
+B2,B2|B2S42,col,Column,Jun'26,9,,2026-12-10,2027-02-05
+B2,B2|B2S42,act_corewall,Core Wall,Jul'26,1,,2026-12-10,2027-03-03
+B2,B2|B2S51,earth,Earthwork,Jul'26,,,2026-10-09,2026-10-11
+B2,B2|B2S51,exc,Excavation,Aug'26,,,2026-10-12,2026-11-10
+B2,B2|B2S51,slab_pile,Slab + Pilecap,Aug'26,15,,2026-11-11,2026-12-01
+B2,B2|B2S51,col,Column,Sep'26,3,,2026-12-02,2027-01-28
+B2,B2|B2S51,act_corewall,Core Wall,Sep'26,2,,2026-12-02,2027-02-23
+B2,B2|B2S52,earth,Earthwork,Sep'26,,,2026-10-09,2026-10-11
+B2,B2|B2S52,exc,Excavation,Sep'26,,,2026-10-12,2026-11-10
+B2,B2|B2S52,slab_pile,Slab + Pilecap,Sep'26,15,,2026-11-11,2026-12-01
+B2,B2|B2S52,col,Column,Sep'26,3,,2026-12-02,2027-01-28
+B2,B2|B2S52,act_corewall,Core Wall,Oct'26,2,,2026-12-02,2027-02-23
+B2,B2|B2S6,earth,Earthwork,Nov'26,,,2026-10-21,2026-11-18
+B2,B2|B2S6,exc,Excavation,Sep'26,,,2026-10-24,2026-12-17
+B2,B2|B2S6,slab_pile,Slab + Pilecap,Sep'26,11,,2026-11-16,2027-01-06
+B2,B2|B2S6,col,Column,Oct'26,11,,2026-12-04,2027-03-05
+B2,B2|B2S6,ls,Lift/Stairs Wall,Nov'26,1,,2027-03-08,2027-05-28
+B2,B2|B2S6A,earth,Earthwork,Jul'26,,,2026-10-21,2026-11-18
+B2,B2|B2S6A,exc,Excavation,Jul'26,,,2026-10-24,2026-12-17
+B2,B2|B2S6A,slab_pile,Slab + Pilecap,Jul'26,11,,2026-11-16,2027-01-06
+B2,B2|B2S6A,col,Column,Jul'26,11,,2026-12-04,2027-03-05
+B2,B2|B2S6A,ls,Lift/Stairs Wall,Aug'26,1,,2027-03-08,2027-05-28
+B2,B2|B2S7,earth,Earthwork,Aug'26,,,2026-10-21,2026-10-23
+B2,B2|B2S7,exc,Excavation,Sep'26,,,2026-10-26,2026-12-02
+B2,B2|B2S7,slab_pile,Slab + Pilecap,Sep'26,6,,2026-12-03,2026-12-31
+B2,B2|B2S7,col,Column,Oct'26,6,,2027-01-01,2027-03-01
+B2,B2|B2S7,act_corewall,Core Wall,Oct'26,1,,2027-03-02,2027-05-24
+B2,B2|B2S8,earth,Earthwork,Oct'26,,,2026-09-15,2026-09-17
+B2,B2|B2S8,exc,Excavation,Oct'26,,,2026-09-18,2026-10-01
+B2,B2|B2S8,slab_pile,Slab + Pilecap,Nov'26,12,,2026-10-02,2026-10-30
+B2,B2|B2S8,col,Column,Nov'26,12,,2026-11-02,2026-12-29
+B2,B2|B2S8A,earth,Earthwork,Oct'26,,,2026-07-20,2026-08-31
+B2,B2|B2S8A,exc,Excavation,Oct'26,,,2026-07-23,2026-09-14
+B2,B2|B2S8A,slab_pile,Slab + Pilecap,Nov'26,21,,2026-08-12,2026-10-13
+B2,B2|B2S8A,col,Column,Nov'26,14,,2026-09-01,2026-12-10
+B2,B2|B2S9,earth,Earthwork,Dec'26,,,2026-08-18,2026-08-20
+B2,B2|B2S9,exc,Excavation,Dec'26,,,2026-08-21,2026-09-18
+B2,B2|B2S9,slab_pile,Slab + Pilecap,Jan'27,12,,2026-09-21,2026-10-19
+B2,B2|B2S9,col,Column,Jan'27,12,,2026-10-20,2026-12-16
+B2,B2|EB22.1,pile,Pilecap,Oct'26,9,,2026-04-01,2026-07-10
+B2,B2|EB22.1,act_corewall,Core Wall,Jun'26,1,,2026-06-17,2026-07-28
+B2,B2|EB22.1,col,Column,Jul'26,5,,2026-06-17,2026-07-15
+B2,B2|EB22.2,pile,Pilecap,Jul'26,4,,2026-04-09,2026-06-19
+B2,B2|EB22.2,col,Column,Aug'26,4,,2026-06-22,2026-06-30
+B2,B2|EB22.3,pile,Pilecap,Aug'26,6,,2026-06-22,2026-06-30
+B2,B2|EB22.3,col,Column,Sep'26,6,,2026-07-01,2026-07-09
+B2,B2|EB22.4,pile,Pilecap,Sep'26,4,,2026-07-13,2026-07-21
+B2,B2|EB22.4,col,Column,Sep'26,3,,2026-07-22,2026-07-30
+B2,B2|EB23.1A1,pile,Pilecap,Sep'26,4,,2026-07-23,2026-07-31
+B2,B2|EB23.1A1,col,Column,Sep'26,4,,2026-08-03,2026-08-11
+B2,B2|EB23.1A2,col,Column,Sep'26,8,,2026-09-18,2026-09-28
+B2,B2|EB23.1A2,pile,Pilecap,Oct'26,2,,2027-04-21,2027-05-10
+B2,B2|EB23.21,col,Column,Nov'26,3,,2026-08-12,2026-08-20
+B2,B2|EB23.3,col,Column,Sep'26,7,,2026-09-18,2026-09-28
+B2,B2|EB23.4,col,Column,Sep'26,1,,2026-09-18,2026-09-28
+B2,B2|EB23.4,act_corewall,Core Wall,Oct'26,1,,2026-09-18,2026-11-19

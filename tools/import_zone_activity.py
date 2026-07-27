@@ -65,7 +65,7 @@ def main():
     for fp in files:
         with open(fp, encoding='utf-8-sig') as f:
             rd=csv.DictReader(f); rows=list(rd)
-        outrows=[]
+        outrows=[]; pending=[]
         for r in rows:
             zone=(r.get('分区') or '').strip()
             act=(r.get('活动') or '').strip()
@@ -78,7 +78,7 @@ def main():
             for col in ('活动开始','活动结束'):
                 iso=to_iso(r.get(col))
                 if iso is None: bad_date.setdefault(f'{fp.name}: {r.get(col)}',1)
-            outrows.append({
+            rec={
                 '楼层':(r.get('楼层') or '').strip(),
                 '分区':mk if mk else zone,
                 '活动':act,
@@ -88,8 +88,9 @@ def main():
                 '完成量':(r.get('完成量') or '').strip(),
                 '活动开始':(to_iso(r.get('活动开始')) or (r.get('活动开始') or '').strip()),
                 '活动结束':(to_iso(r.get('活动结束')) or (r.get('活动结束') or '').strip()),
-            })
-        out_by_file[fp]=outrows
+            }
+            (outrows if mk else pending).append(rec)
+        out_by_file[fp]=(outrows,pending)
 
     print(f'总行数 {total}, 分区可转换 {converted}, 分区转不了 {total-converted}')
     def show(title,d):
@@ -101,10 +102,18 @@ def main():
     if not (bad_zone or bad_act or bad_date): print('\n✅ 全部能对上, 可以 --apply')
 
     if a.apply:
-        for fp,outrows in out_by_file.items():
-            fp.rename(fp.with_suffix('.csv.bak'))
+        pend_dir=ZA_DIR/'_unmatched'; pend_dir.mkdir(exist_ok=True)
+        n_ok=n_pend=0
+        for fp,(outrows,pending) in out_by_file.items():
+            fp.with_suffix('.csv.bak').write_bytes(fp.read_bytes())  # 备份(复制, 不 rename)
             with open(fp,'w',encoding='utf-8-sig',newline='') as f:
                 w=csv.DictWriter(f,fieldnames=COLS); w.writeheader(); w.writerows(outrows)
-        print(f'\n已写回 {len(out_by_file)} 个文件(原文件备份为 *.csv.bak)')
+            n_ok+=len(outrows)
+            if pending:
+                with open(pend_dir/fp.name,'w',encoding='utf-8-sig',newline='') as f:
+                    w=csv.DictWriter(f,fieldnames=COLS); w.writeheader(); w.writerows(pending)
+                n_pend+=len(pending)
+        print(f'\n已写回: 转换成功 {n_ok} 行(原文件备份 *.csv.bak)')
+        print(f'对不上的 {n_pend} 行已单独放到 {pend_dir}/ (C/P 细分等, 之后再处理)')
 
 if __name__=='__main__': main()
