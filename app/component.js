@@ -1483,30 +1483,43 @@ class Component extends DCLogic {
     const zmk=z.mk||z.lid, admin=this.rwsIsAdmin();
     const M=admin?this.ACT_MONTHS:this.visMonths(); const curL=this.actCurLabel();
     const acts=this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z));
-    this._schMoOpen=this._schMoOpen||{};
-    const inCss='width:56px;text-align:right;font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 5px;flex:0 0 auto';
-    let blocks='';
-    // every applicable activity is shown in every month so admin can enter data anywhere
-    M.forEach(m=>{
-      const rows=acts.map(a=>{ const plan=this.actPlan(lv,zmk,a.id,m), dm=this.actDoneMonth(lv,zmk,a.id,m);
-        const pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
-        const bc=pct==null?'#c3ccd6':(pct>=100?'#35c08e':(pct>0?'#d98a2a':'#c3ccd6'));
-        const planCell=admin?`<input class="sch-plan" data-a="${a.id}" data-m="${this.esc(m)}" value="${plan==null?'':plan}" placeholder="—" style="${inCss}">`:`<span style="width:56px;text-align:right;font-size:10.5px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${plan==null?'—':this.fmt(plan)}</span>`;
-        const doneCell=admin?`<input class="sch-done" data-a="${a.id}" data-m="${this.esc(m)}" value="${dm==null?'':dm}" placeholder="—" style="${inCss}">`:`<span style="width:56px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?'—':this.fmt(dm)}</span>`;
-        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span><span style="width:30px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8px;color:#9aa6b6;width:20px;flex:0 0 auto">${this.esc(a.unit||'')}</span><span style="font-size:10px;font-weight:700;width:32px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`;
-      }).join('');
-      const okey=zmk+'||'+m; const open=(okey in this._schMoOpen)?this._schMoOpen[okey]:(m===curL);
-      blocks+=`<details class="schmo" data-mo="${this.esc(okey)}"${open?' open':''} style="margin-bottom:8px;border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6${m===curL?';outline:1.5px solid #4a90e2':''}"><summary style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;padding:9px 11px;list-style:none">${this.esc(m)}${m===curL?' · now':''}</summary><div style="padding:0 11px 10px">${rows||'<div style="font-size:10px;color:#aab4c2">no activities</div>'}</div></details>`;
-    });
-    // Dates — zone overall + per-activity start/end, all editable (admin)
+    // top switcher: "Total" (no month) shows/edits the zone total; a month shows/edits that month's plan & done
+    if(!this._schMode || (this._schMode!=='__total' && M.indexOf(this._schMode)<0)) this._schMode=(M.indexOf(curL)>=0?curL:'__total');
+    const mode=this._schMode, isTotal=(mode==='__total');
+    const inCss='width:60px;text-align:right;font-size:11px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:3px 6px;flex:0 0 auto';
     const dcss='font-size:9.5px;font-family:inherit;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 4px;color:#2e3a59';
-    const zdt=(this._zdate||{})[lv+'||'+zmk]||{};
-    const dRow=(label,which,val,extra)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:${which==='zone'?'700':'600'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(label)}">${this.esc(label)}</span>${extra}</div>`;
-    const dateInputs=(cls,attrs,v)=>admin?`<input type="date" class="${cls}" ${attrs} data-which="start" value="${v.start||''}" style="${dcss}"><span style="color:#9aa6b6;font-size:9px">→</span><input type="date" class="${cls}" ${attrs} data-which="end" value="${v.end||''}" style="${dcss}">`:`<span style="font-size:9.5px;color:#4b5566;font-family:'IBM Plex Mono',monospace">${v.start||'—'} → ${v.end||'—'}</span>`;
-    let dRows=dRow('Zone (overall)','zone',zdt,dateInputs('zdate-in','',zdt));
-    acts.forEach(a=>{ const av=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{}; dRows+=dRow(a.label,'act',av,dateInputs('actdate-in','data-a="'+a.id+'"',av)); });
-    const datesBlock=`<details class="sec" data-sec="__dates" open style="margin-top:6px"><summary class="t" style="cursor:pointer">Dates (start → end)</summary><div style="padding:6px 2px 2px">${dRows}</div></details>`;
-    return (blocks||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No activities.</div>')+datesBlock;
+    const opts=`<option value="__total"${isTotal?' selected':''}>Total (whole zone)</option>`+M.map(m=>`<option value="${this.esc(m)}"${m===mode?' selected':''}>${this.esc(m)}${m===curL?' (now)':''}</option>`).join('');
+    const nav=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
+      <span style="font-size:9.5px;font-weight:800;color:#7d8ea0;text-transform:uppercase;letter-spacing:.4px">View</span>
+      <button class="schm-nav" data-dir="-1" style="border:none;background:#e4e9f1;color:#3a4560;border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:15px;line-height:1">‹</button>
+      <select class="sch-modesel" style="font-size:12px;font-weight:800;padding:5px 9px;border:1px solid #bccadb;border-radius:8px;background:#fff;color:#2e3a59">${opts}</select>
+      <button class="schm-nav" data-dir="1" style="border:none;background:#e4e9f1;color:#3a4560;border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:15px;line-height:1">›</button>
+      <span style="font-size:9px;color:#9aa6b6;flex:1">${isTotal?'entering the whole-zone TOTAL':'entering '+this.esc(mode)+' quantity'}</span>
+    </div>`;
+    const rows=acts.map(a=>{
+      const totalVal=this.actTotal(lv,zmk,a.id,a.total); let cum=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m);if(v!=null)cum+=v;});
+      let pct, qtyCells;
+      if(isTotal){
+        pct=(totalVal!=null&&totalVal>0)?Math.min(100,Math.round(cum/totalVal*100)):null;
+        const totCell=admin?`<input class="sch-total" data-a="${a.id}" value="${totalVal==null?'':totalVal}" placeholder="—" style="${inCss}">`:`<span style="width:60px;text-align:right;font-size:11px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${totalVal==null?'—':this.fmt(totalVal)}</span>`;
+        qtyCells=`<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">Total</span>${totCell}<span style="font-size:8.5px;color:#9aa6b6;width:26px;flex:0 0 auto">${this.esc(a.unit||'')}</span><span style="font-size:9px;color:#7d8ea0;flex:0 0 auto" title="Total completed across all months">done ${this.fmt(cum)}</span>`;
+      } else {
+        const plan=this.actPlan(lv,zmk,a.id,mode), dm=this.actDoneMonth(lv,zmk,a.id,mode);
+        pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
+        const planCell=admin?`<input class="sch-plan" data-a="${a.id}" data-m="${this.esc(mode)}" value="${plan==null?'':plan}" placeholder="—" style="${inCss}">`:`<span style="width:60px;text-align:right;font-size:11px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${plan==null?'—':this.fmt(plan)}</span>`;
+        const doneCell=admin?`<input class="sch-done" data-a="${a.id}" data-m="${this.esc(mode)}" value="${dm==null?'':dm}" placeholder="—" style="${inCss}">`:`<span style="width:60px;text-align:right;font-size:11px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?'—':this.fmt(dm)}</span>`;
+        qtyCells=`<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8.5px;color:#9aa6b6;width:22px;flex:0 0 auto">${this.esc(a.unit||'')}</span>`;
+      }
+      const bc=pct==null?'#c3ccd6':(pct>=100?'#35c08e':(pct>0?'#d98a2a':'#c3ccd6'));
+      const av=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{};
+      const dateCell=admin?`<input type="date" class="actdate-in" data-a="${a.id}" data-which="start" value="${av.start||''}" style="${dcss}"><span style="color:#9aa6b6;font-size:9px">→</span><input type="date" class="actdate-in" data-a="${a.id}" data-which="end" value="${av.end||''}" style="${dcss}">`:`<span style="font-size:9.5px;color:#4b5566;font-family:'IBM Plex Mono',monospace">${av.start||'—'} → ${av.end||'—'}</span>`;
+      return `<div style="border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6;padding:9px 11px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="flex:1;font-size:11.5px;color:#2e3a59;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span><span style="width:38px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:10.5px;font-weight:800;width:34px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">${qtyCells}</div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">Dates</span>${dateCell}</div>
+      </div>`;
+    }).join('');
+    return nav+(rows||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No activities.</div>');
   }
   buildSchedule(){
     const host=this.root.querySelector('#schedbody');
@@ -1566,16 +1579,15 @@ class Component extends DCLogic {
   }
   _bindSchedZone(host,lv,z){
     const zmk=z.mk||z.lid;
-    // month-block open/close persistence
-    host.querySelectorAll('details.schmo').forEach(d=>d.addEventListener('toggle',()=>{this._schMoOpen=this._schMoOpen||{};this._schMoOpen[d.dataset.mo]=d.open;}));
-    // checklist section open/close persistence (so ticking an element doesn't collapse the list)
-    this._schSecOpen=this._schSecOpen||{};
-    host.querySelectorAll('details.sec').forEach(d=>{const k=d.dataset.sec;if(!k)return;if(k in this._schSecOpen)d.open=this._schSecOpen[k];d.addEventListener('toggle',()=>{this._schSecOpen[d.dataset.sec]=d.open;});});
-    // per-month plan / done → routes through the same setters the map panel uses (auto sync + refresh)
+    const M=this.rwsIsAdmin()?this.ACT_MONTHS:this.visMonths(); const seq=['__total',...M];
+    // top switcher: Total ↔ month
+    const msel=host.querySelector('.sch-modesel'); if(msel)msel.addEventListener('change',()=>{this._schMode=msel.value;this.buildSchedule();});
+    host.querySelectorAll('.schm-nav').forEach(b=>b.addEventListener('click',()=>{const i=seq.indexOf(this._schMode)+(+b.dataset.dir);if(i<0||i>=seq.length)return;this._schMode=seq[i];this.buildSchedule();}));
+    // quantity inputs → same setters the map panel uses (auto sync + refresh)
+    host.querySelectorAll('.sch-total').forEach(el=>{ const c=()=>this.setActTotal(lv,zmk,el.dataset.a,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
     host.querySelectorAll('.sch-plan').forEach(el=>{ const c=()=>this.setActPlan(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
     host.querySelectorAll('.sch-done').forEach(el=>{ const c=()=>this.setActDoneMonth(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
-    // dates: zone overall + per-activity start/end
-    host.querySelectorAll('.zdate-in').forEach(el=>el.addEventListener('change',()=>this.setZoneDate(lv,z,el.dataset.which,el.value)));
+    // per-activity dates
     host.querySelectorAll('.actdate-in').forEach(el=>el.addEventListener('change',()=>this.setActDate(lv,zmk,el.dataset.a,el.dataset.which,el.value)));
   }
   paintTimelineSel(){this.root.querySelectorAll('#schedbody .gbar').forEach(el=>el.classList.toggle('sel',this.selKey&&el.dataset.k===this.selKey));}
