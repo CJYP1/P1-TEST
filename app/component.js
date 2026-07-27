@@ -1488,14 +1488,8 @@ class Component extends DCLogic {
     const mode=this._schMode, isTotal=(mode==='__total');
     const inCss='width:60px;text-align:right;font-size:11px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:3px 6px;flex:0 0 auto';
     const dcss='font-size:9.5px;font-family:inherit;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 4px;color:#2e3a59';
-    const opts=`<option value="__total"${isTotal?' selected':''}>Total (whole zone)</option>`+M.map(m=>`<option value="${this.esc(m)}"${m===mode?' selected':''}>${this.esc(m)}${m===curL?' (now)':''}</option>`).join('');
-    const nav=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
-      <span style="font-size:9.5px;font-weight:800;color:#7d8ea0;text-transform:uppercase;letter-spacing:.4px">View</span>
-      <button class="schm-nav" data-dir="-1" style="border:none;background:#e4e9f1;color:#3a4560;border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:15px;line-height:1">‹</button>
-      <select class="sch-modesel" style="font-size:12px;font-weight:800;padding:5px 9px;border:1px solid #bccadb;border-radius:8px;background:#fff;color:#2e3a59">${opts}</select>
-      <button class="schm-nav" data-dir="1" style="border:none;background:#e4e9f1;color:#3a4560;border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:15px;line-height:1">›</button>
-      <span style="font-size:9px;color:#9aa6b6;flex:1">${isTotal?'entering the whole-zone TOTAL':'entering '+this.esc(mode)+' quantity'}</span>
-    </div>`;
+    // switcher lives in the top "PROGRESS AS OF" bar (drives this._schMode) — drawer just shows a small reminder
+    const modeChip=`<div style="margin-bottom:10px;font-size:9.5px;color:#7d8ea0;font-weight:700">Showing <b style="color:#2e3a59">${isTotal?'TOTAL (whole zone)':this.esc(mode)}</b> — switch using the bar at the top.</div>`;
     const rows=acts.map(a=>{
       const totalVal=this.actTotal(lv,zmk,a.id,a.total); let cum=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m);if(v!=null)cum+=v;});
       let pct, qtyCells;
@@ -1519,7 +1513,7 @@ class Component extends DCLogic {
         <div style="display:flex;align-items:center;gap:6px"><span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">Dates</span>${dateCell}</div>
       </div>`;
     }).join('');
-    return nav+(rows||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No activities.</div>');
+    return modeChip+(rows||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No activities.</div>');
   }
   buildSchedule(){
     const host=this.root.querySelector('#schedbody');
@@ -1535,8 +1529,15 @@ class Component extends DCLogic {
     aHost.querySelectorAll('button').forEach(el=>el.onclick=()=>{this._schFilter=el.dataset.cat;this._schEdit=null;this.buildSchedule();});
     this.root.querySelector('#schedlegend').innerHTML=this.ZWT.slice().reverse().map(w=>`<div class="sl-item"><span class="sl-sw" style="background:${w.color}"></span>${w.label}</div>`).join('')+'<div class="sl-item"><span class="sl-fill"></span>Solid = % done</div><div class="sl-item"><span class="sl-lag"></span>Red = due / behind</div>';
     // ---- geo-zone listing: one card per MAP zone (combined "+" pour-groups are naturally split) ----
-    { const _ms=this.root.querySelector('#schedMonths'); if(_ms)_ms.innerHTML='<span style="font-size:10.5px;color:#8a94a6;font-weight:700">Click a zone to open its full monthly detail — same as the map panel.</span>'; }
-    { const _lg=this.root.querySelector('#schedlegend'); if(_lg)_lg.innerHTML='<div class="sl-item"><span class="sl-fill"></span>Solid bar = % done</div>'; }
+    // top bar = Total / month switcher; drives what the zone drawer shows & edits
+    { const _ms=this.root.querySelector('#schedMonths');
+      if(_ms){ const MM=this.rwsIsAdmin()?this.ACT_MONTHS:this.visMonths(); const curL=this.actCurLabel();
+        if(!this._schMode||(this._schMode!=='__total'&&MM.indexOf(this._schMode)<0))this._schMode=(MM.indexOf(curL)>=0?curL:'__total');
+        const mbtn=(val,label,on)=>`<button data-mode="${this.esc(val)}" style="white-space:nowrap;border:none;cursor:pointer;font-family:Archivo,sans-serif;font-weight:700;border-radius:8px;padding:6px 11px;font-size:11.5px;color:#2e3a59;${on?'background:#f5a623;box-shadow:inset 2px 2px 5px #c88b1e,inset -2px -2px 5px #ffc24d':'background:#eef2f7;box-shadow:0 0 0 1px #b6c3d5,2px 2px 6px #aebccf,-2px -2px 6px #ffffff'}">${label}</button>`;
+        _ms.innerHTML='<span style="font-size:10.5px;font-weight:800;color:#8a94a6;text-transform:uppercase;letter-spacing:.6px;margin-right:2px">Enter / view</span>'+mbtn('__total','Total',this._schMode==='__total')+MM.map(m=>mbtn(m,this.esc(m)+(m===curL?' •':''),this._schMode===m)).join('');
+        _ms.querySelectorAll('button').forEach(b=>b.onclick=()=>{this._schMode=b.dataset.mode;if(this._schMode!=='__total')this._actMonth=this._schMode;this.buildSchedule();});
+      } }
+    { const _lg=this.root.querySelector('#schedlegend'); if(_lg)_lg.innerHTML='<div class="sl-item"><span class="sl-fill"></span>Solid bar = % done</div><div class="sl-item" style="color:#8a94a6">Pick <b>Total</b> or a month above, then click a zone to enter quantities &amp; dates.</div>'; }
     const areas=(filt==='all'?['NB','EB','MA']:[filt]); let outHtml='';
     areas.forEach(aK=>{ const cc=this.CAT[aK]; if(!cc)return;
       const byLev={},seen={}; let zN=0,crit=0,pctSum=0,pctN=0;
@@ -1579,11 +1580,8 @@ class Component extends DCLogic {
   }
   _bindSchedZone(host,lv,z){
     const zmk=z.mk||z.lid;
-    const M=this.rwsIsAdmin()?this.ACT_MONTHS:this.visMonths(); const seq=['__total',...M];
-    // top switcher: Total ↔ month
-    const msel=host.querySelector('.sch-modesel'); if(msel)msel.addEventListener('change',()=>{this._schMode=msel.value;this.buildSchedule();});
-    host.querySelectorAll('.schm-nav').forEach(b=>b.addEventListener('click',()=>{const i=seq.indexOf(this._schMode)+(+b.dataset.dir);if(i<0||i>=seq.length)return;this._schMode=seq[i];this.buildSchedule();}));
-    // quantity inputs → same setters the map panel uses (auto sync + refresh)
+    // quantity inputs → same setters the map panel uses (auto sync + refresh); switcher is the top bar
+
     host.querySelectorAll('.sch-total').forEach(el=>{ const c=()=>this.setActTotal(lv,zmk,el.dataset.a,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
     host.querySelectorAll('.sch-plan').forEach(el=>{ const c=()=>this.setActPlan(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
     host.querySelectorAll('.sch-done').forEach(el=>{ const c=()=>this.setActDoneMonth(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
