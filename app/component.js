@@ -1484,29 +1484,29 @@ class Component extends DCLogic {
     const M=admin?this.ACT_MONTHS:this.visMonths(); const curL=this.actCurLabel();
     const acts=this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z));
     this._schMoOpen=this._schMoOpen||{};
-    const inCss='width:54px;text-align:right;font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 5px;flex:0 0 auto';
+    const inCss='width:56px;text-align:right;font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;color:#2e3a59;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 5px;flex:0 0 auto';
     let blocks='';
+    // every applicable activity is shown in every month so admin can enter data anywhere
     M.forEach(m=>{
-      const rows=[];
-      acts.forEach(a=>{ const plan=this.actPlan(lv,zmk,a.id,m), dm=this.actDoneMonth(lv,zmk,a.id,m);
-        if(plan==null && (dm==null||dm===0)) return; // only activities scheduled / worked this month
+      const rows=acts.map(a=>{ const plan=this.actPlan(lv,zmk,a.id,m), dm=this.actDoneMonth(lv,zmk,a.id,m);
         const pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
         const bc=pct==null?'#c3ccd6':(pct>=100?'#35c08e':(pct>0?'#d98a2a':'#c3ccd6'));
-        const _ea=this._elemAct(a.id); const _derived=_ea&&this._zoneHasElems(lv,zmk,_ea.types);
-        const planCell=admin?`<input class="sch-plan" data-a="${a.id}" data-m="${this.esc(m)}" value="${plan==null?'':plan}" placeholder="plan" style="${inCss}">`:`<span style="width:54px;text-align:right;font-size:10.5px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${plan==null?'—':this.fmt(plan)}</span>`;
-        const doneCell=_derived?`<span title="Auto-counted from the checklist below" style="width:54px;text-align:right;font-size:10.5px;color:#4b5566;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?0:this.fmt(dm)}⚙</span>`:(admin?`<input class="sch-done" data-a="${a.id}" data-m="${this.esc(m)}" value="${dm==null?'':dm}" placeholder="done" style="${inCss}">`:`<span style="width:54px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?'—':this.fmt(dm)}</span>`);
-        rows.push(`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span><span style="width:34px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8px;color:#9aa6b6;width:20px;flex:0 0 auto">${this.esc(a.unit||'')}</span><span style="font-size:10px;font-weight:700;width:32px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`);
-      });
-      if(!rows.length && m!==curL) return; // skip empty months except the current one
+        const planCell=admin?`<input class="sch-plan" data-a="${a.id}" data-m="${this.esc(m)}" value="${plan==null?'':plan}" placeholder="—" style="${inCss}">`:`<span style="width:56px;text-align:right;font-size:10.5px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${plan==null?'—':this.fmt(plan)}</span>`;
+        const doneCell=admin?`<input class="sch-done" data-a="${a.id}" data-m="${this.esc(m)}" value="${dm==null?'':dm}" placeholder="—" style="${inCss}">`:`<span style="width:56px;text-align:right;font-size:10.5px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?'—':this.fmt(dm)}</span>`;
+        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(a.label)}">${this.esc(a.label)}</span><span style="width:30px;height:6px;border-radius:4px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:${Math.min(pct||0,100)}%;background:${bc}"></span></span><span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8px;color:#9aa6b6;width:20px;flex:0 0 auto">${this.esc(a.unit||'')}</span><span style="font-size:10px;font-weight:700;width:32px;text-align:right;flex:0 0 auto;color:${pct==null?'#aab4c2':bc}">${pct==null?'—':pct+'%'}</span></div>`;
+      }).join('');
       const okey=zmk+'||'+m; const open=(okey in this._schMoOpen)?this._schMoOpen[okey]:(m===curL);
-      blocks+=`<details class="schmo" data-mo="${this.esc(okey)}"${open?' open':''} style="margin-bottom:8px;border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6${m===curL?';outline:1.5px solid #4a90e2':''}"><summary style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;padding:9px 11px;list-style:none">${this.esc(m)}${m===curL?' · now':''}</summary><div style="padding:0 11px 10px">${rows.join('')||'<div style="font-size:10px;color:#aab4c2">no work this month</div>'}</div></details>`;
+      blocks+=`<details class="schmo" data-mo="${this.esc(okey)}"${open?' open':''} style="margin-bottom:8px;border-radius:12px;background:#e8edf3;box-shadow:inset 0 0 0 1px #cdd8e6${m===curL?';outline:1.5px solid #4a90e2':''}"><summary style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;padding:9px 11px;list-style:none">${this.esc(m)}${m===curL?' · now':''}</summary><div style="padding:0 11px 10px">${rows||'<div style="font-size:10px;color:#aab4c2">no activities</div>'}</div></details>`;
     });
-    // Elements & checklists — full detail, same as the map panel (ticking columns/beams etc.)
-    let elem='';
-    acts.forEach(a=>{ const s=this._actElemSecFull(lv,z,a.id); if(s)elem+=`<div style="margin-bottom:2px"><div style="font-size:9.5px;font-weight:800;color:#7d8ea0;text-transform:uppercase;letter-spacing:.4px;margin:6px 0 2px">${this.esc(a.label)}</div>${s}</div>`; });
-    const custom=this._custSecHtml(lv,z,admin);
-    const elemBlock=(elem||custom)?`<details class="sec schelemwrap" data-sec="__schelem" open style="margin-top:6px"><summary class="t" style="cursor:pointer">Elements &amp; checklists</summary><div style="padding-top:4px">${elem}${custom}</div></details>`:'';
-    return (blocks||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No scheduled work.</div>')+elemBlock;
+    // Dates — zone overall + per-activity start/end, all editable (admin)
+    const dcss='font-size:9.5px;font-family:inherit;border:1px solid #bccadb;border-radius:6px;background:#fff;padding:2px 4px;color:#2e3a59';
+    const zdt=(this._zdate||{})[lv+'||'+zmk]||{};
+    const dRow=(label,which,val,extra)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="flex:1;font-size:10.5px;color:#4b5566;font-weight:${which==='zone'?'700':'600'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0" title="${this.esc(label)}">${this.esc(label)}</span>${extra}</div>`;
+    const dateInputs=(cls,attrs,v)=>admin?`<input type="date" class="${cls}" ${attrs} data-which="start" value="${v.start||''}" style="${dcss}"><span style="color:#9aa6b6;font-size:9px">→</span><input type="date" class="${cls}" ${attrs} data-which="end" value="${v.end||''}" style="${dcss}">`:`<span style="font-size:9.5px;color:#4b5566;font-family:'IBM Plex Mono',monospace">${v.start||'—'} → ${v.end||'—'}</span>`;
+    let dRows=dRow('Zone (overall)','zone',zdt,dateInputs('zdate-in','',zdt));
+    acts.forEach(a=>{ const av=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{}; dRows+=dRow(a.label,'act',av,dateInputs('actdate-in','data-a="'+a.id+'"',av)); });
+    const datesBlock=`<details class="sec" data-sec="__dates" open style="margin-top:6px"><summary class="t" style="cursor:pointer">Dates (start → end)</summary><div style="padding:6px 2px 2px">${dRows}</div></details>`;
+    return (blocks||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No activities.</div>')+datesBlock;
   }
   buildSchedule(){
     const host=this.root.querySelector('#schedbody');
@@ -1574,20 +1574,9 @@ class Component extends DCLogic {
     // per-month plan / done → routes through the same setters the map panel uses (auto sync + refresh)
     host.querySelectorAll('.sch-plan').forEach(el=>{ const c=()=>this.setActPlan(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
     host.querySelectorAll('.sch-done').forEach(el=>{ const c=()=>this.setActDoneMonth(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
-    // element checklists (columns / beams / piles / lifts / stairs / cores / custom items)
-    host.querySelectorAll('.elchip').forEach(el=>el.addEventListener('click',()=>this.cycleElem(el.dataset.key)));
-    host.querySelectorAll('.eldate').forEach(el=>{el.addEventListener('click',e=>e.stopPropagation());el.addEventListener('change',()=>{const key=el.dataset.key;if(!this.rwsCanEditElement(key)){this.rwsDeny('You can only update items inside your assigned zones.');return;}this.setElemDate(key,el.value);this.commitElem();});});
-    host.querySelectorAll('[data-bulk]').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();ev.preventDefault();
-      if(!this.rwsIsAdmin() && !this.rwsScopeOk(lv,zmk)){this.rwsDeny('Outside your assigned zones.');return;}
-      const type=el.dataset.bulk; const items=({col:z.cols,pile:z.piles,beam:z.beams,lift:z.lifts,stair:z.stairs,core:z.cores})[type]||[];
-      items.forEach(x=>{const key=this.ekey(lv,z,type,typeof x==='string'?x:x.id);this.elem[key]='done';rwsSyncElementStatus(key,'done');});this.commitElem();}));
-    host.querySelectorAll('[data-bulk-all]').forEach(el=>el.addEventListener('click',()=>this.setZoneElems(lv,z,el.dataset.bulkAll)));
-    // custom "+add" lists
-    host.querySelectorAll('.cnewcat-act').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const aid=el.dataset.a;const lab=el.dataset.lab||'status';this._inputModal({title:'Add to '+lab+' list',label:lab+' item ID / Area / Vol / Nos. etc',placeholder:'e.g. CX19-CY41',ok:'Add',onOk:(id)=>{const code=this._ensureActItemsCat(aid);this.addCustomItem(lv,zmk,code,id);}});}));
-    host.querySelectorAll('.cadd').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();this._inputModal({title:'Add item',label:'Item ID / mark',placeholder:'e.g. W-1',ok:'Add',onOk:(id)=>this.addCustomItem(lv,zmk,el.dataset.cat,id)});}));
-    host.querySelectorAll('.cdel').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const p=el.dataset.del.split('||');if(confirm('Delete '+p[1]+'?'))this.delCustomItem(lv,zmk,p[0],p[1]);}));
-    host.querySelectorAll('.cdelcat').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();this.delCustomCat(el.dataset.cat);}));
-    host.querySelectorAll('.catvis').forEach(el=>{el.addEventListener('click',ev=>ev.stopPropagation());el.addEventListener('change',()=>this.setActVis(lv,zmk,el.dataset.a,el.checked,z));});
+    // dates: zone overall + per-activity start/end
+    host.querySelectorAll('.zdate-in').forEach(el=>el.addEventListener('change',()=>this.setZoneDate(lv,z,el.dataset.which,el.value)));
+    host.querySelectorAll('.actdate-in').forEach(el=>el.addEventListener('change',()=>this.setActDate(lv,zmk,el.dataset.a,el.dataset.which,el.value)));
   }
   paintTimelineSel(){this.root.querySelectorAll('#schedbody .gbar').forEach(el=>el.classList.toggle('sel',this.selKey&&el.dataset.k===this.selKey));}
 
