@@ -55,6 +55,7 @@ class Component extends DCLogic {
     try{this._actCmt=JSON.parse(localStorage.getItem('rws_act_cmt')||'{}');}catch(e){this._actCmt={};}
     try{this._catAdd=JSON.parse(localStorage.getItem('rws_cat_add')||'[]');}catch(e){this._catAdd=[];}
     try{this._elemAdd=JSON.parse(localStorage.getItem('rws_elem_add')||'{}');}catch(e){this._elemAdd={};}
+    try{this._colAdd=JSON.parse(localStorage.getItem('rws_col_add')||'{}');}catch(e){this._colAdd={};}   // 管理员在地图上放置的柱子(Marine 等)
     this.loadUpdates();
     this.loadElem();
     this.deriveProgress();
@@ -877,9 +878,17 @@ class Component extends DCLogic {
         s+=`<text class="collbl" ${_uT?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id.replace('WF-B2','').replace('MK-B2','MK-'))}</text>`;
       });
     }
-    if(this.showColumns && this.curLevel==='L1'){   // Marine 占位柱: 暂无真实坐标, 按数量在区内均匀摆放(空心红点=估算位置, 有真坐标后替换)
-      L.zones.forEach(z=>{ if(z.cat!=='MA')return; const n=(z.counts&&z.counts.columns)||0; if(!n)return;
-        this._evenPtsInZone(z,n).forEach(p=>{ s+=`<circle class="colmk colmk-ph" cx="${p[0].toFixed(0)}" cy="${(H-p[1]).toFixed(0)}" r="950" fill="#ffffff" fill-opacity="0.85" stroke="#c8102e" stroke-width="300" stroke-dasharray="650,450"/>`; });
+    if(this.showColumns && this.curLevel==='L1'){   // Marine 占位柱: 剩余未放置的按数量均匀摆(空心红点); 已用"点击放柱"放的画实心点
+      const _placed=this.placedCols(this.curLevel);
+      L.zones.forEach(z=>{ if(z.cat!=='MA')return; const tot=(z.counts&&z.counts.columns)||0;
+        const placedN=_placed.filter(c=>c.zone===z.label).length; const rem=tot-placedN; if(rem<=0)return;
+        this._evenPtsInZone(z,rem).forEach(p=>{ s+=`<circle class="colmk colmk-ph" cx="${p[0].toFixed(0)}" cy="${(H-p[1]).toFixed(0)}" r="950" fill="#ffffff" fill-opacity="0.85" stroke="#c8102e" stroke-width="300" stroke-dasharray="650,450"/>`; });
+      });
+    }
+    if(this.showColumns){   // 管理员点击放置的真实柱子(实心红点)
+      this.placedCols(this.curLevel).forEach(c=>{ const sy=H-c.y;
+        s+=`<circle class="colmk colmk-placed" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${c.crit?'#c8102e':'#8a93a3'}" stroke="#ffffff" stroke-width="220"/>`;
+        s+=`<text class="collbl" x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id)}</text>`;
       });
     }
     // ZC 叠加层: 从真实 Marine 父区几何一次性生成(与 C/P 一样可切换显示)
@@ -902,7 +911,7 @@ class Component extends DCLogic {
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
-      el.addEventListener('click',()=>{const z=L.zones[+el.dataset.i];if(!this.zoneVisible(z))return;this.selKey=this.zid(z);this.selectZone(z);this.paintSel();this.paintTimelineSel();});
+      el.addEventListener('click',()=>{if(this._placingCol)return;const z=L.zones[+el.dataset.i];if(!this.zoneVisible(z))return;this.selKey=this.zid(z);this.selectZone(z);this.paintSel();this.paintTimelineSel();});
     });
     this.svg.querySelectorAll('.subz').forEach(el=>{
       el.addEventListener('mousemove',ev=>{const [cls,i]=el.dataset.sk.split('|');const kind=cls.replace('sub','');const e=this.SUBZONES[this.curLevel][kind][+i];
@@ -910,11 +919,11 @@ class Component extends DCLogic {
         const r=this.svg.getBoundingClientRect();let x=ev.clientX-r.left+14,y=ev.clientY-r.top+14;if(x>r.width-240)x-=260;if(y>r.height-90)y-=90;
         this.tip.style.left=x+'px';this.tip.style.top=y+'px';this.tip.style.opacity=1;});
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
-      el.addEventListener('click',ev=>{ev.stopPropagation();const [cls,i]=el.dataset.sk.split('|');const kind=cls.replace('sub','');
+      el.addEventListener('click',ev=>{if(this._placingCol)return;ev.stopPropagation();const [cls,i]=el.dataset.sk.split('|');const kind=cls.replace('sub','');
         if(kind==='ZC'){const e=this.SUBZONES[this.curLevel].ZC[+i];const z=(this.DATA.levels[this.curLevel].zones||[]).find(x=>x.label===e.label);if(z){this._subOpen=null;this.selKey=this.zid(z);this.selectZone(z);this.paintSel();return;}}
         this.selectSubzone(kind,+i);});
     });
-    this.svg.querySelectorAll('.colmk').forEach(el=>{
+    this.svg.querySelectorAll('.colmk[data-ci]').forEach(el=>{
       el.addEventListener('mousemove',ev=>{const c=this.COLUMNS[this.curLevel][+el.dataset.ci];
         this.tip.innerHTML=`<h4>${this.esc(c.id)}</h4><div class="grp">Column · ${this.esc(c.sz||'')} · zone ${this.esc(c.zone||'')} · click to open</div>`;
         const r=this.svg.getBoundingClientRect();let x=ev.clientX-r.left+14,y=ev.clientY-r.top+14;
@@ -1011,9 +1020,13 @@ class Component extends DCLogic {
     const SL=this.SUBZONES&&this.SUBZONES[this.curLevel];
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
-    p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>`;
+    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}`:'';
+    p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
-      if(el.dataset.k==='ZC')this.showSubZC=!this.showSubZC;else if(el.dataset.k==='C')this.showSubC=!this.showSubC;else if(el.dataset.k==='P')this.showSubP=!this.showSubP;
+      const k=el.dataset.k;
+      if(k==='__place'){this.togglePlaceCol();return;}
+      if(k==='__expcol'){this.exportPlacedCols();return;}
+      if(k==='ZC')this.showSubZC=!this.showSubZC;else if(k==='C')this.showSubC=!this.showSubC;else if(k==='P')this.showSubP=!this.showSubP;
       this.buildMetrics();this.render();}));
   }
   showTip(ev,i){
@@ -1145,6 +1158,35 @@ class Component extends DCLogic {
   // (robust to imperfect shared vertices). Cached per level. Neutral bold dividing lines.
   ptIn(ring,x,y){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
   _evenPtsInZone(z,n){const r=z.ring;let x0=1e18,y0=1e18,x1=-1e18,y1=-1e18;r.forEach(p=>{if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0];if(p[1]<y0)y0=p[1];if(p[1]>y1)y1=p[1];});const inside=[],G=14;for(let ri=1;ri<G;ri++)for(let ci=1;ci<G;ci++){const px=x0+(x1-x0)*ci/G,py=y0+(y1-y0)*ri/G;if(this.ptIn(r,px,py))inside.push([px,py]);}if(inside.length<=n)return inside;const out=[],step=inside.length/n;for(let k=0;k<n;k++)out.push(inside[Math.floor(k*step)]);return out;}
+  /* ---------- 点击放置柱子(管理员, 无需坐标; 点地图取精确位置) ---------- */
+  placedCols(lv){return (this._colAdd&&this._colAdd[lv])||[];}
+  savePlacedCols(){try{localStorage.setItem('rws_col_add',JSON.stringify(this._colAdd||{}));}catch(e){}}
+  togglePlaceCol(){if(!this.rwsIsAdmin())return;this._placingCol=!this._placingCol;if(this.svg)this.svg.style.cursor=this._placingCol?'crosshair':'';this.refreshSubzPanel();}
+  _placeColAt(clientX,clientY){
+    if(!this._placingCol||!this.rwsIsAdmin())return;
+    const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;
+    const r=this.svg.getBoundingClientRect();
+    const sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w, sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;
+    const dx=sx, dy=H-sy;   // proj 的逆(proj: [x,H-y])
+    this._colAdd=this._colAdd||{};const arr=this._colAdd[lv]||(this._colAdd[lv]=[]);
+    // 点到已放置的柱子附近 → 删除(撤销误点); r≈1200 图纸单位
+    const near=arr.findIndex(c=>Math.hypot(c.x-dx,c.y-dy)<1400);
+    if(near>=0){arr.splice(near,1);this.savePlacedCols();this.render();return;}
+    // 找所在分区(优先 Marine, 否则任意包含该点的区)
+    let zoneLabel='';const zs=L.zones||[];
+    let z=zs.find(z=>z.cat==='MA'&&z.ring&&this.ptIn(z.ring,dx,dy))||zs.find(z=>z.ring&&this.ptIn(z.ring,dx,dy));
+    if(z)zoneLabel=z.label;
+    const n=arr.filter(c=>c.zone===zoneLabel).length+1;
+    arr.push({id:(zoneLabel? zoneLabel.replace(/\s+/g,'')+'-C'+n : 'MCOL-'+(arr.length+1)),x:dx,y:dy,zone:zoneLabel,sz:'',crit:false,placed:true});
+    this.savePlacedCols();this.render();
+  }
+  exportPlacedCols(){
+    const rows=[['楼层','分区','柱号','x','y','尺寸','关键路径']];
+    Object.keys(this._colAdd||{}).forEach(lv=>this._colAdd[lv].forEach(c=>rows.push([lv,c.zone||'',c.id,Math.round(c.x),Math.round(c.y),c.sz||'',c.crit?'是':'否'])));
+    const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+    const blob=new Blob(['﻿'+rows.map(r=>r.map(esc).join(',')).join('\r\n')],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='placed_columns_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},400);
+  }
   buildList(){
     const L=this.DATA.levels[this.curLevel],seen={},arr=[];
     L.zones.forEach(z=>{if(!this.zoneVisible(z))return;const k=this.zid(z);if(!seen[k]){seen[k]=1;arr.push(z);}});
@@ -1742,8 +1784,9 @@ class Component extends DCLogic {
       const mxr=(ev.clientX-r.left)/r.width,myr=(ev.clientY-r.top)/r.height,f=ev.deltaY<0?0.85:1/0.85;
       this.vb={x:this.vb.x+(this.vb.w-this.vb.w*f)*mxr,y:this.vb.y+(this.vb.h-this.vb.h*f)*myr,w:this.vb.w*f,h:this.vb.h*f};
       svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);this.colLOD();},{passive:false});
-    let dragging=false,last=null;
-    svg.addEventListener('mousedown',ev=>{dragging=true;last=[ev.clientX,ev.clientY];svg.classList.add('drag');});
+    let dragging=false,last=null,downXY=null;
+    svg.addEventListener('mousedown',ev=>{dragging=true;last=[ev.clientX,ev.clientY];downXY=[ev.clientX,ev.clientY];svg.classList.add('drag');});
+    svg.addEventListener('click',ev=>{if(!this._placingCol)return;if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;this._placeColAt(ev.clientX,ev.clientY);});
     window.addEventListener('mouseup',()=>{dragging=false;svg.classList.remove('drag');});
     window.addEventListener('mousemove',ev=>{if(!dragging)return;const r=svg.getBoundingClientRect();
       this.vb.x-=(ev.clientX-last[0])/r.width*this.vb.w;this.vb.y-=(ev.clientY-last[1])/r.height*this.vb.h;last=[ev.clientX,ev.clientY];
