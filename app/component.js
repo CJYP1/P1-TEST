@@ -792,8 +792,8 @@ class Component extends DCLogic {
       let op=vis?(this.colorMode==='area'?0.5:0.72):0.05;
       let planst='';
       if(vis&&this.colorMode==='plan'){ const _m=this.planMonth(); if(this.zoneHasPlan(this.curLevel,z,_m))op=0.62; else if(this.zoneRollIn(this.curLevel,z,_m))op=0.6; else{const _st=(z._p&&z._p.status)||'todo';op=_st==='done'?0.62:(_st==='wip'?0.6:0.92);} }
-      const _maL1=(this.curLevel==='L1'&&z.cat==='MA');   // L1 Marine 父区(ZC)
-      if(_maL1&&!this.showSubZC)op=0;                        // ZC 层关: 只显示外轮廓/边界线, 不填充; 开则保持正常颜色
+      const _maL1=(this.curLevel==='L1'&&z.cat==='MA');   // L1 Marine 父区(ZC): 底图不填充(填色交给 ZC 叠加层), 只留边界线
+      if(_maL1)op=0;
       s+=`<polygon class="zone${vis?'':' dim'}${crit}${planst}" data-i="${i}" points="${pts}" fill="${this.zoneFill(z)}" fill-opacity="${op}"/>`;
     });
     {const _hk=['podcis','podium','transfer'].filter(k=>this.showOvl[k]);
@@ -888,7 +888,11 @@ class Component extends DCLogic {
       const lq=this.proj(e.lp,H);
       s+=`<polygon class="subz ${cls}" data-sk="${cls}|${i}" points="${pts}" fill="${col}" fill-opacity="0" stroke="${col}" stroke-width="650"${dash?' stroke-dasharray="2200,1300"':''}/>`;
       s+=`<text class="subzlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="3400" fill="${col}">${this.esc(e.label)}</text>`;});};
-     _dr(_subL.ZC,'subZC','#1d4ed8',false,this.showSubZC);
+     if(this.showSubZC&&_subL.ZC){_subL.ZC.forEach((e,i)=>{
+       const zpts=e.pts.map(pp=>{const q=this.proj(pp,H);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');
+       const zlq=this.proj(e.lp,H); const zcol=(this.zoneTint?this.zoneTint(e.label):'#8fb4e8');
+       s+=`<polygon class="subz subZC" data-sk="subZC|${i}" points="${zpts}" fill="${zcol}" fill-opacity="0.55" stroke="#1d4ed8" stroke-width="700"/>`;
+       s+=`<text class="subzlbl" x="${zlq[0].toFixed(0)}" y="${zlq[1].toFixed(0)}" font-size="3400" fill="#12306e">${this.esc(e.label)}</text>`;});}
      _dr(_subL.C,'subC','#b35a1f',false,this.showSubC);
      _dr(_subL.P,'subP','#7c3aed',true,this.showSubP);}
     this.svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);
