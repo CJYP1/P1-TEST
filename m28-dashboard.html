@@ -30,7 +30,7 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
  document.addEventListener('click',function(e){ if(panel.style.display==='block' && !panel.contains(e.target) && !(e.target.classList&&e.target.classList.contains('m28-cbtn'))) closeP(); });
  function renderList(item){
    var arr=(window.__m28.comments[item]||[]);
-   ttl.textContent='评论 · '+item+' ('+arr.length+')';
+   var _t=item.indexOf('col::')===0?item.split('::').pop():item; ttl.textContent='评论 · '+_t+' ('+arr.length+')';
    list.innerHTML = arr.length ? arr.map(function(c){return '<div class="cm"><span class="who">'+esc(c.author)+'</span><span class="tm">'+esc(fmtTs(c.ts))+'</span><div class="bd">'+esc(c.body)+'</div></div>';}).join('') : '<div style="font-size:11px;color:#898781">还没有评论</div>';
    addBox.style.display = window.__m28.canComment ? 'flex' : 'none';
  }
@@ -46,13 +46,17 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
      var arr=(r&&r.ok&&r.data)||[]; var map={}; arr.forEach(function(c){ (map[c.item]=map[c.item]||[]).push(c); }); window.__m28.comments=map;
    }catch(e){ window.__m28.comments={}; }
  }
- function markItems(){
-   document.querySelectorAll('[data-item-id]').forEach(function(it){
-     var id=it.getAttribute('data-item-id'); var n=(window.__m28.comments[id]||[]).length;
-     var btn=it.querySelector('.m28-cbtn');
-     if(!btn){ btn=document.createElement('span'); btn.className='m28-cbtn'; it.appendChild(btn);
-       btn.addEventListener('click',function(ev){ ev.stopPropagation(); openP(id,btn); }); }
-     btn.className='m28-cbtn'+(n>0?' has':''); btn.textContent='💬'+(n>0?n:'');
+ function markItems(){          /* 每个类别列(thead th)一个评论位, 不再每格一个 */
+   document.querySelectorAll('table.cs-table').forEach(function(tbl,ti){
+     tbl.querySelectorAll('thead th').forEach(function(th,ci){
+       var label=(th.textContent||'').trim(); if(!label) return;
+       var key='col::t'+ti+'::c'+ci+'::'+label;
+       var n=(window.__m28.comments[key]||[]).length;
+       var btn=th.querySelector('.m28-cbtn');
+       if(!btn){ btn=document.createElement('span'); btn.className='m28-cbtn'; th.appendChild(btn);
+         btn.addEventListener('click',function(ev){ ev.stopPropagation(); openP(key,btn); }); }
+       btn.className='m28-cbtn'+(n>0?' has':''); btn.textContent='💬'+(n>0?n:'');
+     });
    });
  }
  document.getElementById('m28csend').addEventListener('click',async function(){

@@ -880,7 +880,7 @@ class Component extends DCLogic {
     }
     const _realCol=(this.COLUMNS&&this.COLUMNS[this.curLevel])||[];
     const _realIds=new Set(_realCol.map(c=>c.id));
-    if(this.showColumns && this.curLevel==='L1'){   // Marine 占位柱: 剩余(总数 - 已入库真实柱 - 本地放置)才画空心红点
+    if(this._showColPh && this.showColumns && this.curLevel==='L1'){   // Marine 占位柱(默认隐藏; 设 this._showColPh=true 可再显示): 剩余(总数 - 已入库真实柱 - 本地放置)才画空心红点
       const _placed=this.placedCols(this.curLevel).filter(c=>!_realIds.has(c.id));
       L.zones.forEach(z=>{ if(z.cat!=='MA')return; const tot=(z.counts&&z.counts.columns)||0;
         const realN=_realCol.filter(c=>c.zone===z.label).length;
@@ -994,10 +994,12 @@ class Component extends DCLogic {
     const lv=this.curLevel, sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:e.a};
     let editHtml='';
     if(editable){
+      const _ap=this.zoneActPct(lv,sz); const _opct=_ap?_ap.pct:null; const _pc=this.progColor(_opct||0);
+      const progHtml=`<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim)">Site progress ${_opct==null?'<span style="color:var(--faint);font-weight:600;text-transform:none">No data yet</span>':''}</div><div style="font-size:20px;font-weight:800;color:${_pc}">${_opct==null?'—':_opct+'%'}</div></div><div style="height:9px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-top:5px;box-shadow:inset 0 0 0 1px var(--line)"><i style="display:block;height:100%;width:${_opct||0}%;background:${_pc}"></i></div></div>`;
       const M=this.ACT_MONTHS, curL=this.actCurLabel();
       if(!this._schMode||(this._schMode!=='__total'&&M.indexOf(this._schMode)<0))this._schMode=(M.indexOf(curL)>=0?curL:'__total');
       const opts=`<option value="__total"${this._schMode==='__total'?' selected':''}>Total</option>`+M.map(m=>`<option value="${this.esc(m)}"${m===this._schMode?' selected':''}>${this.esc(m)}${m===curL?' (now)':''}</option>`).join('');
-      editHtml=`<div class="sec"><div class="t">Enter data · this sub-division only</div>
+      editHtml=progHtml+`<div class="sec"><div class="t">Enter data · this sub-division only</div>
         <div style="font-size:9.5px;color:var(--faint);margin:-2px 0 6px">Stored on this sub-division (key ${this.esc(sz.mk)}) — not rolled up to the parent zone.</div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="font-size:9.5px;font-weight:800;color:var(--dim);text-transform:uppercase">View</span>
           <button class="hbtn sub-mnav" data-dir="-1" style="padding:4px 10px;font-size:15px;line-height:1">‹</button>
@@ -1602,7 +1604,7 @@ class Component extends DCLogic {
         pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
         const planCell=admin?`<input class="sch-plan" data-a="${a.id}" data-m="${this.esc(mode)}" value="${plan==null?'':plan}" placeholder="—" style="${inCss}">`:`<span style="width:60px;text-align:right;font-size:11px;color:#7d8ea0;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${plan==null?'—':this.fmt(plan)}</span>`;
         const doneCell=admin?`<input class="sch-done" data-a="${a.id}" data-m="${this.esc(mode)}" value="${dm==null?'':dm}" placeholder="—" style="${inCss}">`:`<span style="width:60px;text-align:right;font-size:11px;color:#2e3a59;font-family:'IBM Plex Mono',monospace;flex:0 0 auto">${dm==null?'—':this.fmt(dm)}</span>`;
-        qtyCells=`<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}<span style="font-size:8.5px;color:#9aa6b6;width:22px;flex:0 0 auto">${this.esc(a.unit||'')}</span>`;
+        qtyCells=`<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">P</span>${planCell}${admin?this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+mode):''}<span style="font-size:8.5px;color:#9aa6b6;flex:0 0 auto">D</span>${doneCell}${admin?this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+mode):''}<span style="font-size:8.5px;color:#9aa6b6;width:22px;flex:0 0 auto">${this.esc(a.unit||'')}</span>`;
       }
       const bc=pct==null?'#c3ccd6':(pct>=100?'#35c08e':(pct>0?'#d98a2a':'#c3ccd6'));
       const av=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{};
@@ -1688,6 +1690,7 @@ class Component extends DCLogic {
     host.querySelectorAll('.sch-done').forEach(el=>{ const c=()=>this.setActDoneMonth(lv,zmk,el.dataset.a,el.dataset.m,el.value,z); el.addEventListener('change',c); el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}); });
     // per-activity dates
     host.querySelectorAll('.actdate-in').forEach(el=>el.addEventListener('change',()=>this.setActDate(lv,zmk,el.dataset.a,el.dataset.which,el.value)));
+    host.querySelectorAll('.act-lock').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();this.toggleEdited(el.dataset.store,el.dataset.k);}));
   }
   paintTimelineSel(){this.root.querySelectorAll('#schedbody .gbar').forEach(el=>el.classList.toggle('sel',this.selKey&&el.dataset.k===this.selKey));}
 
