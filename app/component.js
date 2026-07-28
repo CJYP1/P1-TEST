@@ -988,39 +988,25 @@ class Component extends DCLogic {
     if(kind==='L2'){ const cs=(L.l2c||{})[e.label]||[]; if(cs.length)rows.push(['Sub-divisions (C)',cs.join(', ')]);
       const ps=(L.l2p||{})[e.label]||[]; if(ps.length)rows.push(['Pour groups (P)',ps.join(', ')]); }
     const t={'C':'Marine sub-division','CZ':'Casting zone','P':'Pour group','L2':'L2 zone (above)'}[kind];
-    const sb=this.root.querySelector('#sidebody'); if(!sb)return; this.setSummaryVis&&this.setSummaryVis();
-    const admin=this.rwsIsAdmin();
+    const lv=this.curLevel, admin=this.rwsIsAdmin();
     const editable=(kind==='C'||kind==='P')&&admin;   // C/P 细分可录入(仅管理员); 数据独立记在细分自己的键上
-    this._subOpen=editable?{kind,i}:null;
-    const lv=this.curLevel, sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:e.a};
-    let editHtml='';
     if(editable){
-      sz.cols=[];sz.piles=[];sz.beams=[];sz.lifts=[];sz.stairs=[];sz.sub=[];   // 合成分区: 无构件清单
-      const _ap=this.zoneActPct(lv,sz); const _opct=_ap?_ap.pct:null; const _pc=this.progColor(_opct||0);
-      const _st=_opct==null?{label:'Not started',v:'--todo'}:(_opct>=100?{label:'Complete',v:'--done'}:{label:'In progress',v:'--wip'});
-      const tiles=this.statCell(lv,sz.mk,'area','Area m²',sz.area||0)+this._actList(lv,sz).filter(a=>a.id!=='exc'&&a.id!=='demo'&&(a.id!=='pile'||lv==='B2')).map(a=>{const tot=this.actTotal(lv,sz.mk,a.id,a.total);const lab=this.esc(a.label)+(a.unit?' '+this.esc(a.unit):'');if(this.rwsIsAdmin())return `<div class="stat"><input class="actot-ov-in" data-a="${this.esc(a.id)}" value="${tot==null?'':tot}" placeholder="—" title="${this.esc(a.label)} total (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">${lab}</div></div>`;return tot?`<div class="stat"><div class="n">${this.fmt(tot)}</div><div class="l">${lab}</div></div>`:'';}).join('');
-      editHtml=`<div class="detail" style="padding:0 0 6px">
-        <h3 style="margin-top:6px;display:flex;align-items:center">${this.esc(e.label)}<span style="margin-left:auto;font-size:13px;font-weight:800;color:var(${_st.v})">${_st.label}</span></h3>
-        <div class="progblock">
-          <div class="top"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim)">Site progress ${_opct==null?'<span style="color:var(--faint);font-weight:600;text-transform:none">No data yet</span>':''}</div><div class="pc" style="color:${_pc}">${_opct==null?0:_opct}%</div></div>
-          <div class="pbar"><i style="width:${_opct||0}%;background:${_pc}"></i></div>
-          <div class="prows">${this._zdateRow(lv,sz,'Plan start','start')}${this._zdateRow(lv,sz,'Plan end','end')}</div>
-        </div>
-        <div class="statgrid">${tiles}</div>
-        <div style="font-size:9.5px;color:var(--faint);margin:2px 0 4px">Stored on this sub-division (key ${this.esc(sz.mk)}) — not rolled up to the parent zone.${this.rwsIsAdmin()?' Dashed boxes are editable — press Enter or click away to save.':''}</div>
-      </div>`;
+      // 直接复用 ZC 的完整分区面板(含 ACTIVITIES/月份切换/STATUS/日期/锁), 合成一个只属于此细分的分区
+      const sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:e.a,
+        grp:(kind==='P'?e.label:''),fam:(kind==='P'?('Pour group '+e.label):'Marine sub-division'),
+        cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],crit:false};
+      this.selKey=null;
+      this.selectZone(sz,{kind,i});
+      return;
     }
+    const sb=this.root.querySelector('#sidebody'); if(!sb)return; this.setSummaryVis&&this.setSummaryVis();
+    this._subOpen=null;
     sb.innerHTML=`<div class="zsticky"><span class="back" id="subback"><span class="bkarrow">‹</span> Back</span><span class="zst-info"><b>${this.esc(e.label)}</b></span></div>
       <div class="sec"><div class="t">${t}</div>
       <div class="row" style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--dim)">Area</span><b>${this.fmt(e.a)} m²</b></div>
       ${rows.map(r=>`<div class="row" style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--dim)">${r[0]}</span><b style="text-align:right;max-width:60%">${this.esc(r[1])}</b></div>`).join('')}
-      ${editable?'':'<div style="font-size:10px;color:var(--faint);margin-top:8px">Overlay reference layer — quantities & progress stay on the main zones.</div>'}</div>${editHtml}`;
+      <div style="font-size:10px;color:var(--faint);margin-top:8px">Overlay reference layer — quantities & progress stay on the main zones.</div></div>`;
     const bk=sb.querySelector('#subback'); if(bk)bk.addEventListener('click',()=>{this._subOpen=null;this.selKey=null;this.paintSel&&this.paintSel();this.buildList();});
-    if(editable){
-      sb.querySelectorAll('.qty-ov-in').forEach(el=>{const c=()=>this.setQtyOv(el.dataset.lv,el.dataset.zmk,el.dataset.field,el.value);el.addEventListener('change',c);el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();});});
-      sb.querySelectorAll('.actot-ov-in').forEach(el=>{const c=()=>this.setActTotal(lv,sz.mk,el.dataset.a,el.value,sz);el.addEventListener('change',c);el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();});});
-      sb.querySelectorAll('.zdate-in').forEach(el=>el.addEventListener('change',()=>this.setZoneDate(lv,sz,el.dataset.which,el.value)));
-    }
   }
   refreshSubzPanel(){
     const p=this.root.querySelector('#subzpanel'); if(!p)return;
@@ -1372,8 +1358,8 @@ class Component extends DCLogic {
     return `<div class="stat"><input class="qty-ov-in" data-lv="${this.esc(lv)}" data-zmk="${this.esc(zmk)}" data-field="${field}" value="${value}" title="Edit ${label} (admin)" style="width:100%;background:transparent;border:1px dashed var(--accent);border-radius:5px;font-size:15px;font-weight:700;color:var(--accent);padding:1px 3px;font-family:inherit"><div class="l">${label}</div></div>`;
   }
   flashOk(el){if(!el)return;el.classList.remove('flash-ok');void el.offsetWidth;el.classList.add('flash-ok');setTimeout(()=>{el.classList.remove('flash-ok');},900);}
-  selectZone(z){
-    this._subOpen=null;   // 选正常分区时退出细分编辑态
+  selectZone(z,sub){
+    this._subOpen=sub||null;   // 细分(C/P)时保留上下文, 正常分区置空
     const c=z.counts,ct=this.CAT[z.cat]||this.CAT.NB,p=z._p||{pct:0,status:'todo',seq:'-',start:0,end:0};
     const st=this.STATUS[p.status];
     const lv=this.curLevel;
@@ -1420,7 +1406,7 @@ class Component extends DCLogic {
      `<div class="zsticky"><span class="back" id="back"><span class="bkarrow">‹</span> Back</span><span class="zst-info"><b>${this.esc(z.label)}</b><span class="zst-sep">·</span>editing <span class="zst-m">${this.esc(this._actMonth)}</span></span></div>
       <div class="detail"><h3>${this.esc(z.label)} ${z.crit?'<span class="badge" style="font-size:9px;padding:1px 6px;border-radius:10px;background:var(--crit);color:#fff">CRITICAL</span>':''}<span style="margin-left:auto;font-size:13px;font-weight:800;color:var(${st.v})">${st.label}</span></h3>
       <div class="g"><span class="cat" style="display:inline-block;padding:1px 7px;border-radius:10px;font-size:9.5px;font-weight:700;color:#fff;background:${ct.c}">${ct.label}</span> · ${z.grp&&z.grp!=='Ungrouped'?'Pour group: '+this.esc(z.grp):'Family: '+this.esc(z.fam)} · ${this.curLevel}</div>
-      ${this.rwsIsAdmin()?`<label style="display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:${z.crit?'var(--crit)':'var(--dim)'};margin:2px 0 8px;cursor:pointer;user-select:none"><input type="checkbox" id="critChk" ${z.crit?'checked':''} style="width:15px;height:15px;accent-color:var(--crit);cursor:pointer">Critical zone <span style="font-weight:500;color:var(--faint)">· auto-saved</span></label>`:(z.crit?'<div style="font-size:11.5px;font-weight:700;color:var(--crit);margin:2px 0 8px">◆ Critical zone</div>':'')}
+      ${this.rwsIsAdmin()&&!this._subOpen?`<label style="display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:${z.crit?'var(--crit)':'var(--dim)'};margin:2px 0 8px;cursor:pointer;user-select:none"><input type="checkbox" id="critChk" ${z.crit?'checked':''} style="width:15px;height:15px;accent-color:var(--crit);cursor:pointer">Critical zone <span style="font-weight:500;color:var(--faint)">· auto-saved</span></label>`:(z.crit?'<div style="font-size:11.5px;font-weight:700;color:var(--crit);margin:2px 0 8px">◆ Critical zone</div>':'')}
       ${subHtml}
       <div class="progblock">
         <div class="top"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim)">Site progress ${p.source==='none'?'<span style="color:var(--faint);font-weight:600;text-transform:none">No data yet</span>':''}</div><div class="pc" style="color:${this.progColor(p.pct)}">${p.pct}%</div></div>
@@ -1443,7 +1429,7 @@ class Component extends DCLogic {
       ${this._custSecHtml(lv,z,this.rwsIsAdmin())}
       </div>`;
     this.setSummaryVis();
-    this.root.querySelector('#back').addEventListener('click',()=>{this.selKey=null;this.paintSel();this.paintTimelineSel();this.buildList();});
+    this.root.querySelector('#back').addEventListener('click',()=>{this._subOpen=null;this.selKey=null;this.paintSel();this.paintTimelineSel();this.buildList();});
     const ck=this.root.querySelector('#critChk');if(ck)ck.addEventListener('change',()=>{const _vb={...this.vb};this.setCrit(this.curLevel,z,ck.checked);this.render();this.vb=_vb;this._vbLevel=this.curLevel;if(this.svg)this.svg.setAttribute('viewBox',`${_vb.x} ${_vb.y} ${_vb.w} ${_vb.h}`);if(this.colLOD)this.colLOD();this.selectZone(z);this.paintSel();});
     const sv=this.root.querySelector('#in_save');
     if(sv)sv.addEventListener('click',()=>{
@@ -1506,11 +1492,11 @@ class Component extends DCLogic {
      sb.querySelectorAll('.act-vis').forEach(el=>el.addEventListener('change',()=>this.setActVis(_zk[0],_zk[1],el.dataset.a,el.value,z)));
      sb.querySelectorAll('.actadd').forEach(el=>el.addEventListener('click',()=>this._actAddModal(z)));
      sb.querySelectorAll('.actdel').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();this.delCustomAct(el.dataset.a);}));
-     const _am=sb.querySelector('.act-month');if(_am)_am.addEventListener('change',()=>{this._actMonth=_am.value;this.selectZone(z);});
-     sb.querySelectorAll('.zpm-nav').forEach(b=>b.addEventListener('click',()=>{const sel=sb.querySelector('.act-month');if(!sel)return;const i=sel.selectedIndex+(+b.dataset.dir);if(i<0||i>=sel.options.length)return;this._actMonth=sel.options[i].value;this.selectZone(z);}));}
+     const _am=sb.querySelector('.act-month');if(_am)_am.addEventListener('change',()=>{this._actMonth=_am.value;this.selectZone(z,sub);});
+     sb.querySelectorAll('.zpm-nav').forEach(b=>b.addEventListener('click',()=>{const sel=sb.querySelector('.act-month');if(!sel)return;const i=sel.selectedIndex+(+b.dataset.dir);if(i<0||i>=sel.options.length)return;this._actMonth=sel.options[i].value;this.selectZone(z,sub);}));}
     {const _msel=sb.querySelector('.zp-month-sel');
-     if(_msel){_msel.addEventListener('change',()=>{this._zpMonthSel=this._zpMonthSel||{};this._zpMonthSel[_msel.dataset.z]=_msel.value;this.selectZone(z);});}
-     sb.querySelectorAll('.zpm-nav').forEach(b=>b.addEventListener('click',()=>{const sel=sb.querySelector('.zp-month-sel');if(!sel)return;const i=sel.selectedIndex+ (+b.dataset.dir); if(i<0||i>=sel.options.length)return; this._zpMonthSel=this._zpMonthSel||{}; this._zpMonthSel[sel.dataset.z]=sel.options[i].value; this.selectZone(z);}));}
+     if(_msel){_msel.addEventListener('change',()=>{this._zpMonthSel=this._zpMonthSel||{};this._zpMonthSel[_msel.dataset.z]=_msel.value;this.selectZone(z,sub);});}
+     sb.querySelectorAll('.zpm-nav').forEach(b=>b.addEventListener('click',()=>{const sel=sb.querySelector('.zp-month-sel');if(!sel)return;const i=sel.selectedIndex+ (+b.dataset.dir); if(i<0||i>=sel.options.length)return; this._zpMonthSel=this._zpMonthSel||{}; this._zpMonthSel[sel.dataset.z]=sel.options[i].value; this.selectZone(z,sub);}));}
     const _zsb=sb.querySelector('#zpSaveBtn');if(_zsb)_zsb.addEventListener('click',()=>{
       const lv=this.curLevel,zmk=z.mk||z.lid;
       sb.querySelectorAll('.zp-plan-in').forEach(el=>{
