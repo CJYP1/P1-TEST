@@ -70,6 +70,7 @@ header .sub{font-size:11px;color:var(--dim)}
 #subzpanel{position:absolute;top:12px;left:14px;display:none;gap:7px;z-index:8;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:7px 10px;box-shadow:0 6px 18px var(--shadow);align-items:center}
 .szttl{font-size:10px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px;margin-right:2px}
 .szchip{cursor:pointer;font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;border:1.6px solid var(--line);color:var(--faint)}
+.szchip[data-k="ZC"].on{border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.14)}
 .szchip[data-k="C"].on{border-color:#b35a1f;color:#b35a1f;background:rgba(224,123,57,.14)}
 .szchip[data-k="CZ"].on{border-color:#0d9488;color:#0d9488;background:rgba(13,148,136,.14)}
 .szchip[data-k="P"].on{border-color:#7c3aed;color:#7c3aed;background:rgba(124,58,237,.14)}
