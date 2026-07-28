@@ -18,10 +18,10 @@
   var gate=document.getElementById('m28gate');
   document.documentElement.style.overflow='hidden';
   function unlock(){ if(gate)gate.remove(); document.documentElement.style.overflow=''; }
-  try{ var s=await rwsRestoreSession(); if(s){ unlock(); return; } }catch(e){}
+  try{ var s=await rwsRestoreSession(); if(s && (s.role==='m28'||s.role==='admin')){ unlock(); return; } }catch(e){}
   var btn=document.getElementById('m28btn'), err=document.getElementById('m28err');
   async function go(){ err.style.display='none'; btn.disabled=true; btn.textContent='...';
-    try{ await rwsLogin(document.getElementById('m28u').value.trim(), document.getElementById('m28p').value); unlock(); }
+    try{ var dd=await rwsLogin(document.getElementById('m28u').value.trim(), document.getElementById('m28p').value); if(dd && (dd.role==='m28'||dd.role==='admin')){ unlock(); } else { try{rwsClearSession();}catch(_){} throw new Error('此账号没有 M28 查看权限'); } }
     catch(e){ err.textContent=(e&&e.message)||'登录失败'; err.style.display='block'; btn.disabled=false; btn.textContent='登录 Sign in'; } }
   btn.addEventListener('click',go);
   document.getElementById('m28p').addEventListener('keydown',function(e){ if(e.key==='Enter')go(); });
