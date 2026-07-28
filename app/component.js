@@ -1165,8 +1165,10 @@ class Component extends DCLogic {
   _placeColAt(clientX,clientY){
     if(!this._placingCol||!this.rwsIsAdmin())return;
     const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;
-    const r=this.svg.getBoundingClientRect();
-    const sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w, sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;
+    // 用 SVG 自身坐标变换(正确处理 viewBox + 等比缩放留白), 拿到光标处的用户坐标
+    let sx,sy;
+    try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());sx=p.x;sy=p.y;}
+    catch(e){const r=this.svg.getBoundingClientRect();sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w;sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;}
     const dx=sx, dy=H-sy;   // proj 的逆(proj: [x,H-y])
     this._colAdd=this._colAdd||{};const arr=this._colAdd[lv]||(this._colAdd[lv]=[]);
     // 点到已放置的柱子附近 → 删除(撤销误点); r≈1200 图纸单位
@@ -1177,8 +1179,11 @@ class Component extends DCLogic {
     let z=zs.find(z=>z.cat==='MA'&&z.ring&&this.ptIn(z.ring,dx,dy))||zs.find(z=>z.ring&&this.ptIn(z.ring,dx,dy));
     if(z)zoneLabel=z.label;
     const n=arr.filter(c=>c.zone===zoneLabel).length+1;
-    arr.push({id:(zoneLabel? zoneLabel.replace(/\s+/g,'')+'-C'+n : 'MCOL-'+(arr.length+1)),x:dx,y:dy,zone:zoneLabel,sz:'',crit:false,placed:true});
-    this.savePlacedCols();this.render();
+    const defId=(zoneLabel? zoneLabel.replace(/\s+/g,'')+'-C'+n : 'MCOL-'+(arr.length+1));
+    const col={id:defId,x:dx,y:dy,zone:zoneLabel,sz:'',crit:false,placed:true};
+    arr.push(col);this.savePlacedCols();this.render();
+    // 让你自己填柱号(默认 defId, 直接确定=用默认)
+    if(this._inputModal)this._inputModal({title:'柱号 / Column mark',label:'这根柱子的编号('+(zoneLabel||'?')+')',placeholder:defId,ok:'确定',onOk:(v)=>{v=(v||'').trim();if(v){col.id=v;this.savePlacedCols();this.render();}}});
   }
   exportPlacedCols(){
     const rows=[['楼层','分区','柱号','x','y','尺寸','关键路径']];
