@@ -793,8 +793,7 @@ class Component extends DCLogic {
       let planst='';
       if(vis&&this.colorMode==='plan'){ const _m=this.planMonth(); if(this.zoneHasPlan(this.curLevel,z,_m))op=0.62; else if(this.zoneRollIn(this.curLevel,z,_m))op=0.6; else{const _st=(z._p&&z._p.status)||'todo';op=_st==='done'?0.62:(_st==='wip'?0.6:0.92);} }
       const _maL1=(this.curLevel==='L1'&&z.cat==='MA');   // L1 Marine 父区(ZC)
-      if(_maL1&&!this.showSubZC)op=0;                        // 默认只显示外轮廓/边界线, 不填充
-      else if(vis&&_maL1&&(this.showSubC||this.showSubZC||this.showSubP))op=op*0.35;
+      if(_maL1&&!this.showSubZC)op=0;                        // ZC 层关: 只显示外轮廓/边界线, 不填充; 开则保持正常颜色
       s+=`<polygon class="zone${vis?'':' dim'}${crit}${planst}" data-i="${i}" points="${pts}" fill="${this.zoneFill(z)}" fill-opacity="${op}"/>`;
     });
     {const _hk=['podcis','podium','transfer'].filter(k=>this.showOvl[k]);
@@ -848,7 +847,7 @@ class Component extends DCLogic {
     });
     _lbls.forEach(lb=>{
       const z=lb.z,cx=lb.fx,cy=lb.fy,fs=lb.fs;
-      if(this.curLevel==='L1'&&z.cat==='MA'&&!this.showSubZC)return;   // L1 Marine 父区默认不显示名字(只留边界线)
+      if(this.curLevel==='L1'&&z.cat==='MA')return;   // L1 Marine 父区名字由 ZC 叠加层提供(自身标签不画, 避免重叠; ZC 关时只留边界线)
       const isCrit=z.crit&&this.showCrit;
       s+=`<text class="zname${isCrit?' crit':''}" style="font-size:${fs.toFixed(0)}px" x="${cx.toFixed(0)}" y="${(cy-fs*0.25).toFixed(0)}">${this.esc(z.label)}</text>`;
       if(this.colorMode==='plan'&&this.zoneHasPlan(this.curLevel,z,this.planMonth())&&this.zonePlanStarted(this.curLevel,z,this.planMonth())){const _r=Math.max(fs*0.7,220),_bx=cx,_by=cy+fs*0.65+_r*1.35;s+=`<circle class="planprog" cx="${_bx.toFixed(0)}" cy="${_by.toFixed(0)}" r="${(_r*1.15).toFixed(0)}" fill="#f5a623" fill-opacity="0.25"/><circle class="planprog" cx="${_bx.toFixed(0)}" cy="${_by.toFixed(0)}" r="${_r.toFixed(0)}" fill="#f5a623" stroke="#fff" stroke-width="${(_r*0.3).toFixed(0)}"/><circle class="planprog" cx="${_bx.toFixed(0)}" cy="${_by.toFixed(0)}" r="${(_r*0.34).toFixed(0)}" fill="#fff"/>`;}
