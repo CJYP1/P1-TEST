@@ -877,6 +877,11 @@ class Component extends DCLogic {
         s+=`<text class="collbl" ${_uT?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id.replace('WF-B2','').replace('MK-B2','MK-'))}</text>`;
       });
     }
+    if(this.showColumns && this.curLevel==='L1'){   // Marine 占位柱: 暂无真实坐标, 按数量在区内均匀摆放(空心红点=估算位置, 有真坐标后替换)
+      L.zones.forEach(z=>{ if(z.cat!=='MA')return; const n=(z.counts&&z.counts.columns)||0; if(!n)return;
+        this._evenPtsInZone(z,n).forEach(p=>{ s+=`<circle class="colmk colmk-ph" cx="${p[0].toFixed(0)}" cy="${(H-p[1]).toFixed(0)}" r="950" fill="#ffffff" fill-opacity="0.85" stroke="#c8102e" stroke-width="300" stroke-dasharray="650,450"/>`; });
+      });
+    }
     // ZC 叠加层: 从真实 Marine 父区几何一次性生成(与 C/P 一样可切换显示)
     if(this.curLevel==='L1'&&this.SUBZONES&&this.SUBZONES.L1&&!this.SUBZONES.L1.ZC){
       this.SUBZONES.L1.ZC=(this.DATA.levels.L1.zones||[]).filter(z=>z.cat==='MA').map(z=>({label:z.label,pts:z.ring,a:z.area,
@@ -1139,6 +1144,7 @@ class Component extends DCLogic {
   // Clean outer boundary + between-area seams for the three big areas, via a coverage grid
   // (robust to imperfect shared vertices). Cached per level. Neutral bold dividing lines.
   ptIn(ring,x,y){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
+  _evenPtsInZone(z,n){const r=z.ring;let x0=1e18,y0=1e18,x1=-1e18,y1=-1e18;r.forEach(p=>{if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0];if(p[1]<y0)y0=p[1];if(p[1]>y1)y1=p[1];});const inside=[],G=14;for(let ri=1;ri<G;ri++)for(let ci=1;ci<G;ci++){const px=x0+(x1-x0)*ci/G,py=y0+(y1-y0)*ri/G;if(this.ptIn(r,px,py))inside.push([px,py]);}if(inside.length<=n)return inside;const out=[],step=inside.length/n;for(let k=0;k<n;k++)out.push(inside[Math.floor(k*step)]);return out;}
   buildList(){
     const L=this.DATA.levels[this.curLevel],seen={},arr=[];
     L.zones.forEach(z=>{if(!this.zoneVisible(z))return;const k=this.zid(z);if(!seen[k]){seen[k]=1;arr.push(z);}});
@@ -1698,7 +1704,7 @@ class Component extends DCLogic {
 
   buildRail(){
     const rail=this.root.querySelector('#rail');rail.innerHTML='';
-    if(this.rwsIsAdmin()){const _mkrp=(lv,sub)=>{const rp=document.createElement('div');rp.className='rbtn rp'+(this._rpActive===lv?' on':'');rp.dataset.lv=lv;rp.innerHTML='<div class="code">RP</div><div class="nm" style="font-size:7.5px;line-height:1;letter-spacing:.2px;color:var(--dim);font-weight:700">'+sub+'</div>';rp.addEventListener('click',()=>this.setLevel(lv));rail.appendChild(rp);};_mkrp('__RP','Hardcoded');_mkrp('__RPL','Linked');}
+    if(this.rwsIsAdmin()){const _mkrp=(lv,sub)=>{const rp=document.createElement('div');rp.className='rbtn rp'+(this._rpActive===lv?' on':'');rp.dataset.lv=lv;rp.innerHTML='<div class="code">RP</div><div class="nm" style="font-size:7.5px;line-height:1;letter-spacing:.2px;color:var(--dim);font-weight:700">'+sub+'</div>';rp.addEventListener('click',()=>this.setLevel(lv));rail.appendChild(rp);};/* RP·Hardcoded / RP·Linked 报表层按钮已隐藏(内容为空的绿色界面) */ void _mkrp;}
     this.DATA.order.forEach(lv=>{const b=document.createElement('div');b.className='rbtn'+(lv===this.curLevel?' on':'');b.dataset.lv=lv;
       const lp=this.levelProg[lv];const empty=!this.DATA.levels[lv].zones.length;
       if(empty){b.className+=' tpl';b.innerHTML=`<div class="code">${this._lvName(lv)}</div><div class="nm">Awaiting</div><div class="tag">TEMPLATE</div>`;}
