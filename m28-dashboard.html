@@ -1,33 +1,79 @@
 <meta charset="utf-8">
 <title>M28 Daily Progress Dashboard</title>
-<!-- ===== 登录门(与主系统同一套账号密码; 未登录看不到内容) ===== -->
-<div id="m28gate" style="position:fixed;inset:0;z-index:2147483647;background:#0f1420;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui,Arial,sans-serif">
-  <div style="width:min(340px,92vw);background:#1b2233;border:1px solid #2c3650;border-radius:14px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.5)">
-    <div style="font-size:16px;font-weight:800;margin-bottom:6px">M28 Daily Progress</div>
-    <div style="font-size:12px;color:#9fb0c8;margin-bottom:14px">请用授权账号登录查看(与主系统同一账号密码)</div>
-    <input id="m28u" placeholder="Username" autocomplete="username" style="width:100%;box-sizing:border-box;margin-bottom:8px;padding:9px;border-radius:8px;border:1px solid #2c3650;background:#0f1420;color:#fff;font-size:14px">
-    <input id="m28p" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;margin-bottom:12px;padding:9px;border-radius:8px;border:1px solid #2c3650;background:#0f1420;color:#fff;font-size:14px">
-    <button id="m28btn" style="width:100%;padding:10px;border-radius:8px;border:none;background:#4a90e2;color:#fff;font-weight:700;cursor:pointer;font-size:14px">登录 Sign in</button>
-    <div id="m28err" style="font-size:11px;color:#ff6b81;margin-top:8px;display:none"></div>
-  </div>
-</div>
+<!-- ===== M28 控制器: 公开查看 + 权限编辑 + 每项目评论(登录可见) ===== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app/cloud-sync.js"></script>
+<style>
+.m28-cbtn{display:inline-flex;align-items:center;gap:2px;margin-left:6px;font-size:11px;font-weight:700;color:#2a78d6;cursor:pointer;border:1px solid #cdd8e6;border-radius:8px;padding:0 6px;line-height:18px;vertical-align:middle;background:#fff}
+.m28-cbtn.has{background:#eaf2fc}
+#m28cpanel{position:fixed;z-index:2147483000;width:300px;max-width:92vw;background:#fff;border:1px solid #c3c2b7;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;font-family:system-ui,Arial,sans-serif}
+#m28cpanel .hd{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid #eee;font-weight:800;font-size:12px;color:#0b0b0b}
+#m28cpanel .list{max-height:230px;overflow:auto;padding:8px 12px}
+#m28cpanel .cm{margin-bottom:9px}
+#m28cpanel .cm .who{font-size:11px;font-weight:800;color:#184f95}
+#m28cpanel .cm .tm{font-size:9.5px;color:#898781;margin-left:6px;font-weight:600}
+#m28cpanel .cm .bd{font-size:12px;color:#0b0b0b;white-space:pre-wrap;margin-top:1px}
+#m28cpanel .add{border-top:1px solid #eee;padding:8px 12px;display:flex;gap:6px}
+#m28cpanel textarea{flex:1;resize:vertical;min-height:34px;font:inherit;font-size:12px;border:1px solid #cdd8e6;border-radius:8px;padding:5px;color:#0b0b0b}
+#m28cpanel button.send{border:none;background:#2a78d6;color:#fff;border-radius:8px;font-weight:700;padding:0 12px;cursor:pointer}
+</style>
+<div id="m28cpanel"><div class="hd"><span id="m28ctitle">Comments</span><span id="m28cclose" style="cursor:pointer;color:#898781">✕</span></div><div class="list" id="m28clist"></div><div class="add" id="m28cadd" style="display:none"><textarea id="m28cin" placeholder="写评论 / write a comment…"></textarea><button class="send" id="m28csend">发送</button></div></div>
 <script>
-(async function(){
-  var gate=document.getElementById('m28gate');
-  document.documentElement.style.overflow='hidden';
-  function unlock(){ if(gate)gate.remove(); document.documentElement.style.overflow=''; }
-  try{ var s=await rwsRestoreSession(); if(s && (s.role==='m28'||s.role==='admin')){ unlock(); return; } }catch(e){}
-  var btn=document.getElementById('m28btn'), err=document.getElementById('m28err');
-  async function go(){ err.style.display='none'; btn.disabled=true; btn.textContent='...';
-    try{ var dd=await rwsLogin(document.getElementById('m28u').value.trim(), document.getElementById('m28p').value); if(dd && (dd.role==='m28'||dd.role==='admin')){ unlock(); } else { try{rwsClearSession();}catch(_){} throw new Error('此账号没有 M28 查看权限'); } }
-    catch(e){ err.textContent=(e&&e.message)||'登录失败'; err.style.display='block'; btn.disabled=false; btn.textContent='登录 Sign in'; } }
-  btn.addEventListener('click',go);
-  document.getElementById('m28p').addEventListener('keydown',function(e){ if(e.key==='Enter')go(); });
+window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:null};
+(function(){
+ function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+ function fmtTs(t){try{return new Date(t).toLocaleString();}catch(e){return '';}}
+ var panel=document.getElementById('m28cpanel'),list=document.getElementById('m28clist'),addBox=document.getElementById('m28cadd'),inp=document.getElementById('m28cin'),ttl=document.getElementById('m28ctitle');
+ var curItem=null;
+ function closeP(){panel.style.display='none';curItem=null;}
+ document.getElementById('m28cclose').addEventListener('click',closeP);
+ document.addEventListener('click',function(e){ if(panel.style.display==='block' && !panel.contains(e.target) && !(e.target.classList&&e.target.classList.contains('m28-cbtn'))) closeP(); });
+ function renderList(item){
+   var arr=(window.__m28.comments[item]||[]);
+   ttl.textContent='评论 · '+item+' ('+arr.length+')';
+   list.innerHTML = arr.length ? arr.map(function(c){return '<div class="cm"><span class="who">'+esc(c.author)+'</span><span class="tm">'+esc(fmtTs(c.ts))+'</span><div class="bd">'+esc(c.body)+'</div></div>';}).join('') : '<div style="font-size:11px;color:#898781">还没有评论</div>';
+   addBox.style.display = window.__m28.canComment ? 'flex' : 'none';
+ }
+ function openP(item,anchor){
+   curItem=item; renderList(item); panel.style.display='block';
+   var r=anchor.getBoundingClientRect();
+   var x=Math.min(r.left, window.innerWidth-panel.offsetWidth-8), y=r.bottom+6;
+   if(y+panel.offsetHeight>window.innerHeight) y=Math.max(8, r.top-panel.offsetHeight-6);
+   panel.style.left=Math.max(8,x)+'px'; panel.style.top=y+'px';
+ }
+ async function loadComments(){
+   try{ var r=await rwsCall('rws_m28_comment_list',{p_token:rwsGetSession().token});
+     var arr=(r&&r.ok&&r.data)||[]; var map={}; arr.forEach(function(c){ (map[c.item]=map[c.item]||[]).push(c); }); window.__m28.comments=map;
+   }catch(e){ window.__m28.comments={}; }
+ }
+ function markItems(){
+   document.querySelectorAll('[data-item-id]').forEach(function(it){
+     var id=it.getAttribute('data-item-id'); var n=(window.__m28.comments[id]||[]).length;
+     var btn=it.querySelector('.m28-cbtn');
+     if(!btn){ btn=document.createElement('span'); btn.className='m28-cbtn'; it.appendChild(btn);
+       btn.addEventListener('click',function(ev){ ev.stopPropagation(); openP(id,btn); }); }
+     btn.className='m28-cbtn'+(n>0?' has':''); btn.textContent='💬'+(n>0?n:'');
+   });
+ }
+ document.getElementById('m28csend').addEventListener('click',async function(){
+   if(!curItem||!window.__m28.canComment)return; var body=inp.value.trim(); if(!body)return; var b=this; b.disabled=true;
+   try{ await rwsCall('rws_m28_comment_add',{p_token:rwsGetSession().token,p_item_id:curItem,p_body:body});
+        inp.value=''; await loadComments(); renderList(curItem); markItems();
+   }catch(e){ alert('发送失败: '+(e&&e.message||e)); }
+   b.disabled=false;
+ });
+ window.__m28_initComments=async function(){ await loadComments(); markItems(); };
+ window.addEventListener('load',async function(){
+   try{ if(typeof rwsRestoreSession==='function'){ var s=await rwsRestoreSession(); if(s){ window.__m28.loggedIn=true; window.__m28.sess=s;
+     var role=s.role, sc=s.allowed_scopes||[];
+     window.__m28.canEdit=(role==='admin'||sc.indexOf('M28')>=0);
+     window.__m28.canComment=(role==='admin'||sc.indexOf('M28_CMT')>=0);
+   }} }catch(e){}
+   if(window.__m28.loggedIn && window.__m28_initComments) window.__m28_initComments();
+ });
 })();
 </script>
-<!-- ===== 登录门结束 ===== -->
+<!-- ===== M28 控制器结束 ===== -->
 
 <style>
   :root {
@@ -1298,6 +1344,7 @@
     table.addEventListener('click', function (e) {
       var btn = e.target.closest('.cs-toggle');
       if (!btn) return;
+      if(!(window.__m28&&window.__m28.canEdit)) return; /* 只有勾了 M28 权限/admin 才能改 */
       var cur = parseInt(btn.getAttribute('data-state'), 10) || 0;
       var next = (cur + 1) % 4;
       btn.setAttribute('data-state', String(next));
@@ -1311,10 +1358,10 @@
   });
 
   updateAllUnlocks();
-  /* 从云端拉取 M28 进度并应用(主系统同一账号) */
+  /* 从云端拉取 M28 进度并应用(公开读, 无需登录) */
   (async function(){ try{
-    if(typeof rwsGetSession!=='function'||!rwsGetSession()||typeof rwsCall!=='function') return;
-    var r=await rwsCall('rws_m28_get',{p_token:rwsGetSession().token});
+    if(typeof rwsCall!=='function') return;
+    var r=await rwsCall('rws_m28_get_pub',{});
     if(!r||!r.ok||!r.data||typeof r.data!=='object') return;
     var cloud=r.data, changed=false; Object.keys(cloud).forEach(function(k){ state[k]=cloud[k]; changed=true; });
     if(!changed) return; try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}

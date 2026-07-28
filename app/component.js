@@ -491,9 +491,7 @@ class Component extends DCLogic {
     this._adminEntry=rwsIsAdminEntryRequested();
     this.rwsBindAuthUI();
     const cached=rwsGetSession();
-    if(cached && cached.role==='m28'){   // m28 账号只用于 M28 看板, 不进主系统
-      this.root.querySelector('#rwsAuthGate').style.display='flex';
-    } else if(cached){
+    if(cached){
       this._rwsUser=cached; this.rwsRenderUserBar(); this.rwsOnQueueChange();
       this.rwsAfterLogin();
       rwsRestoreSession().then(fresh=>{if(fresh){this._rwsUser=fresh;this.rwsRenderUserBar();}else if(!rwsGetSession()){this._rwsUser=null;this.rwsRenderUserBar();this.root.querySelector('#rwsAuthGate').style.display='flex';}});
@@ -511,7 +509,6 @@ class Component extends DCLogic {
       if(!u||!p)return;
       try{
         const session=await rwsLogin(u,p);
-        if(session && session.role==='m28'){ try{await rwsLogout();}catch(_){} this._rwsUser=null; err.textContent='此账号仅用于 M28 看板,请打开 📊 M28。'; err.style.display=''; return; }
         this._rwsUser=session; gate.style.display='none';
         this.root.querySelector('#rwsLoginPass').value='';
         this.rwsRenderUserBar(); this.rwsOnQueueChange();
@@ -630,14 +627,14 @@ class Component extends DCLogic {
     }
     try{
       const users=await rwsAdminListUsers();
-      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine']];
+      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['M28','M28 看板·可改动'],['M28_CMT','M28 看板·可评论']];
       body.innerHTML=`<div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
         <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Add / update account</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
           <input id="rwsNuUser" placeholder="username" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt)">
           <input id="rwsNuPass" placeholder="password (blank = keep existing)" type="text" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt)">
           <input id="rwsNuName" placeholder="display name" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt)">
-          <select id="rwsNuRole" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt)"><option value="user">user</option><option value="admin">admin</option><option value="m28">m28 (只看M28看板)</option></select>
+          <select id="rwsNuRole" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt)"><option value="user">user</option><option value="admin">admin</option></select>
         </div>
         <div style="font-size:9.5px;font-weight:700;color:var(--dim);margin-bottom:4px">Areas this user may edit (leave all unchecked = read-only)</div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px">
