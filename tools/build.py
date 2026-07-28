@@ -164,6 +164,21 @@ embeds = (
     + ("  add(b,'locked-data','application/json'," + js_str(json.dumps(seed, ensure_ascii=False, separators=(',',':'))) + ");  /* 基准数据种子(zone-activity/zone-plan-dates/col-month.csv) */\n" if seed else "")
     + "})();\n")
 (ROOT/'generated'/'embeds.bundle.js').write_text(embeds, encoding='utf-8')
+
+# ---------- 缓存击破: 每次构建按 bundle 内容哈希给 index.html 的引用换版本号 ----------
+import hashlib, re as _re
+_ver = hashlib.md5(
+    (ROOT/'generated'/'app.bundle.js').read_bytes() + (ROOT/'generated'/'embeds.bundle.js').read_bytes()
+).hexdigest()[:10]
+_idxp = ROOT/'index.html'
+if _idxp.exists():
+    _idx = _idxp.read_text(encoding='utf-8')
+    _new = _re.sub(r'(generated/app\.bundle\.js)(\?v=[^"\']*)?',   r'\1?v=' + _ver, _idx)
+    _new = _re.sub(r'(generated/embeds\.bundle\.js)(\?v=[^"\']*)?', r'\1?v=' + _ver, _new)
+    if _new != _idx:
+        _idxp.write_text(_new, encoding='utf-8')
+        print(f"  cache-bust: index.html bundle 版本 → {_ver}")
+
 print(f"OK: generated/app.bundle.js ({(ROOT/'generated'/'app.bundle.js').stat().st_size:,} B), "
       f"embeds.bundle.js ({(ROOT/'generated'/'embeds.bundle.js').stat().st_size:,} B), "
       f"zone-xref {len(zx)} 组, 楼层汇总覆盖 {sum(len(v) for v in levelsum.values())} 项")
