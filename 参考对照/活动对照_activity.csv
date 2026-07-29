@@ -1,0 +1,21 @@
+﻿活动id(活动列填这个),活动名称,单位
+earth,Earthwork,m³
+exc,Excavation,m³
+piling,Piling,nos
+demo_wall,Demolition Wall,m³
+demo,Demolition Slab,m³
+slab_pile,Slab + Pilecap,m²
+pile,Pilecap,nos
+col,Column,nos
+ls,Lift/Stairs Wall,nos
+mbeam,Steel Main Beam,nos
+cbeam,Cast Steel Main Beam,nos
+slab,Slab,m²
+slab_top,Top Slab,m²
+act_corewall,Core Wall,nos
+act_wall,Wall,nos
+act_colcorbel,Column Cobel,
+rc,RC Works,m³
+pcbeam,Precast Beam Installation,nos
+temp_stair,Temp Staircase,nos
+act_cyclical,Cyclical Works,

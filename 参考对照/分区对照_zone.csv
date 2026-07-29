@@ -1,0 +1,233 @@
+﻿分区名称,mk键(分区列填这个),楼层,大区,类型,备注(父区)
+EB1S1,B1|EB1S1,B1,Existing Basement,分区,
+EB1S2.1,B1|EB1S2.1,B1,Existing Basement,分区,
+EB1S2.2,B1|EB1S2.2,B1,Existing Basement,分区,
+EB1S2.3,B1|EB1S2.3,B1,Existing Basement,分区,
+EB1S2.4,B1|EB1S2.4,B1,Existing Basement,分区,
+EB1S5,B1|EB1S5,B1,Existing Basement,分区,
+EB1S6,B1|EB1S6,B1,Existing Basement,分区,
+EB1S7,B1|EB1S7,B1,Existing Basement,分区,
+EB1S8,B1|EB1S8,B1,Existing Basement,分区,
+A-01,B1|A01,B1,New Basement,分区,
+A-02,B1|A02,B1,New Basement,分区,
+A-03,B1|A03,B1,New Basement,分区,
+A-04,B1|A04,B1,New Basement,分区,
+A-05,B1|A05,B1,New Basement,分区,
+A-06,B1|A06,B1,New Basement,分区,
+A-07,B1|A07,B1,New Basement,分区,
+B-01,B1|B01,B1,New Basement,分区,
+B-02,B1|B02,B1,New Basement,分区,
+B-03,B1|B03,B1,New Basement,分区,
+B-04,B1|B04,B1,New Basement,分区,
+B-04A,B1|B04A,B1,New Basement,分区,
+C-01a,B1|C01A,B1,New Basement,分区,
+C-01a-1,B1|C01A1,B1,New Basement,分区,
+C-01b,B1|C01B,B1,New Basement,分区,
+C-02-1,B1|C021,B1,New Basement,分区,
+C-02-2,B1|C022,B1,New Basement,分区,
+C-02-3,B1|C023,B1,New Basement,分区,
+D-01,B1|D01,B1,New Basement,分区,
+D-02,B1|D02,B1,New Basement,分区,
+E-01-1,B1|E011,B1,New Basement,分区,
+E-01-2,B1|E012,B1,New Basement,分区,
+F-01-1,B1|F011,B1,New Basement,分区,
+F-01-2,B1|F012,B1,New Basement,分区,
+F-02-1,B1|F021,B1,New Basement,分区,
+F-02-2,B1|F022,B1,New Basement,分区,
+S-1,B1M|S1,B1M,New Basement,分区,
+S-2,B1M|S2,B1M,New Basement,分区,
+S-3,B1M|S3,B1M,New Basement,分区,
+S-4,B1M|S4,B1M,New Basement,分区,
+S-5,B1M|S5,B1M,New Basement,分区,
+S-6,B1M|S6,B1M,New Basement,分区,
+S-7,B1M|S7,B1M,New Basement,分区,
+S-8,B1M|S8,B1M,New Basement,分区,
+EB2-1,B2|EB21,B2,Existing Basement,分区,
+EB2-2.1,B2|EB22.1,B2,Existing Basement,分区,
+EB2-2.2,B2|EB22.2,B2,Existing Basement,分区,
+EB2-2.3,B2|EB22.3,B2,Existing Basement,分区,
+EB2-2.4,B2|EB22.4,B2,Existing Basement,分区,
+EB2-3.1A-1,B2|EB23.1A1,B2,Existing Basement,分区,
+EB2-3.1A-2,B2|EB23.1A2,B2,Existing Basement,分区,
+EB2-3.1B,B2|EB23.1B,B2,Existing Basement,分区,
+EB2-3.1C,B2|EB23.1C,B2,Existing Basement,分区,
+EB2-3.2-1,B2|EB23.21,B2,Existing Basement,分区,
+EB2-3.2-2,B2|EB23.22,B2,Existing Basement,分区,
+EB2-3.3,B2|EB23.3,B2,Existing Basement,分区,
+EB2-3.4,B2|EB23.4,B2,Existing Basement,分区,
+EB2-3.5,B2|EB23.5,B2,Existing Basement,分区,
+B2-S1,B2|B2S1,B2,New Basement,分区,
+B2-S10,B2|B2S10,B2,New Basement,分区,
+B2-S11,B2|B2S11,B2,New Basement,分区,
+B2-S12,B2|B2S12,B2,New Basement,分区,
+B2-S13,B2|B2S13,B2,New Basement,分区,
+B2-S13a,B2|B2S13A,B2,New Basement,分区,
+B2-S14,B2|B2S14,B2,New Basement,分区,
+B2-S14a,B2|B2S14A,B2,New Basement,分区,
+B2-S1a,B2|B2S1A,B2,New Basement,分区,
+B2-S2-1,B2|B2S21,B2,New Basement,分区,
+B2-S2-2,B2|B2S22,B2,New Basement,分区,
+B2-S2a,B2|B2S2A,B2,New Basement,分区,
+B2-S3-1,B2|B2S31,B2,New Basement,分区,
+B2-S3-2,B2|B2S32,B2,New Basement,分区,
+B2-S4-1,B2|B2S41,B2,New Basement,分区,
+B2-S4-2,B2|B2S42,B2,New Basement,分区,
+B2-S5-1,B2|B2S51,B2,New Basement,分区,
+B2-S5-2,B2|B2S52,B2,New Basement,分区,
+B2-S6,B2|B2S6,B2,New Basement,分区,
+B2-S6a,B2|B2S6A,B2,New Basement,分区,
+B2-S7,B2|B2S7,B2,New Basement,分区,
+B2-S8,B2|B2S8,B2,New Basement,分区,
+B2-S8a,B2|B2S8A,B2,New Basement,分区,
+B2-S9,B2|B2S9,B2,New Basement,分区,
+SLAB B-1,L1|SLABB1,L1,Existing Basement,分区,
+SLAB B-2.1,L1|SLABB2.1,L1,Existing Basement,分区,
+SLAB B-2.2,L1|SLABB2.2,L1,Existing Basement,分区,
+SLAB B-2.3,L1|SLABB2.3,L1,Existing Basement,分区,
+SLAB B-2.4,L1|SLABB2.4,L1,Existing Basement,分区,
+SLAB B-3.1,L1|SLABB3.1,L1,Existing Basement,分区,
+SLAB B-3.2,L1|SLABB3.2,L1,Existing Basement,分区,
+SLAB B-3.3,L1|SLABB3.3,L1,Existing Basement,分区,
+SLAB B-3.4,L1|SLABB3.4,L1,Existing Basement,分区,
+SLAB B-3.5,L1|SLABB3.5,L1,Existing Basement,分区,
+CAPPING BEAM 1A,L1|CAPPINGBEAM1A,L1,New Basement,分区,
+CAPPING BEAM 1B,L1|CAPPINGBEAM1B,L1,New Basement,分区,
+CAPPING BEAM 1C,L1|CAPPINGBEAM1C,L1,New Basement,分区,
+CAPPING BEAM 2A,L1|CAPPINGBEAM2A,L1,New Basement,分区,
+CAPPING BEAM 2B,L1|CAPPINGBEAM2B,L1,New Basement,分区,
+CAPPING BEAM 3A,L1|CAPPINGBEAM3A,L1,New Basement,分区,
+CAPPING BEAM 3B,L1|CAPPINGBEAM3B,L1,New Basement,分区,
+CAPPING BEAM 4,L1|CAPPINGBEAM4,L1,New Basement,分区,
+CAPPING BEAM 5,L1|CAPPINGBEAM5,L1,New Basement,分区,
+CAPPING BEAM 6,L1|CAPPINGBEAM6,L1,New Basement,分区,
+CAPPING BEAM 7,L1|CAPPINGBEAM7,L1,New Basement,分区,
+CAPPING BEAM 8,L1|CAPPINGBEAM8,L1,New Basement,分区,
+M-SLAB 1,L1|MSLAB1,L1,New Basement,分区,
+M-SLAB 2,L1|MSLAB2,L1,New Basement,分区,
+M-SLAB 3,L1|MSLAB3,L1,New Basement,分区,
+M-SLAB 4,L1|MSLAB4,L1,New Basement,分区,
+M-SLAB 5,L1|MSLAB5,L1,New Basement,分区,
+M-SLAB6,L1|MSLAB6,L1,New Basement,分区,
+SLAB 1,L1|SLAB1,L1,New Basement,分区,
+SLAB 10-1,L1|SLAB101,L1,New Basement,分区,
+SLAB 10-2,L1|SLAB102,L1,New Basement,分区,
+SLAB 11A,L1|SLAB11A,L1,New Basement,分区,
+SLAB 11B,L1|SLAB11B,L1,New Basement,分区,
+SLAB 12-1,L1|SLAB121,L1,New Basement,分区,
+SLAB 12-2,L1|SLAB122,L1,New Basement,分区,
+SLAB 13 (F01-1),L1|SLAB13F011,L1,New Basement,分区,
+SLAB 13 (F01-2),L1|SLAB13F012,L1,New Basement,分区,
+SLAB 2A,L1|SLAB2A,L1,New Basement,分区,
+SLAB 2B,L1|SLAB2B,L1,New Basement,分区,
+SLAB 2C,L1|SLAB2C,L1,New Basement,分区,
+SLAB 2D,L1|SLAB2D,L1,New Basement,分区,
+SLAB 2D-1,L1|SLAB2D1,L1,New Basement,分区,
+SLAB 3A,L1|SLAB3A,L1,New Basement,分区,
+SLAB 3B,L1|SLAB3B,L1,New Basement,分区,
+SLAB 3C,L1|SLAB3C,L1,New Basement,分区,
+SLAB 3C-1,L1|SLAB3C1,L1,New Basement,分区,
+SLAB 4A,L1|SLAB4A,L1,New Basement,分区,
+SLAB 4B,L1|SLAB4B,L1,New Basement,分区,
+SLAB 5A,L1|SLAB5A,L1,New Basement,分区,
+SLAB 5B,L1|SLAB5B,L1,New Basement,分区,
+SLAB 6A,L1|SLAB6A,L1,New Basement,分区,
+SLAB 6A-1,L1|SLAB6A1,L1,New Basement,分区,
+SLAB 6B,L1|SLAB6B,L1,New Basement,分区,
+SLAB 7-1,L1|SLAB71,L1,New Basement,分区,
+SLAB 7-2,L1|SLAB72,L1,New Basement,分区,
+SLAB 7-3,L1|SLAB73,L1,New Basement,分区,
+SLAB 7-4,L1|SLAB74,L1,New Basement,分区,
+SLAB 8-1,L1|SLAB81,L1,New Basement,分区,
+SLAB 8-2,L1|SLAB82,L1,New Basement,分区,
+SLAB 8A-1,L1|SLAB8A1,L1,New Basement,分区,
+SLAB 8A-2,L1|SLAB8A2,L1,New Basement,分区,
+SLAB 9A,L1|SLAB9A,L1,New Basement,分区,
+SLAB 9B,L1|SLAB9B,L1,New Basement,分区,
+ZC 3.2,L1|ZC3.2,L1,Marine,分区,
+ZC1,L1|ZC1,L1,Marine,分区,
+ZC2.1,L1|ZC2.1,L1,Marine,分区,
+ZC2.2,L1|ZC2.2,L1,Marine,分区,
+ZC3.1A,L1|ZC3.1A,L1,Marine,分区,
+ZC3.1B,L1|ZC3.1B,L1,Marine,分区,
+C1-1,L1|C1-1,L1,Marine,Marine细分(C),父区:ZC1
+C1-2,L1|C1-2,L1,Marine,Marine细分(C),父区:ZC1
+C1-3,L1|C1-3,L1,Marine,Marine细分(C),父区:ZC1
+C1-4,L1|C1-4,L1,Marine,Marine细分(C),父区:ZC1
+C1-5,L1|C1-5,L1,Marine,Marine细分(C),父区:ZC1
+C1-6,L1|C1-6,L1,Marine,Marine细分(C),父区:ZC1
+C1-7,L1|C1-7,L1,Marine,Marine细分(C),父区:ZC2.2
+C2-1,L1|C2-1,L1,Marine,Marine细分(C),父区:ZC2.2
+C2-2,L1|C2-2,L1,Marine,Marine细分(C),父区:ZC2.2
+C2-3,L1|C2-3,L1,Marine,Marine细分(C),父区:ZC2.1
+C2-4,L1|C2-4,L1,Marine,Marine细分(C),父区:ZC2.1
+C2-5,L1|C2-5,L1,Marine,Marine细分(C),父区:ZC2.1
+C2-6,L1|C2-6,L1,Marine,Marine细分(C),父区:ZC2.1
+C2-7,L1|C2-7,L1,Marine,Marine细分(C),父区:ZC2.2
+C2-8,L1|C2-8,L1,Marine,Marine细分(C),父区:ZC2.2
+C3.1-1,L1|C3.1-1,L1,Marine,Marine细分(C),父区:ZC3.1A
+C3.1-2,L1|C3.1-2,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.1-3,L1|C3.1-3,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.1-4,L1|C3.1-4,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.1-5,L1|C3.1-5,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.1-6,L1|C3.1-6,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.1-7,L1|C3.1-7,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.1-8,L1|C3.1-8,L1,Marine,Marine细分(C),父区:ZC3.1B
+C3.2-1,L1|C3.2-1,L1,Marine,Marine细分(C),父区:ZC3.2
+C3.2-2,L1|C3.2-2,L1,Marine,Marine细分(C),父区:ZC3.2
+C3.2-3,L1|C3.2-3,L1,Marine,Marine细分(C),父区:ZC3.2
+C3.2-4,L1|C3.2-4,L1,Marine,Marine细分(C),父区:ZC3.2
+C3.2-5,L1|C3.2-5,L1,Marine,Marine细分(C),父区:ZC3.1A
+C3.2-6,L1|C3.2-6,L1,Marine,Marine细分(C),父区:ZC3.1A
+C3.2-7,L1|C3.2-7,L1,Marine,Marine细分(C),父区:ZC3.1A
+P1,L1|P1,L1,Marine,Marine细分(P),父区:ZC1
+P10,L1|P10,L1,Marine,Marine细分(P),父区:ZC2.1 / ZC2.2
+P11,L1|P11,L1,Marine,Marine细分(P),父区:ZC2.1
+P12,L1|P12,L1,Marine,Marine细分(P),父区:ZC1 / ZC2.2
+P13,L1|P13,L1,Marine,Marine细分(P),父区:ZC1
+P14,L1|P14,L1,Marine,Marine细分(P),父区:ZC3.2
+P2,L1|P2,L1,Marine,Marine细分(P),父区:ZC1
+P3-1,L1|P3-1,L1,Marine,Marine细分(P),父区:ZC1
+P3-2,L1|P3-2,L1,Marine,Marine细分(P),父区:ZC1
+P4-1,L1|P4-1,L1,Marine,Marine细分(P),父区:ZC1
+P4-2,L1|P4-2,L1,Marine,Marine细分(P),父区:ZC1
+P5-1,L1|P5-1,L1,Marine,Marine细分(P),父区:ZC2.2
+P5-2,L1|P5-2,L1,Marine,Marine细分(P),父区:ZC2.1 / ZC2.2
+P6-1,L1|P6-1,L1,Marine,Marine细分(P),父区:ZC2.2
+P6-2,L1|P6-2,L1,Marine,Marine细分(P),父区:ZC2.1 / ZC2.2
+P7-1,L1|P7-1,L1,Marine,Marine细分(P),父区:ZC2.2
+P7-2,L1|P7-2,L1,Marine,Marine细分(P),父区:ZC2.1 / ZC2.2
+P8-1,L1|P8-1,L1,Marine,Marine细分(P),父区:ZC2.2
+P8-2,L1|P8-2,L1,Marine,Marine细分(P),父区:ZC2.2
+P8-3,L1|P8-3,L1,Marine,Marine细分(P),父区:ZC2.1 / ZC2.2
+P9-1,L1|P9-1,L1,Marine,Marine细分(P),父区:ZC2.2
+P9-2,L1|P9-2,L1,Marine,Marine细分(P),父区:ZC2.2
+4.1,L2|4.1,L2,Existing Basement,分区,
+4.1CIST,L2|4.1CIST,L2,Existing Basement,分区,
+4.2,L2|4.2,L2,Existing Basement,分区,
+4.2T,L2|4.2T,L2,Existing Basement,分区,
+4.3CIST,L2|4.3CIST,L2,Existing Basement,分区,
+4.3T,L2|4.3T,L2,Existing Basement,分区,
+4.4,L2|4.4,L2,Existing Basement,分区,
+2.1,L2|2.1,L2,New Basement,分区,
+2.1CIS,L2|2.1CIS,L2,New Basement,分区,
+2.1CIST,L2|2.1CIST,L2,New Basement,分区,
+2.1T,L2|2.1T,L2,New Basement,分区,
+2.2,L2|2.2,L2,New Basement,分区,
+2.2T,L2|2.2T,L2,New Basement,分区,
+2.3CIST,L2|2.3CIST,L2,New Basement,分区,
+2.3T,L2|2.3T,L2,New Basement,分区,
+2.4,L2|2.4,L2,New Basement,分区,
+2.4T,L2|2.4T,L2,New Basement,分区,
+2.6CIS,L2|2.6CIS,L2,New Basement,分区,
+2.6CIST,L2|2.6CIST,L2,New Basement,分区,
+1.1,L2|1.1,L2,Marine,分区,
+1.2,L2|1.2,L2,Marine,分区,
+1.2T,L2|P1.2T,L2,Marine,分区,
+3.1CIST,L2|3.1CIST,L2,Marine,分区,
+3.1T,L2|3.1T,L2,Marine,分区,
+3.2,L2|3.2,L2,Marine,分区,
+3.2T,L2|3.2T,L2,Marine,分区,
+3.3CIST,L2|3.3CIST,L2,Marine,分区,
+3.3T,L2|3.3T,L2,Marine,分区,
+3.4,L2|3.4,L2,Marine,分区,
+3.4T,L2|3.4T,L2,Marine,分区,
