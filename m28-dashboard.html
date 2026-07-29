@@ -89,9 +89,10 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
    /* 兼容旧引用: 若还有地方读全局 canEdit/canComment, 给个"任一分页可改"的近似值 */
    var role=s&&s.role, sc=(s&&s.allowed_scopes)||[];
    var any=!!s&&(role==='admin'||sc.indexOf('EB')>=0||sc.indexOf('NB')>=0||sc.indexOf('M28_OTHER')>=0);
-   window.__m28.canEdit=any; window.__m28.canComment=any; }
+   window.__m28.canEdit=any; window.__m28.canComment=!!s&&(role==='admin'||sc.indexOf('CMT')>=0); }
+ /* 编辑按分页对应 area 权限; 评论统一看 CMT(和主地图同一个"Comment"权限) */
  window.__m28.canEditLevel=function(level){ var s=window.__m28.sess; if(!s)return false; if(s.role==='admin')return true; var sc=s.allowed_scopes||[]; return sc.indexOf(m28ScopeFor(level))>=0; };
- window.__m28.canCommentLevel=function(level){ return window.__m28.canEditLevel(level); };
+ window.__m28.canCommentLevel=function(level){ var s=window.__m28.sess; if(!s)return false; if(s.role==='admin')return true; var sc=s.allowed_scopes||[]; if(sc.indexOf('CMT')<0)return false; var AC=['EB','NB','MA','M28_OTHER']; var hasArea=AC.some(function(c){return sc.indexOf(c)>=0;}); if(!hasArea)return true; return sc.indexOf(m28ScopeFor(level))>=0; };
  window.__m28.levelOf=function(el){ var p=el&&el.closest?el.closest('.cs-level-panel'):null; return p?(p.getAttribute('data-level')||''):''; };
  var _gate=document.getElementById('m28gate');
  function showGate(){ if(_gate)_gate.style.display='flex'; }

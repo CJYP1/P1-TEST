@@ -123,7 +123,7 @@ class Component extends DCLogic {
   _idNote(){return `<div style="font-size:9.5px;line-height:1.35;color:var(--faint);font-style:italic;margin:5px 2px 2px;padding-left:2px">IDs listed as reference. For the actual structural element ID &amp; specification, please refer to the latest structural design plan.</div>`;}
   _actElemSec(lv,z,aid){
     if(aid==='col')   return (z.cols&&z.cols.length)  ? this._collSecInline(lv,z,'Column list',z.cols.length,'col',z.cols,this.colHtmlFor(lv,z)+this._idNote()) : '';
-    if(aid==='pile')  return (z.piles&&z.piles.length)? this._collSecInline(lv,z,'Pile-cap list',z.piles.length,'pile',z.piles,this.elRows(lv,z,'pile',z.piles,x=>this.esc(x.rl||''),'none listed')) : '';
+    if(aid==='pile')  return (z.piles&&z.piles.length&&!this._pileHiddenForEB(lv,z.mk||z.lid))? this._collSecInline(lv,z,'Pile-cap list',z.piles.length,'pile',z.piles,this.elRows(lv,z,'pile',z.piles,x=>this.esc(x.rl||''),'none listed')) : '';
     if(aid==='mbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Steel-main-beam list',z.beams.length,'beam',z.beams,this.elRows(lv,z,'beam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='cbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Cast-s-main-beam list',z.beams.length,'cbeam',z.beams,this.elRows(lv,z,'cbeam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='ls'){ let h='';
@@ -152,11 +152,11 @@ class Component extends DCLogic {
   saveDates(){try{localStorage.setItem('rws_zdate',JSON.stringify(this._zdate||{}));localStorage.setItem('rws_act_date',JSON.stringify(this._actDate||{}));localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth||{}));}catch(e){}}
   saveActCmt(){try{localStorage.setItem('rws_act_cmt',JSON.stringify(this._actCmt||{}));}catch(e){}}
   actCmts(lv,zmk,aid){const pre=lv+'||'+zmk+'||'+aid+'||';const o=this._actCmt||{};return Object.keys(o).filter(k=>k.indexOf(pre)===0).map(k=>({k,...o[k]})).sort((a,b)=>String(a.ts||'').localeCompare(String(b.ts||'')));}
-  addActCmt(lv,zmk,aid,text){text=(text||'').trim();if(!text)return;if(!(this.rwsIsAdmin()||this.rwsScopeOk(lv,zmk))){this.rwsDeny('Outside your assigned zones.');return;}const s=(typeof rwsGetSession==='function'&&rwsGetSession())||{};const ts=new Date().toISOString();const k=lv+'||'+zmk+'||'+aid+'||'+ts+'_'+Math.random().toString(36).slice(2,6);const v={t:text,by:s.username||'user',ts};this._actCmt=this._actCmt||{};this._actCmt[k]=v;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,v,lv,zmk);this._actRerender(this._selZone());}
-  resolveActCmt(k,done){const o=(this._actCmt||{})[k];if(!o)return;const p=k.split('||');if(!(this.rwsIsAdmin()||this.rwsScopeOk(p[0],p[1]))){this.rwsDeny('Outside your assigned zones.');return;}if(done)o.done=true;else delete o.done;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,o,p[0],p[1]);this._actRerender(this._selZone());}
+  addActCmt(lv,zmk,aid,text){text=(text||'').trim();if(!text)return;if(!(this.rwsIsAdmin()||this.rwsCanComment(lv,zmk))){this.rwsDeny('You cannot comment on this area.');return;}const s=(typeof rwsGetSession==='function'&&rwsGetSession())||{};const ts=new Date().toISOString();const k=lv+'||'+zmk+'||'+aid+'||'+ts+'_'+Math.random().toString(36).slice(2,6);const v={t:text,by:s.username||'user',ts};this._actCmt=this._actCmt||{};this._actCmt[k]=v;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,v,lv,zmk);this._actRerender(this._selZone());}
+  resolveActCmt(k,done){const o=(this._actCmt||{})[k];if(!o)return;const p=k.split('||');if(!(this.rwsIsAdmin()||this.rwsCanComment(p[0],p[1]))){this.rwsDeny('You cannot comment on this area.');return;}if(done)o.done=true;else delete o.done;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,o,p[0],p[1]);this._actRerender(this._selZone());}
   delActCmt(k){if(!this.rwsIsAdmin())return;if(this._actCmt)delete this._actCmt[k];this.saveActCmt();if(typeof rwsSyncKV==='function'){const p=k.split('||');rwsSyncKV('act_cmt',k,null,p[0],p[1]);}this._actRerender(this._selZone());}
   _cmtBtn(lv,zmk,aid){const n=this.actCmts(lv,zmk,aid).filter(c=>!c.done).length;return `<span class="actcmt-btn" data-a="${aid}" title="Comments — click to open/close" style="cursor:pointer;font-size:11px;margin-left:8px;color:${n?'var(--accent)':'var(--dim)'}">💬${n?' '+n:''}</span>`;}
-  _cmtPanel(lv,zmk,aid){if(this._cmtOpen!==lv+'||'+zmk+'||'+aid)return '';const all=this.actCmts(lv,zmk,aid);const admin=this.rwsIsAdmin();const canAdd=admin||this.rwsHasScope('CMT');   // 主界面评论需要 CMT 权限
+  _cmtPanel(lv,zmk,aid){if(this._cmtOpen!==lv+'||'+zmk+'||'+aid)return '';const all=this.actCmts(lv,zmk,aid);const admin=this.rwsIsAdmin();const canAdd=admin||this.rwsCanComment(lv,zmk);   // 评论需要 CMT; 范围跟随授权区域(只勾 CMT=全区)
     const open=all.filter(c=>!c.done), done=all.filter(c=>c.done), showDone=!!this._cmtShowDone;
     const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${canAdd?(res?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen">↩</span>':' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done — hides it (kept in cloud)">✓</span>'):''}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete">✕</span>':''}</span></div>`;
     const list=open.length?open.map(c=>row(c,false)).join(''):'<div class="empty" style="padding:4px 2px">no open comments</div>';
@@ -214,7 +214,10 @@ class Component extends DCLogic {
      stat-grid total boxes so they auto-calculate from the CSV, but an admin override in
      this._actTotal (typed into the box) still always wins — clearing the box restores the auto sum. */
   actAutoTotal(lv,zmk,a){let s=0,any=false;this.ACT_MONTHS.forEach(m=>{const v=this.actPlan(lv,zmk,a,m);if(v!=null){s+=v;any=true;}});return any?Math.round(s*100)/100:null;}
-  actDoneMonth(lv,zmk,a,m){const ea=this._elemAct(a);if(ea&&this._zoneHasElems(lv,zmk,ea.types))return this.elemDoneInMonth(lv,zmk,ea.types,m);const v=(this._actDoneM||{})[lv+'||'+zmk+'||'+a+'||'+m];return v==null?null:v;}
+  /* 活动的 Done 是否由构件清单派生。EB(Existing Basement)的 pilecap 清单 IDs 不正确 → 隐藏, 且 Done 改手动 */
+  _pileHiddenForEB(lv,zmk){return this.zoneCat(lv,zmk)==='EB';}
+  _actUsesElems(aid,lv,zmk){const ea=this._elemAct(aid);if(!ea)return false;if(aid==='pile'&&this._pileHiddenForEB(lv,zmk))return false;return this._zoneHasElems(lv,zmk,ea.types);}
+  actDoneMonth(lv,zmk,a,m){if(this._actUsesElems(a,lv,zmk))return this.elemDoneInMonth(lv,zmk,this._elemAct(a).types,m);const v=(this._actDoneM||{})[lv+'||'+zmk+'||'+a+'||'+m];return v==null?null:v;}
   actCumDone(lv,zmk,a){let s=0;this.ACT_MONTHS.forEach(m=>{const v=(this._actDoneM||{})[lv+'||'+zmk+'||'+a+'||'+m];if(v!=null)s+=v;});return s;}
   actCarry(lv,zmk,aid,mi){const M=this.ACT_MONTHS;let cpPrev=0,cdPrev=0;for(let i=0;i<mi;i++){cpPrev+=this.actPlan(lv,zmk,aid,M[i])||0;cdPrev+=this.actDoneMonth(lv,zmk,aid,M[i])||0;}const plan=this.actPlan(lv,zmk,aid,M[mi])||0;const done=this.actDoneMonth(lv,zmk,aid,M[mi])||0;const carryIn=Math.max(0,cpPrev-cdPrev);const required=plan;const balance=(cpPrev+plan)-(cdPrev+done);const cleared=Math.min(done,carryIn);const current=Math.max(0,done-cleared);return {carryIn,plan,done,required,balance,cleared,current,hasData:(cpPrev+cdPrev+plan+done)>0};}
   actVisState(lv,zmk,a){const v=(this._actHidden||{})[lv+'||'+zmk+'||'+a];return (v==='hide')?'hide':(v==='show'?'show':'auto');}
@@ -499,6 +502,8 @@ class Component extends DCLogic {
   }
   rwsIsAdmin(){return !!this._rwsUser && this._rwsUser.role==='admin';}
   rwsHasScope(code){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return a.indexOf(code)>=0;}
+  /* 评论权限: 必须有 CMT。范围跟随被授权的区域 —— 勾了区域就只能评论那些区; 只勾 CMT(没勾任何区)= 全区可评 */
+  rwsCanComment(lv,zmk){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];if(a.indexOf('CMT')<0)return false;const AREAS=['EB','NB','MA','M28_OTHER'];const hasArea=AREAS.some(c=>a.indexOf(c)>=0);if(!hasArea)return true;return a.indexOf(this.zoneCat(lv,zmk))>=0;}
   rwsDeny(msg){alert(msg||'You are not allowed to change that.');}
   rwsOnQueueChange(){
     const n=rwsQueueSize(); const b=this.root&&this.root.querySelector('#rwsQueueBadge'); if(!b||!this._rwsUser)return;
@@ -513,7 +518,7 @@ class Component extends DCLogic {
     try{if(this.DATA&&this.root.querySelector('#rail'))this.buildRail();}catch(_e){}
     if(!u){info.textContent='';lo.style.display='none';ab.style.display='none';adminOnly.forEach(b=>b.style.display='none');return;}
     let areaTxt='';
-    if(u.role!=='admin'){const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];areaTxt=a.length?' · '+a.map(c=>AL[c]||c).join(', '):' · read-only';}
+    if(u.role!=='admin'){const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];areaTxt=a.length?' · '+a.map(c=>AL[c]||c).join(', '):' · read-only';}
     info.textContent='👤 '+(u.display_name||u.username)+(u.role==='admin'?' (admin)':areaTxt);
     lo.style.display='';
     ab.style.display=(u.role==='admin')?'':'none';
@@ -650,7 +655,7 @@ class Component extends DCLogic {
   async rwsRenderAdmin(){
     const body=this.root.querySelector('#rwsAdminBody');
     body.innerHTML='<div class="empty">Loading…</div>';
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
     if(this._rwsAdminTab==='log'){
       try{
         const rows=await rwsAdminActivityLog(500);
@@ -665,7 +670,7 @@ class Component extends DCLogic {
     }
     try{
       const users=await rwsAdminListUsers();
-      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map)'],['M28_OTHER','M28 · L2/L3/L4 · Ramp · TST · Hoarding']];
+      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map + M28)'],['M28_OTHER','M28 · L2/L3/L4 · Ramp · TST · Hoarding']];
       body.innerHTML=`<div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
         <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Add / update account</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -679,7 +684,7 @@ class Component extends DCLogic {
           ${AREAS.map(([c,l])=>`<label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--txt);cursor:pointer"><input type="checkbox" class="rwsNuArea" value="${c}" style="cursor:pointer">${l}</label>`).join('')}
         </div>
         <button class="hbtn primary" id="rwsNuSave">Save account</button>
-        <div style="font-size:9.5px;color:var(--faint);margin-top:6px">A "user" account can change ALL status and actual completed quantities, and only inside the areas checked above. The M28 board reuses these same areas — Existing/New Basement also unlock M28's EB/NB pages (view is always open to everyone; edit/comment follow the area). "M28 · L2/L3/L4…" covers the M28 pages that don't map to EB/NB. Admins can edit everything (plans, totals) and manage accounts.</div>
+        <div style="font-size:9.5px;color:var(--faint);margin-top:6px">A "user" account can change status and actual completed quantities only inside the areas checked above. The M28 board: any signed-in user can view; editing reuses these areas (Existing/New Basement unlock M28's EB/NB pages, "M28 · L2/L3/L4…" covers the rest); commenting needs the "Comment" box: with area boxes ticked it comments only in those areas; with Comment ticked and no area, it comments in every area (main map + M28). Admins can edit everything (plans, totals) and manage accounts.</div>
       </div>
       <table class="reg"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Areas</th><th>Active</th></tr></thead><tbody>
       ${users.map(u=>{const areas=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return `<tr class="rwsUserRow" data-u="${this.esc(u.username)}" style="cursor:pointer"><td>${this.esc(u.username)}</td><td>${this.esc(u.display_name||'')}</td><td>${this.esc(u.role)}</td><td>${u.role==='admin'?'<span style=\"color:var(--faint)\">(all)</span>':this.esc(areas.map(c=>AL[c]||c).join(', ')||'—')}</td><td>${u.active?'yes':'no'}</td></tr>`;}).join('')}
@@ -721,7 +726,7 @@ class Component extends DCLogic {
     return r.action||'';
   }
   rwsLogParts(r){
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
     if(!this._zoneLabel){ this._zoneLabel={}; this.DATA.order.forEach(lv=>this.DATA.levels[lv].zones.forEach(z=>{this._zoneLabel[lv+'||'+this.zid(z)]=z.label;})); }
     const k=r.target_key||''; const p=k.split('||');
     const zlabel=(lv,zmk)=>lv+' · '+((this._zoneLabel[lv+'||'+zmk]||this._zoneLabel[lv+'||_'+zmk])||zmk);
@@ -1396,7 +1401,7 @@ class Component extends DCLogic {
       const _planEdited=this.isEdited('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm);
       const _doneEdited=this.isEdited('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm);
       const _editBadge=(on)=>on?`<span class="act-editedtag" title="Manually changed on the webpage — this value won't be overwritten by future CSV updates">✎ edited</span>`:'';
-      const _ea=this._elemAct(a.id); const _derived=_ea&&this._zoneHasElems(lv,zmk,_ea.types);
+      const _ea=this._elemAct(a.id); const _derived=this._actUsesElems(a.id,lv,zmk);
       const doneCell=_derived?`<span class="act-derived" title="Auto-counted from the ${_ea.label} list below (by completion date) — stays in sync with the checklist">${dm==null?0:this.fmt(dm)}<span class="lnk" data-jump="${_ea.sec}" title="Jump to the ${_ea.label} list to mark each one complete">✎ Update ${_ea.label}</span></span>`:(canEdit?`<input class="act-donem" data-a="${a.id}" value="${dm==null?'':dm}" placeholder="—" title="Done in ${sm}"${canEdit?'':' disabled'}>`:`${dm==null?'—':this.fmt(dm)}`);
       const mn='';  /* Done/Plan单月行已移除(与 by累计 重复) */
       const _adv=(this._actDate||{})[lv+'||'+zmk+'||'+a.id]||{};
@@ -2029,7 +2034,7 @@ class Component extends DCLogic {
 
   /* ---------- lock file: persist all markers to a portable file & reload ---------- */
   async buildFullExport(){
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
     const zones=[];
     this.DATA.order.forEach(lv=>{const seen={};this.DATA.levels[lv].zones.forEach(z=>{const zid=this.zid(z);if(seen[zid])return;seen[zid]=1;const c=z.counts||{};const p=z._p||{};
       zones.push({level:lv,zone_mk:zid,label:z.label,area_code:z.cat||'NB',area:AL[z.cat||'NB'],critical:!!z.crit,
