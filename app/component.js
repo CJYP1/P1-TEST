@@ -450,7 +450,8 @@ class Component extends DCLogic {
       if(d.actDate)  this._actDate =_rebuildFromCSV('act_date', this._actDate, d.actDate);
       if(d.zdate)    this._zdate   =_rebuildFromCSV('zdate',    this._zdate,   d.zdate);
       if(d.colMonth) this._colMonth=_rebuildFromCSV('col_month',this._colMonth,d.colMonth);
-      if(d.marineCol) this._marineCol=d.marineCol;   /* Marine 柱子按 P 区分组映射(marine-col-map.csv) */
+      if(d.marineCol){this._marineCol=d.marineCol;   /* Marine 柱子按 P 区分组映射(marine-col-map.csv) */
+        this._marineCritSet=new Set();Object.keys(d.marineCol).forEach(p=>d.marineCol[p].forEach(c=>{if(c.c)this._marineCritSet.add(String(c.id||'').trim().toUpperCase());}));}
       this.saveAct();this.saveDates();
       if(Array.isArray(d.actDefs)){const ex=new Set((this._actDefs||[]).map(x=>x&&x.id));d.actDefs.forEach(x=>{if(x&&x.id&&!ex.has(x.id)){(this._actDefs=this._actDefs||[]).push(x);}});}
       }catch(e){}}
@@ -949,8 +950,10 @@ class Component extends DCLogic {
         const st=zz?this.elemStatus(this.ekey(this.curLevel,zz,'col',c.id)):'todo';
         const fill=st==='done'?this.cssvar('--done'):st==='wip'?this.cssvar('--wip'):'#8a93a3';
         const _uT=this._colUnderT(c);
-        s+=`<circle class="colmk${_uT?' colmk-t':''}" data-ci="${ci}" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${fill}" stroke="${_uT?'#c8102e':'#ffffff'}" stroke-width="${_uT?560:220}"/>`;
-        s+=`<text class="collbl" ${_uT?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id.replace('WF-B2','').replace('MK-B2','MK-'))}</text>`;
+        const _crit=!!(this._marineCritSet&&this._marineCritSet.has(_nid));   /* marine-col-map 里标 critical 的 Marine 柱 → 红 */
+        const _red=_uT||_crit;
+        s+=`<circle class="colmk${_uT?' colmk-t':''}" data-ci="${ci}" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${fill}" stroke="${_red?'#c8102e':'#ffffff'}" stroke-width="${_uT?560:220}"/>`;
+        s+=`<text class="collbl" ${_red?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id.replace('WF-B2','').replace('MK-B2','MK-'))}</text>`;
       });
     }
     const _realCol=(this.COLUMNS&&this.COLUMNS[this.curLevel])||[];
@@ -967,8 +970,9 @@ class Component extends DCLogic {
       // 去重: 同 id 跳过; 另外按位置去重 —— 和任一正式柱子重叠(<1400)的一律跳过, 清掉已烤入正式数据后本地残留的重复
       const _nearReal=(x,y)=>_realCol.some(rc=>Math.hypot(rc.x-x,rc.y-y)<1400);
       this.placedCols(this.curLevel).forEach(c=>{ const _nid=_nrm(c.id); if(_colSeen.has(_nid)||_realIds.has(c.id)||_nearReal(c.x,c.y))return; _colSeen.add(_nid); const sy=H-c.y;
-        s+=`<circle class="colmk colmk-placed" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${c.crit?'#c8102e':'#8a93a3'}" stroke="#ffffff" stroke-width="220"/>`;
-        s+=`<text class="collbl" x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id)}</text>`;
+        const _pc=!!c.crit||!!(this._marineCritSet&&this._marineCritSet.has(_nid));   /* 本地放置柱: 自身 crit 或 marine 表标了 critical → 红 */
+        s+=`<circle class="colmk colmk-placed" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${_pc?'#c8102e':'#8a93a3'}" stroke="#ffffff" stroke-width="220"/>`;
+        s+=`<text class="collbl" ${_pc?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id)}</text>`;
       });
     }
     // ZC 叠加层: 从真实 Marine 父区几何一次性生成(与 C/P 一样可切换显示)
