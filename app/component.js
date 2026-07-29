@@ -961,7 +961,9 @@ class Component extends DCLogic {
       });
     }
     if(this.showColumns){   // 本地"点击放置"但还没入库的柱子(实心点); 已入库的跳过避免重复
-      this.placedCols(this.curLevel).forEach(c=>{ if(_realIds.has(c.id))return; const sy=H-c.y;
+      // 去重: 同 id 跳过; 另外按位置去重 —— 和任一正式柱子重叠(<1400)的一律跳过, 清掉已烤入正式数据后本地残留的重复
+      const _nearReal=(x,y)=>_realCol.some(rc=>Math.hypot(rc.x-x,rc.y-y)<1400);
+      this.placedCols(this.curLevel).forEach(c=>{ if(_realIds.has(c.id)||_nearReal(c.x,c.y))return; const sy=H-c.y;
         s+=`<circle class="colmk colmk-placed" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${c.crit?'#c8102e':'#8a93a3'}" stroke="#ffffff" stroke-width="220"/>`;
         s+=`<text class="collbl" x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id)}</text>`;
       });
