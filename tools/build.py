@@ -142,6 +142,17 @@ if cmf.exists():
             cat, elem, mon = row['类别'].strip(), row['构件'].strip(), row['月份'].strip()
             if lv and zmk and elem and mon: cm[f'{lv}||{zmk}||{cat}||{elem}'] = mon
     if cm: seed['colMonth'] = cm
+# marine-col-map.csv → Marine 柱子按 P 区(pour group)重新分组 {P区: [{id,sz,c}]}
+mcm = ROOT/'data-csv'/'fixed'/'marine-col-map.csv'
+if mcm.exists():
+    marine = {}
+    with open(mcm, encoding='utf-8-sig') as f:
+        for row in csv.DictReader(f):
+            p = (row.get('分区') or '').strip(); cid = (row.get('柱ID') or '').strip()
+            if not p or not cid: continue
+            c = 1 if (row.get('critical') or '').strip() in ('1','是','y','Y','true','True') else 0
+            marine.setdefault(p, []).append({'id': cid, 'sz': (row.get('尺寸') or '').strip(), 'c': c})
+    if marine: seed['marineCol'] = marine
 if seed:
     seed['actDefs'] = [{'id':'act_wall','label':'Wall','unit':'nos'},
                        {'id':'act_corewall','label':'Core Wall','unit':'nos'}]

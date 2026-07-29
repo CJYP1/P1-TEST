@@ -450,6 +450,7 @@ class Component extends DCLogic {
       if(d.actDate)  this._actDate =_rebuildFromCSV('act_date', this._actDate, d.actDate);
       if(d.zdate)    this._zdate   =_rebuildFromCSV('zdate',    this._zdate,   d.zdate);
       if(d.colMonth) this._colMonth=_rebuildFromCSV('col_month',this._colMonth,d.colMonth);
+      if(d.marineCol) this._marineCol=d.marineCol;   /* Marine 柱子按 P 区分组映射(marine-col-map.csv) */
       this.saveAct();this.saveDates();
       if(Array.isArray(d.actDefs)){const ex=new Set((this._actDefs||[]).map(x=>x&&x.id));d.actDefs.forEach(x=>{if(x&&x.id&&!ex.has(x.id)){(this._actDefs=this._actDefs||[]).push(x);}});}
       }catch(e){}}
@@ -1062,9 +1063,11 @@ class Component extends DCLogic {
     const editable=(kind==='C'||kind==='P')&&admin;   // C/P 细分可录入(仅管理员); 数据独立记在细分自己的键上
     if(editable){
       // 直接复用 ZC 的完整分区面板(含 ACTIVITIES/月份切换/STATUS/日期/锁), 合成一个只属于此细分的分区
+      const _mcols=(kind==='P'&&this._marineCol&&this._marineCol[e.label])?this._marineCol[e.label].map(c=>({id:c.id,sz:c.sz||'',c:c.c?1:0})):[];
       const sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:e.a,
         grp:(kind==='P'?e.label:''),fam:(kind==='P'?('Pour group '+e.label):'Marine sub-division'),
-        cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],crit:false};
+        cols:_mcols,piles:[],beams:[],lifts:[],stairs:[],sub:[],
+        counts:{columns:_mcols.length,pilecap:0,mainbeam:0,steelbeam:0},crit:false};
       this.selKey=null;
       this.selectZone(sz,{kind,i});
       return;
