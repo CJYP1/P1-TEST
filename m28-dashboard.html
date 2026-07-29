@@ -19,9 +19,9 @@
 </style>
 <div id="m28cpanel"><div class="hd"><span id="m28ctitle">Comments</span><span id="m28cclose" style="cursor:pointer;color:#898781">✕</span></div><div class="list" id="m28clist"></div><div class="add" id="m28cadd" style="display:none"><textarea id="m28cin" placeholder="写评论 / write a comment…"></textarea><button class="send" id="m28csend">发送</button></div>
 <div id="m28gate" style="position:fixed;inset:0;z-index:2147483600;background:#0f1420;display:none;align-items:center;justify-content:center;font-family:system-ui,Arial,sans-serif">
-  <div style="width:min(340px,92vw);background:#fff;border-radius:14px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.4)">
+  <div style="position:relative;width:min(340px,92vw);background:#fff;border-radius:14px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.4)">
     <div style="font-size:15px;font-weight:800;margin-bottom:4px;color:#111">M28 · Sign in</div>
-    <div style="font-size:11px;color:#667;margin-bottom:16px">请用主系统账号登录(需有 M28 查看权限) / Sign in with your account (needs M28 view permission).</div>
+    <div style="font-size:11px;color:#667;margin-bottom:16px">请用主系统账号登录才能查看 / Sign in with your main account to view. 编辑 / 评论按你被授权的区域(EB / NB / L2 以上等)。</div>
     <label style="font-size:10px;font-weight:700;color:#667;display:block;margin-bottom:4px">Username</label>
     <input id="m28gu" type="text" autocomplete="username" style="width:100%;box-sizing:border-box;border:1px solid #cdd8e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px">
     <label style="font-size:10px;font-weight:700;color:#667;display:block;margin-bottom:4px">Password</label>
@@ -29,7 +29,9 @@
     <div id="m28ge" style="font-size:11px;color:#c8102e;margin-bottom:10px;display:none"></div>
     <button id="m28gb" style="width:100%;border:none;background:#5b6ef5;color:#fff;font-weight:800;border-radius:8px;padding:10px;cursor:pointer">Sign in</button>
   </div>
-</div></div>
+</div>
+<button id="m28loginbtn" style="position:fixed;right:16px;bottom:16px;z-index:2147483200;border:1px solid #cdd8e6;background:#fff;color:#2a3550;font-family:system-ui,Arial,sans-serif;font-weight:700;font-size:12px;border-radius:10px;padding:8px 13px;box-shadow:0 6px 18px rgba(0,0,0,.15);cursor:pointer">Sign in to edit</button>
+</div>
 <script>
 window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:null};
 (function(){
@@ -44,10 +46,10 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
    var arr=(window.__m28.comments[item]||[]);
    var _t=item.indexOf('col::')===0?item.split('::').pop():item; ttl.textContent='评论 · '+_t+' ('+arr.length+')';
    list.innerHTML = arr.length ? arr.map(function(c){return '<div class="cm"><span class="who">'+esc(c.author)+'</span><span class="tm">'+esc(fmtTs(c.ts))+'</span><div class="bd">'+esc(c.body)+'</div></div>';}).join('') : '<div style="font-size:11px;color:#898781">还没有评论</div>';
-   addBox.style.display = window.__m28.canComment ? 'flex' : 'none';
+   addBox.style.display = (window.__m28.canCommentLevel&&window.__m28.canCommentLevel(window.__m28._curLevel)) ? 'flex' : 'none';
  }
  function openP(item,anchor){
-   curItem=item; renderList(item); panel.style.display='block';
+   curItem=item; window.__m28._curLevel=(window.__m28.levelOf?window.__m28.levelOf(anchor):''); renderList(item); panel.style.display='block';
    var r=anchor.getBoundingClientRect();
    var x=Math.min(r.left, window.innerWidth-panel.offsetWidth-8), y=r.bottom+6;
    if(y+panel.offsetHeight>window.innerHeight) y=Math.max(8, r.top-panel.offsetHeight-6);
@@ -72,38 +74,47 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
    });
  }
  document.getElementById('m28csend').addEventListener('click',async function(){
-   if(!curItem||!window.__m28.canComment)return; var body=inp.value.trim(); if(!body)return; var b=this; b.disabled=true;
+   if(!curItem||!(window.__m28.canCommentLevel&&window.__m28.canCommentLevel(window.__m28._curLevel)))return; var body=inp.value.trim(); if(!body)return; var b=this; b.disabled=true;
    try{ await rwsCall('rws_m28_comment_add',{p_token:rwsGetSession().token,p_item_id:curItem,p_body:body});
         inp.value=''; await loadComments(); renderList(curItem); markItems();
    }catch(e){ alert('发送失败: '+(e&&e.message||e)); }
    b.disabled=false;
  });
  window.__m28_initComments=async function(){ await loadComments(); markItems(); };
+ /* 分页 → 主页 area scope 映射: EB/NB 复用主页权限; 其余(L2/L3/L4/Ramp/TST/Hoarding)归 M28_OTHER */
+ function m28ScopeFor(level){ if(level==='b2'||level==='l1')return 'EB'; if(level==='nb-b2'||level==='nb-l1')return 'NB'; return 'M28_OTHER'; }
  function applySess(s){ window.__m28.loggedIn=!!s; window.__m28.sess=s||null;
+   /* 登录了就能看(不需要单独的 M28 查看权限); 没登录看不了 */
+   window.__m28.canView=!!s;
+   /* 兼容旧引用: 若还有地方读全局 canEdit/canComment, 给个"任一分页可改"的近似值 */
    var role=s&&s.role, sc=(s&&s.allowed_scopes)||[];
-   window.__m28.canEdit=!!s&&(role==='admin'||sc.indexOf('M28')>=0);
-   window.__m28.canComment=!!s&&(role==='admin'||sc.indexOf('M28_CMT')>=0);
-   window.__m28.canView=!!s&&(role==='admin'||sc.indexOf('M28_VIEW')>=0||sc.indexOf('M28')>=0||sc.indexOf('M28_CMT')>=0); }
+   var any=!!s&&(role==='admin'||sc.indexOf('EB')>=0||sc.indexOf('NB')>=0||sc.indexOf('M28_OTHER')>=0);
+   window.__m28.canEdit=any; window.__m28.canComment=any; }
+ window.__m28.canEditLevel=function(level){ var s=window.__m28.sess; if(!s)return false; if(s.role==='admin')return true; var sc=s.allowed_scopes||[]; return sc.indexOf(m28ScopeFor(level))>=0; };
+ window.__m28.canCommentLevel=function(level){ return window.__m28.canEditLevel(level); };
+ window.__m28.levelOf=function(el){ var p=el&&el.closest?el.closest('.cs-level-panel'):null; return p?(p.getAttribute('data-level')||''):''; };
  var _gate=document.getElementById('m28gate');
  function showGate(){ if(_gate)_gate.style.display='flex'; }
  function hideGate(){ if(_gate)_gate.style.display='none'; }
+ /* 常驻登录/登出按钮 — 未登录显示"Sign in to edit", 已登录显示名字+登出 */
+ function refreshLoginBtn(){ var b=document.getElementById('m28loginbtn'); if(!b)return; var s=window.__m28.sess;
+   if(s){ b.textContent='✓ '+((s.display_name||s.username||'signed in'))+' · Sign out'; }
+   else { b.textContent='Sign in to edit'; } }
+ (function(){ var lb=document.getElementById('m28loginbtn');
+   /* 登录后可见此按钮 → 登出; 登出后必须重新登录才能查看, 所以再次弹出登录门 */
+   if(lb)lb.addEventListener('click',function(){ if(window.__m28.sess){ try{if(typeof rwsClearSession==='function')rwsClearSession();}catch(_){} applySess(null); refreshLoginBtn(); showGate(); } else { showGate(); } }); })();
  (function(){ var b=document.getElementById('m28gb'),u=document.getElementById('m28gu'),pw=document.getElementById('m28gp'),er=document.getElementById('m28ge');
    async function go(){ if(er)er.style.display='none'; var un=(u.value||'').trim(),pp=pw.value; if(!un||!pp)return; b.disabled=true;
-     try{ var s=await rwsLogin(un,pp); applySess(s);
-            if(!window.__m28.canView){ if(er){er.textContent='此账号没有 M28 查看权限 / no M28 view permission'; er.style.display='';} try{if(typeof rwsClearSession==='function')rwsClearSession();}catch(_){} applySess(null); }
-            else { hideGate(); if(window.__m28_initComments)window.__m28_initComments(); } }
+     try{ var s=await rwsLogin(un,pp); applySess(s); refreshLoginBtn();
+            hideGate(); if(window.__m28_initComments)window.__m28_initComments(); if(typeof markItems==='function')markItems(); }
      catch(e){ if(er){er.textContent='登录失败 / sign-in failed: '+(e&&e.message||e); er.style.display='';} }
      b.disabled=false; }
    if(b)b.addEventListener('click',go);
    if(pw)pw.addEventListener('keydown',function(e){if(e.key==='Enter')go();}); })();
  window.addEventListener('load',async function(){
    var s=null; try{ if(typeof rwsRestoreSession==='function') s=await rwsRestoreSession(); }catch(e){}
-   applySess(s);
-   if(!window.__m28.canView){                          // 登录主系统 + 有 M28 查看权限 才能看
-     showGate();
-     if(window.__m28.loggedIn){ var er=document.getElementById('m28ge'); if(er){er.textContent='此账号没有 M28 查看权限 / no M28 view permission'; er.style.display='';} }
-     return;
-   }
+   applySess(s); refreshLoginBtn();
+   if(!window.__m28.canView){ showGate(); return; }     // 必须登录主系统账号才能查看
    if(window.__m28_initComments) window.__m28_initComments();
  });
 })();
@@ -1379,7 +1390,8 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
     table.addEventListener('click', function (e) {
       var btn = e.target.closest('.cs-toggle');
       if (!btn) return;
-      if(!(window.__m28&&window.__m28.canEdit)) return; /* 只有勾了 M28 权限/admin 才能改 */
+      var _lv=(window.__m28&&window.__m28.levelOf)?window.__m28.levelOf(btn):''; /* 该表所属分页 */
+      if(!(window.__m28&&window.__m28.canEditLevel&&window.__m28.canEditLevel(_lv))) return; /* 只有对应 area 权限/admin 才能改 */
       var cur = parseInt(btn.getAttribute('data-state'), 10) || 0;
       var next = (cur + 1) % 4;
       btn.setAttribute('data-state', String(next));

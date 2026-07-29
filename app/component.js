@@ -512,7 +512,7 @@ class Component extends DCLogic {
     try{if(this.DATA&&this.root.querySelector('#rail'))this.buildRail();}catch(_e){}
     if(!u){info.textContent='';lo.style.display='none';ab.style.display='none';adminOnly.forEach(b=>b.style.display='none');return;}
     let areaTxt='';
-    if(u.role!=='admin'){const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine'};const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];areaTxt=a.length?' · '+a.map(c=>AL[c]||c).join(', '):' · read-only';}
+    if(u.role!=='admin'){const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];areaTxt=a.length?' · '+a.map(c=>AL[c]||c).join(', '):' · read-only';}
     info.textContent='👤 '+(u.display_name||u.username)+(u.role==='admin'?' (admin)':areaTxt);
     lo.style.display='';
     ab.style.display=(u.role==='admin')?'':'none';
@@ -649,7 +649,7 @@ class Component extends DCLogic {
   async rwsRenderAdmin(){
     const body=this.root.querySelector('#rwsAdminBody');
     body.innerHTML='<div class="empty">Loading…</div>';
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
     if(this._rwsAdminTab==='log'){
       try{
         const rows=await rwsAdminActivityLog(500);
@@ -664,7 +664,7 @@ class Component extends DCLogic {
     }
     try{
       const users=await rwsAdminListUsers();
-      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map)'],['M28_VIEW','M28 board · view'],['M28','M28 board · edit'],['M28_CMT','M28 board · comment']];
+      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map)'],['M28_OTHER','M28 · L2/L3/L4 · Ramp · TST · Hoarding']];
       body.innerHTML=`<div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
         <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Add / update account</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -678,7 +678,7 @@ class Component extends DCLogic {
           ${AREAS.map(([c,l])=>`<label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--txt);cursor:pointer"><input type="checkbox" class="rwsNuArea" value="${c}" style="cursor:pointer">${l}</label>`).join('')}
         </div>
         <button class="hbtn primary" id="rwsNuSave">Save account</button>
-        <div style="font-size:9.5px;color:var(--faint);margin-top:6px">A "user" account can change ALL status and actual completed quantities, and only inside the areas checked above. Admins can edit everything (plans, totals) and manage accounts.</div>
+        <div style="font-size:9.5px;color:var(--faint);margin-top:6px">A "user" account can change ALL status and actual completed quantities, and only inside the areas checked above. The M28 board reuses these same areas — Existing/New Basement also unlock M28's EB/NB pages (view is always open to everyone; edit/comment follow the area). "M28 · L2/L3/L4…" covers the M28 pages that don't map to EB/NB. Admins can edit everything (plans, totals) and manage accounts.</div>
       </div>
       <table class="reg"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Areas</th><th>Active</th></tr></thead><tbody>
       ${users.map(u=>{const areas=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return `<tr class="rwsUserRow" data-u="${this.esc(u.username)}" style="cursor:pointer"><td>${this.esc(u.username)}</td><td>${this.esc(u.display_name||'')}</td><td>${this.esc(u.role)}</td><td>${u.role==='admin'?'<span style=\"color:var(--faint)\">(all)</span>':this.esc(areas.map(c=>AL[c]||c).join(', ')||'—')}</td><td>${u.active?'yes':'no'}</td></tr>`;}).join('')}
@@ -720,7 +720,7 @@ class Component extends DCLogic {
     return r.action||'';
   }
   rwsLogParts(r){
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
     if(!this._zoneLabel){ this._zoneLabel={}; this.DATA.order.forEach(lv=>this.DATA.levels[lv].zones.forEach(z=>{this._zoneLabel[lv+'||'+this.zid(z)]=z.label;})); }
     const k=r.target_key||''; const p=k.split('||');
     const zlabel=(lv,zmk)=>lv+' · '+((this._zoneLabel[lv+'||'+zmk]||this._zoneLabel[lv+'||_'+zmk])||zmk);
@@ -802,7 +802,7 @@ class Component extends DCLogic {
   /* 月度地图状态 — 计划线(CSV 各月计划量)和实际线(各月实际完成量)分开算, 实际优先于计划。
      返回 state: fin_earlier(更早已完成,灰绿保留) / act_finish(本月实际完成) / act_prog(实际进行中)
                 / plan_finish(本月计划完成) / plan_this(本月计划开始或在做) / none(本月无工作) */
-  PLAN_COLORS(){return {fin_earlier:'#aab4ae',act_finish:'#166b47',act_prog:'#5dcaa5',plan_finish:'#3f38a6',plan_this:'#a7a2e8',none:'#ffffff'};}
+  PLAN_COLORS(){return {fin_earlier:'#aab4ae',act_finish:'#166b47',act_prog:'#e2b45c',plan_finish:'#3f38a6',plan_this:'#a7a2e8',none:'#ffffff'};}
   _zoneMonthState(lv,z,M){
     const zmk=z.mk||z.lid, AM=this.ACT_MONTHS, n=AM.length, mi=AM.indexOf(M);
     if(mi<0)return {state:'none',colored:false};
@@ -1112,13 +1112,14 @@ class Component extends DCLogic {
       Object.keys(this.STATUS).forEach(k=>{const st=this.STATUS[k];s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(${st.v})"></span>${st.label}</div>`;});
     } else if(this.colorMode==='plan'){
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month) · as of ${this.planMonth()}</div>`;
-      s+=`<div style="font-size:9px;color:var(--faint);margin-bottom:4px">Actual outranks plan — a planned zone turns green once site enters real progress.</div>`;
+      s+=`<div style="font-size:9px;color:var(--faint);margin-bottom:4px">Actual outranks plan — a planned zone switches to the actual colour once site enters real progress.</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#aab4ae"></span>Finished earlier (stays)</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#166b47"></span>Actually finished this month</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#5dcaa5"></span>Actually started / in progress</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#e2b45c"></span>Actually started / in progress</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#3f38a6"></span>Planned to finish this month</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#a7a2e8"></span>Planned this month (not started)</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#fff;border:1px solid var(--line);box-sizing:border-box"></span>No work this month</div>`;
+      s+=`<div class="lr"><span style="width:13px;height:13px;border-radius:50%;background:#f5a623;box-shadow:inset 0 0 0 2px #fff;flex:0 0 auto;margin-right:5px"></span>Started marker (planned + real work begun)</div>`;
     } else {
       const mx=this.levelMax();const m=this.METRICS.find(x=>x.k===this.curMetric);
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Quantity heat ${m.label}</div>`;
@@ -1263,7 +1264,7 @@ class Component extends DCLogic {
       const planned=arr.map(z=>({z,items:this.zonePlanItems(this.curLevel,z,m)})).filter(x=>x.items.length)
                       .sort((a,b)=>this.esc(a.z.label).localeCompare(this.esc(b.z.label)));
       const opts=M.map(mm=>`<option value="${mm}" ${mm===m?'selected':''}>${mm}${mm===curL?' (now)':''}</option>`).join('');
-      s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#8c968f">■ done (stays)</b> · <b style="color:#166b47">■ done this month</b> · <b style="color:#5dcaa5">■ in progress</b> · <b style="color:#3f38a6">■ plan finish</b> · <b style="color:#a7a2e8">■ planned</b></span></div></div>`;
+      s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#8c968f">■ done (stays)</b> · <b style="color:#166b47">■ done this month</b> · <b style="color:#c98f1e">■ in progress</b> · <b style="color:#3f38a6">■ plan finish</b> · <b style="color:#a7a2e8">■ planned</b></span></div></div>`;
       if(!planned.length){ s+=`<div class="empty" style="padding:16px 6px">No zones have planned activity in ${m}.</div>`; }
       else { s+=planned.map(({z,items})=>`<div class="planzone" data-k="${this.esc(this.zid(z))}"><div class="pz-nm"><span class="sw" style="background:${(this.CAT[z.cat]||this.CAT.NB).c}"></span>${this.esc(z.label)}${z.crit?' <span style="color:var(--crit)">◆</span>':''}</div><div class="pz-acts">${items.map(it=>`<div class="pz-act"><span>${this.esc(it.label)}</span><b>${this.fmt(it.qty)} ${this.esc(it.unit)}</b></div>`).join('')}</div></div>`).join(''); }
     }
@@ -2027,7 +2028,7 @@ class Component extends DCLogic {
 
   /* ---------- lock file: persist all markers to a portable file & reload ---------- */
   async buildFullExport(){
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main map)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
     const zones=[];
     this.DATA.order.forEach(lv=>{const seen={};this.DATA.levels[lv].zones.forEach(z=>{const zid=this.zid(z);if(seen[zid])return;seen[zid]=1;const c=z.counts||{};const p=z._p||{};
       zones.push({level:lv,zone_mk:zid,label:z.label,area_code:z.cat||'NB',area:AL[z.cat||'NB'],critical:!!z.crit,
