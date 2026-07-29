@@ -67,6 +67,18 @@ class Component extends DCLogic {
     this.root.querySelector('#foot').innerHTML = 'Zones coloured by construction area / derived progress / quantity heat. Geometry & quantities from RWS P1 CJ source; progress comes from element check-offs and manual zone updates; zones with no data show 0% (Not started).';
     this.render();
     this.rwsBoot();
+    if(this._rwsPullTimer)clearInterval(this._rwsPullTimer);
+    this._rwsPullTimer=setInterval(()=>this._rwsAutoPull(),30000);   // 每 30 秒自动从云端拉取, 多人改动无需手动 F5
+  }
+  async _rwsAutoPull(){
+    try{
+      if(typeof rwsGetSession!=='function'||!rwsGetSession())return;      // 未登录不拉
+      if(typeof rwsQueueSize==='function'&&rwsQueueSize()>0)return;        // 本机有待同步改动, 先不覆盖
+      const ae=document.activeElement; if(ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName))return;  // 不打断正在输入
+      await this.rwsAfterLogin();                                          // 拉云端 + 合并 + 重绘
+      if(this._subOpen)this.selectSubzone(this._subOpen.kind,this._subOpen.i);
+      else if(this.selKey){const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(z)this.selectZone(z);}
+    }catch(e){}
   }
 
   /* ---------- helpers ---------- */
@@ -771,10 +783,22 @@ class Component extends DCLogic {
   zonePlanItems(lv,z,m){const zmk=z.mk||z.lid;const out=[];this._actMeta().forEach(a=>{if(this.actHidden(lv,zmk,a.id))return;const p=this.actPlan(lv,zmk,a.id,m);if(p!=null&&p>0)out.push({label:a.label,qty:p,unit:a.unit});});return out;}
   zoneHasPlan(lv,z,m){return this.zonePlanItems(lv,z,m).length>0;}
   zonePlanStarted(lv,z,m){const zmk=z.mk||z.lid;return this._actMeta().some(a=>{const d=this.actDoneMonth(lv,zmk,a.id,m);return d!=null&&d>0;});}
+  _zoneMonthState(lv,z,M){
+    const zmk=z.mk||z.lid, mi=this.ACT_MONTHS.indexOf(M); if(mi<0)return {complete:false,anyDone:false,anyPlanThis:false};
+    let anyDone=false, anyPlanThis=false, hasTotal=false, allComplete=true;
+    this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z)).forEach(a=>{
+      const tot=this.actTotal(lv,zmk,a.id,a.total);
+      let cum=0; for(let i=0;i<=mi;i++){const d=this.actDoneMonth(lv,zmk,a.id,this.ACT_MONTHS[i]); if(d)cum+=d;}
+      if(cum>0)anyDone=true;
+      const pt=this.actPlan(lv,zmk,a.id,M); if(pt!=null&&pt>0)anyPlanThis=true;
+      if(tot!=null&&tot>0){hasTotal=true; if(cum<tot)allComplete=false;}
+    });
+    return {complete:(hasTotal&&allComplete&&anyDone), anyDone, anyPlanThis};
+  }
   _zoneCum(lv,z){const zmk=z.mk||z.lid;let done=0,plan=0;this._actMeta().forEach(a=>{this.ACT_MONTHS.forEach(m=>{const d=this.actDoneMonth(lv,zmk,a.id,m);if(d)done+=d;const pl=this.actPlan(lv,zmk,a.id,m);if(pl)plan+=pl;});});return {done,plan};}
   zoneRollIn(lv,z,m){const zmk=z.mk||z.lid;const mi=this.ACT_MONTHS.indexOf(m);if(mi<=0)return false;return this._actMeta().some(a=>{if(this.actHidden(lv,zmk,a.id))return false;const c=this.actCarry(lv,zmk,a.id,mi);return c&&c.carryIn>0;});}
   zoneFill(z){
-    if(this.colorMode==='plan'){ const _m=this.planMonth(); if(this.zoneHasPlan(this.curLevel,z,_m)) return '#6c7ae0'; const _cm=this._zoneCum(this.curLevel,z); if(_cm.done>0) return (_cm.plan>0&&_cm.done>=_cm.plan)?'#35c08e':'#f5a623'; if(this.zoneRollIn(this.curLevel,z,_m)) return '#c3cbf5'; const _st=(z._p&&z._p.status)||'todo'; return _st==='done'?'#35c08e':(_st==='wip'?'#c3cbf5':'#ffffff'); }
+    if(this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); if(st.complete) return '#35c08e'; if(st.anyDone) return '#f5a623'; if(st.anyPlanThis) return '#6c7ae0'; return '#ffffff'; }
     if(this.colorMode==='area') return (this.CAT[z.cat]||this.CAT.NB).c;
     if(this.colorMode==='progress') return this.progColor(this.zoneDisplayPct(z).pct);
     // quantity heat
@@ -802,7 +826,7 @@ class Component extends DCLogic {
       const crit=vis&&this.showCrit&&z.crit?' critln':'';
       let op=vis?(this.colorMode==='area'?0.5:0.72):0.05;
       let planst='';
-      if(vis&&this.colorMode==='plan'){ const _m=this.planMonth(); const _cm=this._zoneCum(this.curLevel,z); if(this.zoneHasPlan(this.curLevel,z,_m))op=0.62; else if(_cm.done>0)op=0.62; else if(this.zoneRollIn(this.curLevel,z,_m))op=0.6; else{const _st=(z._p&&z._p.status)||'todo';op=_st==='done'?0.62:(_st==='wip'?0.6:0.92);} }
+      if(vis&&this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); op=(st.complete||st.anyDone||st.anyPlanThis)?0.62:0.92; }
       const _maL1=(this.curLevel==='L1'&&z.cat==='MA');   // L1 Marine 父区(ZC): ZC 层关只留边界线; 开则保持正常蓝色填充
       if(_maL1&&!this.showSubZC)op=0;
       s+=`<polygon class="zone${vis?'':' dim'}${crit}${planst}" data-i="${i}" points="${pts}" fill="${this.zoneFill(z)}" fill-opacity="${op}"/>`;
@@ -1056,13 +1080,12 @@ class Component extends DCLogic {
       s+='<div style="height:5px"></div>';
       Object.keys(this.STATUS).forEach(k=>{const st=this.STATUS[k];s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(${st.v})"></span>${st.label}</div>`;});
     } else if(this.colorMode==='plan'){
-      s+='<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month)</div>';
-      s+=`<div class="lr"><span class="sw" style="background:#6c7ae0"></span>Planned this month</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#f5a623"></span>Work started — in progress</div>`;
-      s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:#f5a623;border:2px solid #fff;box-sizing:border-box"></span>Started work this month</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#35c08e"></span>Completed</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#c3cbf5"></span>In progress</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#fff;border:1px solid var(--line);box-sizing:border-box"></span>Not started</div>`;
+      s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month) · as of ${this.planMonth()}</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#35c08e"></span>Completed by this month (stays)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#f5a623"></span>In progress (started by this month)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#6c7ae0"></span>Planned this month (not started)</div>`;
+      s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:#f5a623;border:2px solid #fff;box-sizing:border-box"></span>Did work this month</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#fff;border:1px solid var(--line);box-sizing:border-box"></span>No work this month</div>`;
     } else {
       const mx=this.levelMax();const m=this.METRICS.find(x=>x.k===this.curMetric);
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Quantity heat ${m.label}</div>`;
