@@ -784,21 +784,22 @@ class Component extends DCLogic {
   zoneHasPlan(lv,z,m){return this.zonePlanItems(lv,z,m).length>0;}
   zonePlanStarted(lv,z,m){const zmk=z.mk||z.lid;return this._actMeta().some(a=>{const d=this.actDoneMonth(lv,zmk,a.id,m);return d!=null&&d>0;});}
   _zoneMonthState(lv,z,M){
-    const zmk=z.mk||z.lid, mi=this.ACT_MONTHS.indexOf(M); if(mi<0)return {complete:false,anyDone:false,anyPlanThis:false};
-    let anyDone=false, anyPlanThis=false, hasTotal=false, allComplete=true;
+    const zmk=z.mk||z.lid, mi=this.ACT_MONTHS.indexOf(M); if(mi<0)return {complete:false,completesThisMonth:false,completedBefore:false,anyDone:false,anyPlanThis:false};
+    let anyDone=false, anyPlanThis=false, hasTotal=false, allCompM=true, allCompPrev=true, doneBefore=false;
     this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z)).forEach(a=>{
       const tot=this.actTotal(lv,zmk,a.id,a.total);
-      let cum=0; for(let i=0;i<=mi;i++){const d=this.actDoneMonth(lv,zmk,a.id,this.ACT_MONTHS[i]); if(d)cum+=d;}
-      if(cum>0)anyDone=true;
+      let cumM=0,cumPrev=0; for(let i=0;i<=mi;i++){const d=this.actDoneMonth(lv,zmk,a.id,this.ACT_MONTHS[i]); if(d){cumM+=d; if(i<mi)cumPrev+=d;}}
+      if(cumM>0)anyDone=true; if(cumPrev>0)doneBefore=true;
       const pt=this.actPlan(lv,zmk,a.id,M); if(pt!=null&&pt>0)anyPlanThis=true;
-      if(tot!=null&&tot>0){hasTotal=true; if(cum<tot)allComplete=false;}
+      if(tot!=null&&tot>0){hasTotal=true; if(cumM<tot)allCompM=false; if(cumPrev<tot)allCompPrev=false;}
     });
-    return {complete:(hasTotal&&allComplete&&anyDone), anyDone, anyPlanThis};
+    const completeM=(hasTotal&&allCompM&&anyDone), completePrev=(hasTotal&&allCompPrev&&doneBefore);
+    return {complete:completeM, completesThisMonth:(completeM&&!completePrev), completedBefore:completePrev, anyDone, anyPlanThis};
   }
   _zoneCum(lv,z){const zmk=z.mk||z.lid;let done=0,plan=0;this._actMeta().forEach(a=>{this.ACT_MONTHS.forEach(m=>{const d=this.actDoneMonth(lv,zmk,a.id,m);if(d)done+=d;const pl=this.actPlan(lv,zmk,a.id,m);if(pl)plan+=pl;});});return {done,plan};}
   zoneRollIn(lv,z,m){const zmk=z.mk||z.lid;const mi=this.ACT_MONTHS.indexOf(m);if(mi<=0)return false;return this._actMeta().some(a=>{if(this.actHidden(lv,zmk,a.id))return false;const c=this.actCarry(lv,zmk,a.id,mi);return c&&c.carryIn>0;});}
   zoneFill(z){
-    if(this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); if(st.complete) return '#35c08e'; if(st.anyDone) return '#f5a623'; if(st.anyPlanThis) return '#6c7ae0'; return '#ffffff'; }
+    if(this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); if(st.completesThisMonth) return '#166b47'; if(st.completedBefore) return '#35c08e'; if(st.anyDone) return '#a7e3c6'; if(st.anyPlanThis) return '#6c7ae0'; return '#ffffff'; }
     if(this.colorMode==='area') return (this.CAT[z.cat]||this.CAT.NB).c;
     if(this.colorMode==='progress') return this.progColor(this.zoneDisplayPct(z).pct);
     // quantity heat
@@ -1081,10 +1082,10 @@ class Component extends DCLogic {
       Object.keys(this.STATUS).forEach(k=>{const st=this.STATUS[k];s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(${st.v})"></span>${st.label}</div>`;});
     } else if(this.colorMode==='plan'){
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month) · as of ${this.planMonth()}</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#35c08e"></span>Completed by this month (stays)</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#f5a623"></span>In progress (started by this month)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#a7e3c6"></span>In progress (light = ongoing)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#166b47"></span>Finished this month (dark)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#35c08e"></span>Finished earlier (stays)</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#6c7ae0"></span>Planned this month (not started)</div>`;
-      s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:#f5a623;border:2px solid #fff;box-sizing:border-box"></span>Did work this month</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#fff;border:1px solid var(--line);box-sizing:border-box"></span>No work this month</div>`;
     } else {
       const mx=this.levelMax();const m=this.METRICS.find(x=>x.k===this.curMetric);
@@ -1837,10 +1838,10 @@ class Component extends DCLogic {
     this.root.querySelector('#loadLock').addEventListener('click',()=>lf.click());
     lf.addEventListener('change',e=>{const f=e.target.files[0];if(f)this.loadLock(f);lf.value='';});
     const _cc=this.root.querySelector('#rwsClearCache'); if(_cc) _cc.addEventListener('click',()=>{
-      if(!confirm('清理本机缓存?\n\n将清掉浏览器里残留的本地数据(计划量/实际量/覆盖/状态等), 然后刷新页面。\n\n• 不影响云端已保存的数据\n• 不影响你的登录\n• 刷新后会从云端重新加载最新数据')) return;
+      if(!confirm('Clear local cache?\n\nThis removes stale local data (plan/actual quantities, overrides, statuses) from this browser, then reloads.\n\n• Cloud-saved data is NOT affected\n• Your login is NOT affected\n• Latest data is reloaded from the cloud after refresh')) return;
       var keys=['rws_zp_ov','rws_zp_plan_ov','rws_qty_ov','rws_crit_ov','rws_edited_keys','rws_elem_status','rws_zone_updates','rws_act_total','rws_act_plan','rws_act_donem','rws_act_hidden','rws_act_defs','rws_act_date','rws_act_cmt','rws_col_month','rws_zdate','rws_elem_date','rws_cat_add','rws_elem_add','rws_last_daily_export','rws_offline_queue'];
       keys.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
-      alert('已清理本机缓存, 即将刷新。'); location.reload();
+      alert('Local cache cleared — reloading.'); location.reload();
     });
     this.root.querySelector('#mExport').addEventListener('click',()=>this.exportExcel());
     this.root.querySelector('#mClose').addEventListener('click',()=>this.root.querySelector('#modal').classList.remove('open'));
@@ -1987,7 +1988,7 @@ class Component extends DCLogic {
     return out;
   }
   _downloadJson(obj,name){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},400);}
-  async exportFullJson(){const btn=this.root.querySelector('#exportJson');if(btn)btn.textContent='⏳ Building…';try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_full_'+new Date().toISOString().slice(0,10)+'.json');}catch(e){alert('Export failed: '+e.message);}finally{if(btn)btn.textContent='⬇ Full JSON';}}
+  async exportFullJson(){if(!this.rwsIsAdmin()){this.rwsDeny&&this.rwsDeny('Only admin can export the full JSON.');return;}const btn=this.root.querySelector('#exportJson');if(btn)btn.textContent='⏳ Building…';try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_full_'+new Date().toISOString().slice(0,10)+'.json');}catch(e){alert('Export failed: '+e.message);}finally{if(btn)btn.textContent='⬇ Full JSON';}}
   async rwsMaybeDailyExport(){if(!this.rwsIsAdmin())return;const today=new Date().toISOString().slice(0,10);let last='';try{last=localStorage.getItem('rws_last_daily_export')||'';}catch(e){}if(last===today)return;try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_daily_'+today+'.json');localStorage.setItem('rws_last_daily_export',today);}catch(e){console.warn('[rws] daily export failed',e);}}
   snapshot(){return {v:2,project:'RWS P1 CJ',savedAt:new Date().toISOString(),elem:this.elem,elemDate:this._elemDate,updates:this.updates,zpOv:this._zpOv,crit:this._critOv,actTotal:this._actTotal,actPlan:this._actPlan,actDoneM:this._actDoneM,actHidden:this._actHidden,actDefs:this._actDefs,catAdd:this._catAdd,elemAdd:this._elemAdd,editedKeys:this._editedKeys,actDate:this._actDate,colMonth:this._colMonth,actCmt:this._actCmt};}
   saveLock(){
