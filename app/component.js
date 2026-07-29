@@ -92,13 +92,16 @@ class Component extends DCLogic {
   proj(p,H){return [p[0],H-p[1]];}
   centroid(r,H){let x=0,y=0;r.forEach(p=>{x+=p[0];y+=H-p[1];});return[x/r.length,y/r.length];}
   ml(m){const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return names[((m%12)+12)%12]+' '+(2024+Math.floor(m/12));}
-  _fmtD(iso){if(!iso)return '';const q=String(iso).split('-');if(q.length<3)return iso;const M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (+q[2])+' '+M[+q[1]]+" '"+q[0].slice(2);}
+  /* 显示用 — 新加坡习惯 日/月/年 (dd/mm/yyyy)。输入可为 ISO 或 d/m/y, 先规范再格式化 */
+  _fmtD(d){const iso=this._dISO(d);const q=String(iso).split('-');if(q.length<3)return d||'';return q[2]+'/'+q[1]+'/'+q[0];}
+  /* 把日期串规范成可排序的 ISO(兼容 d/m/yyyy 与 yyyy-mm-dd)— 用于按真实日期比较, 而非字符串 */
+  _dISO(s){s=String(s||'').trim();if(!s)return '';if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)){const[y,m,d]=s.split('-');return y.padStart(4,'0')+'-'+m.padStart(2,'0')+'-'+d.padStart(2,'0');}const m2=s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);if(!m2)return s;return m2[3]+'-'+m2[2].padStart(2,'0')+'-'+m2[1].padStart(2,'0');}
   /* Zone plan start/end derived from the earliest start / latest end across all of that zone's activities (_actDate) */
-  _zoneActSpan(lv,zmk){const pre=lv+'||'+zmk+'||';let start=null,end=null;
+  _zoneActSpan(lv,zmk){const pre=lv+'||'+zmk+'||';let startR=null,endR=null;
     Object.keys(this._actDate||{}).forEach(k=>{if(!k.startsWith(pre))return;const v=this._actDate[k];
-      if(v&&v.start&&(!start||v.start<start))start=v.start;
-      if(v&&v.end&&(!end||v.end>end))end=v.end;});
-    return {start,end};}
+      if(v&&v.start){const r=this._dISO(v.start);if(r&&(startR==null||r<startR))startR=r;}
+      if(v&&v.end){const r=this._dISO(v.end);if(r&&(endR==null||r>endR))endR=r;}});
+    return {start:startR,end:endR};}
   _zdateRow(lv,z,label,which,fb){const zmk=z.mk||z.lid;const manual=(this._zdate||{})[lv+'||'+zmk]||{};
     const auto=this._zoneActSpan(lv,zmk);
     const iso=manual[which]||auto[which]||'';
@@ -799,7 +802,7 @@ class Component extends DCLogic {
   /* 月度地图状态 — 计划线(CSV 各月计划量)和实际线(各月实际完成量)分开算, 实际优先于计划。
      返回 state: fin_earlier(更早已完成,灰绿保留) / act_finish(本月实际完成) / act_prog(实际进行中)
                 / plan_finish(本月计划完成) / plan_this(本月计划开始或在做) / none(本月无工作) */
-  PLAN_COLORS(){return {fin_earlier:'#7c9b8a',act_finish:'#166b47',act_prog:'#5dcaa5',plan_finish:'#3f38a6',plan_this:'#a7a2e8',none:'#ffffff'};}
+  PLAN_COLORS(){return {fin_earlier:'#aab4ae',act_finish:'#166b47',act_prog:'#5dcaa5',plan_finish:'#3f38a6',plan_this:'#a7a2e8',none:'#ffffff'};}
   _zoneMonthState(lv,z,M){
     const zmk=z.mk||z.lid, AM=this.ACT_MONTHS, n=AM.length, mi=AM.indexOf(M);
     if(mi<0)return {state:'none',colored:false};
@@ -1110,7 +1113,7 @@ class Component extends DCLogic {
     } else if(this.colorMode==='plan'){
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month) · as of ${this.planMonth()}</div>`;
       s+=`<div style="font-size:9px;color:var(--faint);margin-bottom:4px">Actual outranks plan — a planned zone turns green once site enters real progress.</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#7c9b8a"></span>Finished earlier (stays)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#aab4ae"></span>Finished earlier (stays)</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#166b47"></span>Actually finished this month</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#5dcaa5"></span>Actually started / in progress</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#3f38a6"></span>Planned to finish this month</div>`;
@@ -1260,7 +1263,7 @@ class Component extends DCLogic {
       const planned=arr.map(z=>({z,items:this.zonePlanItems(this.curLevel,z,m)})).filter(x=>x.items.length)
                       .sort((a,b)=>this.esc(a.z.label).localeCompare(this.esc(b.z.label)));
       const opts=M.map(mm=>`<option value="${mm}" ${mm===m?'selected':''}>${mm}${mm===curL?' (now)':''}</option>`).join('');
-      s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#7c9b8a">■ done (stays)</b> · <b style="color:#166b47">■ done this month</b> · <b style="color:#5dcaa5">■ in progress</b> · <b style="color:#3f38a6">■ plan finish</b> · <b style="color:#a7a2e8">■ planned</b></span></div></div>`;
+      s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#8c968f">■ done (stays)</b> · <b style="color:#166b47">■ done this month</b> · <b style="color:#5dcaa5">■ in progress</b> · <b style="color:#3f38a6">■ plan finish</b> · <b style="color:#a7a2e8">■ planned</b></span></div></div>`;
       if(!planned.length){ s+=`<div class="empty" style="padding:16px 6px">No zones have planned activity in ${m}.</div>`; }
       else { s+=planned.map(({z,items})=>`<div class="planzone" data-k="${this.esc(this.zid(z))}"><div class="pz-nm"><span class="sw" style="background:${(this.CAT[z.cat]||this.CAT.NB).c}"></span>${this.esc(z.label)}${z.crit?' <span style="color:var(--crit)">◆</span>':''}</div><div class="pz-acts">${items.map(it=>`<div class="pz-act"><span>${this.esc(it.label)}</span><b>${this.fmt(it.qty)} ${this.esc(it.unit)}</b></div>`).join('')}</div></div>`).join(''); }
     }
@@ -1670,6 +1673,21 @@ class Component extends DCLogic {
     }).join('');
     return modeChip+(rows||'<div style="color:#aab4c2;font-size:11px;margin-bottom:8px">No activities.</div>');
   }
+  /* 日程卡片上的活动摘要小标签 — 不点开也能看到这个区这个月有什么活(月份:计划量/实际量; Total:总量) */
+  zoneMonthChips(lv,z,m,isTotal){
+    const zmk=z.mk||z.lid;
+    const acts=this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z));
+    const items=[];
+    acts.forEach(a=>{ if(this.actHidden(lv,zmk,a.id))return;
+      if(isTotal){ const t=this.actTotal(lv,zmk,a.id,a.total); if(t!=null&&t>0)items.push({lab:a.label,qty:t,done:false}); }
+      else { const p=this.actPlan(lv,zmk,a.id,m), d=this.actDoneMonth(lv,zmk,a.id,m);
+        if((p!=null&&p>0)||(d!=null&&d>0))items.push({lab:a.label,qty:(p!=null&&p>0?p:d),done:(d!=null&&d>0)}); } });
+    if(!items.length)return '';
+    const shown=items.slice(0,4);
+    const chips=shown.map(it=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#ffffffcc;border:.5px solid #c6d1de;border-radius:6px;padding:1px 5px;font-size:9px;color:#54637a;white-space:nowrap">${it.done?'<span style="width:5px;height:5px;border-radius:50%;background:#218a5c;flex:0 0 auto"></span>':''}${this.esc(it.lab)}${it.qty!=null?' <b style="font-family:\'IBM Plex Mono\',monospace;color:#2e3a59">'+this.fmt(it.qty)+'</b>':''}</span>`).join('');
+    const more=items.length>shown.length?`<span style="font-size:9px;color:#8a94a6;align-self:center">+${items.length-shown.length}</span>`:'';
+    return `<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:7px">${chips}${more}</div>`;
+  }
   buildSchedule(){
     const host=this.root.querySelector('#schedbody');
     if(!this.ZP){ host.innerHTML='<div style="padding:44px;text-align:center;color:#8a94a6">No schedule data.</div>'; return; }
@@ -1703,7 +1721,7 @@ class Component extends DCLogic {
         const label=z.label||mk; if(q&&label.toLowerCase().indexOf(q)<0)return; if(critOnly&&!z.crit)return;
         const ap=this.zoneActPct(lv,z); const pct=ap?ap.pct:null; if(pct!=null){pctSum+=pct;pctN++;} if(z.crit)crit++; zN++;
         const hasWork=_schIsTotal?true:this.zoneHasPlan(lv,z,_schMode);
-        (byLev[lv]=byLev[lv]||[]).push({lv,mk,label,pct,crit:!!z.crit,has:hasWork});
+        (byLev[lv]=byLev[lv]||[]).push({lv,mk,label,pct,crit:!!z.crit,has:hasWork,z});
       }); });
       if(!zN)return; const bpct=pctN?Math.round(pctSum/pctN):0;
       outHtml+=`<section style="background:#eef1f7;border-radius:20px;box-shadow:0 0 0 1px #aebdd1,10px 10px 22px #a8b6cb,-8px -8px 20px #ffffff;overflow:hidden;margin-bottom:20px">
@@ -1724,7 +1742,7 @@ class Component extends DCLogic {
             const _dim=(!_schIsTotal&&!o.has); const _dimSty=_dim?'opacity:.28;filter:grayscale(.5);':'';
             outHtml+=`<div data-lv="${this.esc(o.lv)}" data-mk="${this.esc(o.mk)}" class="zsc-card" title="${_dim?'本月无计划工作':''}" style="${_dimSty}background:${this.zoneTint(o.label)};border-radius:13px;box-shadow:${isC?'0 0 0 3px #ef2d55,':''}${sel?'0 0 0 1px #b6c3d5,4px 4px 10px #aebccf,-3px -3px 8px #ffffff,inset 0 0 0 1.5px #4a90e2':'0 0 0 1px #c6d1de,3px 3px 8px #b3c1d3,-3px -3px 7px #ffffff'};padding:10px 12px;cursor:pointer">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px"><span style="display:flex;align-items:center;gap:5px;min-width:0">${isC?'<span style="font-size:8px;font-weight:800;color:#fff;background:#ef2d55;border-radius:4px;padding:1px 5px;flex:0 0 auto;letter-spacing:.4px">CRIT</span>':''}<span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:#2e3a59;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${this.esc(o.label)}</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;color:${bcol}">${badge}</span></div>
-              <div style="height:7px;border-radius:5px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden"><div style="height:100%;border-radius:5px;width:${Math.min(pct||0,100)}%;background:${bcol}"></div></div></div>`; });
+              <div style="height:7px;border-radius:5px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden"><div style="height:100%;border-radius:5px;width:${Math.min(pct||0,100)}%;background:${bcol}"></div></div>${this.zoneMonthChips(o.lv,o.z,_schMode,_schIsTotal)}</div>`; });
           outHtml+=`</div>`; } });
       outHtml+=`</section>`; });
     if(!outHtml)outHtml='<div style="padding:44px;text-align:center;color:#8a94a6;font-weight:600">No zones match this filter.</div>';

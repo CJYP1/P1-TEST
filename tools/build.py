@@ -76,6 +76,20 @@ if za_dir.exists() and za_dir.is_dir():
 elif za_single.exists():
     za_files = [za_single]
 
+def to_iso(s):
+    """把日期规范成 ISO yyyy-mm-dd(输入可为 d/m/yyyy、d-m-yyyy 或已是 ISO)。
+    统一成 ISO 后:字符串比较=日期比较, <input type=date> 能显示, 前端 _fmtD 能解析。"""
+    s = (s or '').strip()
+    if not s: return ''
+    import re as _re
+    if _re.match(r'^\d{4}-\d{1,2}-\d{1,2}$', s):
+        y, m, d = s.split('-')
+    else:
+        m2 = _re.match(r'^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$', s)
+        if not m2: return s   # 认不出就原样(不至于丢数据), 前端仍有兜底解析
+        d, m, y = m2.group(1), m2.group(2), m2.group(3)
+    return f'{int(y):04d}-{int(m):02d}-{int(d):02d}'
+
 if za_files:
     ap, ad, adm = {}, {}, {}
     for za in za_files:
@@ -95,10 +109,10 @@ if za_files:
                     try: dv = float(done); dv = int(dv) if dv == int(dv) else dv
                     except ValueError: sys.exit(f'{za.name}: {lv}/{zmk}/{aid}/{mon} 完成量 "{done}" 不是数字')
                     adm[f'{lv}||{zmk}||{aid}||{mon}'] = dv
-                s, e = (row.get('活动开始') or '').strip(), (row.get('活动结束') or '').strip()
+                s, e = to_iso(row.get('活动开始')), to_iso(row.get('活动结束'))
                 if s or e:
-                    # 同一分区+活动可能跨多行/多月份 -- 取所有行里最早的开始日 + 最晚的结束日,
-                    # 而不是让后面的行覆盖前面的日期(否则前面月份段的日期会丢失)
+                    # 同一分区+活动可能跨多行/多月份 -- 取所有行里最早的开始日 + 最晚的结束日
+                    # (ISO 格式下字符串比较即日期比较), 而不是让后面的行覆盖前面的日期
                     k = f'{lv}||{zmk}||{aid}'
                     o = ad.get(k, {})
                     if s and (not o.get('start') or s < o['start']): o['start'] = s
@@ -115,8 +129,8 @@ if zpd.exists():
             lv, zmk = row['楼层'].strip(), row['分区'].strip()
             if not lv or not zmk: continue
             o = {}
-            if (row.get('计划开始') or '').strip(): o['start'] = row['计划开始'].strip()
-            if (row.get('计划结束') or '').strip(): o['end'] = row['计划结束'].strip()
+            if (row.get('计划开始') or '').strip(): o['start'] = to_iso(row.get('计划开始'))
+            if (row.get('计划结束') or '').strip(): o['end'] = to_iso(row.get('计划结束'))
             if o: zd[f'{lv}||{zmk}'] = o
     if zd: seed['zdate'] = zd
 cmf = ROOT/'data-csv'/'fixed'/'col-month.csv'
