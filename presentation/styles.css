@@ -94,7 +94,7 @@ header .sub{font-size:11px;color:var(--dim)}
 .collink:hover{color:var(--accent)}
 .elchip.hlrow{outline:2.5px solid var(--accent);outline-offset:1px;border-radius:6px}
 .hlrow{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:6px}
-.collbl{font-size:1350px;font-weight:600;fill:var(--dim);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--stage);stroke-width:320px;display:none}
+.collbl{font-size:1350px;font-weight:600;fill:var(--dim);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--stage);stroke-width:150px;display:none}
 svg.collabels .collbl{display:block}
 .zlabel{font-weight:700;fill:var(--txt);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--stage);stroke-width:520px}
 .zname{font-weight:700;fill:var(--txt);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--stage);stroke-width:600px}
