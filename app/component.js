@@ -431,15 +431,19 @@ class Component extends DCLogic {
     try{this._elemDate=JSON.parse(localStorage.getItem('rws_elem_date')||'{}');}catch(e){this._elemDate={};}
     const emb=document.getElementById('locked-data');
     if(emb){try{const d=JSON.parse(emb.textContent||'{}');if(d.elem)this.elem={...d.elem,...this.elem};if(d.elemDate)this._elemDate={...d.elemDate,...this._elemDate};if(d.updates)this.updates={...d.updates,...this.updates};if(d.zpOv){this._embZpOv=d.zpOv;if(this._zpOv){this._zpOv={...d.zpOv,...this._zpOv};if(this.zpApplyOv)this.zpApplyOv();}}if(d.crit){this._critOv={...d.crit,...(this._critOv||{})};}
-      /* CSV(基准数据)现在优先于云端/本地手改 —— 除非该键已被管理员手动锁定(isEdited), 锁定的值仍保留 */
-      if(d.actTotal){const s=d.actTotal,t=this._actTotal||{};Object.keys(s).forEach(k=>{if(!this.isEdited('act_total',k))t[k]=s[k];});this._actTotal=t;}
-      if(d.actPlan){const s=d.actPlan,t=this._actPlan||{};Object.keys(s).forEach(k=>{if(!this.isEdited('act_plan',k))t[k]=s[k];});this._actPlan=t;}
-      if(d.actDoneM){const s=d.actDoneM,t=this._actDoneM||{};Object.keys(s).forEach(k=>{if(!this.isEdited('act_done_m',k))t[k]=s[k];});this._actDoneM=t;}
+      /* CSV(基准数据)为唯一准: 非锁定键一律以 CSV 重建, 并丢弃不在 CSV 里的旧本地/云端值;
+         只有被管理员手动锁定(isEdited/🔒)的键才保留旧值。用于"除锁定外全部用 CSV 洗掉"。 */
+      const _rebuildFromCSV=(store,localObj,csvObj)=>{const out={};Object.keys(localObj||{}).forEach(k=>{if(this.isEdited(store,k))out[k]=localObj[k];});Object.keys(csvObj||{}).forEach(k=>{if(!this.isEdited(store,k))out[k]=csvObj[k];});return out;};
+      if(d.actTotal) this._actTotal=_rebuildFromCSV('act_total',this._actTotal,d.actTotal);
+      if(d.actPlan)  this._actPlan =_rebuildFromCSV('act_plan', this._actPlan, d.actPlan);
+      /* 实际进度(完成量)不被 CSV 洗掉: 仅在本地缺该键时用 CSV 补, 已有的现场数据保持不动 */
+      if(d.actDoneM){const s=d.actDoneM,t=this._actDoneM||{};Object.keys(s).forEach(k=>{if(!(k in t))t[k]=s[k];});this._actDoneM=t;}
       if(d.actHidden){this._actHidden={...d.actHidden,...(this._actHidden||{})};}
-      /* 基准数据种子扩展(data-csv 生成): 活动起止/区域起止/柱目标月/活动定义 — CSV 优先(无锁定保护) */
-      if(d.actDate){this._actDate={...(this._actDate||{}),...d.actDate};}
-      if(d.zdate){this._zdate={...(this._zdate||{}),...d.zdate};}
-      if(d.colMonth){this._colMonth={...(this._colMonth||{}),...d.colMonth};}
+      /* 活动起止/区域起止/柱目标月 — 无锁定机制, 一律以 CSV 为准并丢弃孤立旧值 */
+      if(d.actDate)  this._actDate =_rebuildFromCSV('act_date', this._actDate, d.actDate);
+      if(d.zdate)    this._zdate   =_rebuildFromCSV('zdate',    this._zdate,   d.zdate);
+      if(d.colMonth) this._colMonth=_rebuildFromCSV('col_month',this._colMonth,d.colMonth);
+      this.saveAct();this.saveDates();
       if(Array.isArray(d.actDefs)){const ex=new Set((this._actDefs||[]).map(x=>x&&x.id));d.actDefs.forEach(x=>{if(x&&x.id&&!ex.has(x.id)){(this._actDefs=this._actDefs||[]).push(x);}});}
       }catch(e){}}
   }
@@ -566,17 +570,21 @@ class Component extends DCLogic {
       if(state.slab_qty){ this._zpOv={...this._zpOv,...state.slab_qty}; if(this.zpApplyOv)this.zpApplyOv(); }
       if(state.qty_ov){ this._qtyOv={...this._qtyOv,...state.qty_ov}; try{localStorage.setItem('rws_qty_ov',JSON.stringify(this._qtyOv));}catch(e){} this.applyQtyOv(); }
       if(state.plan_qty_ov){ this._zpPlanOv={...this._zpPlanOv,...state.plan_qty_ov}; try{localStorage.setItem('rws_zp_plan_ov',JSON.stringify(this._zpPlanOv));}catch(e){} if(this.zpApplyOv)this.zpApplyOv(); }
-      if(state.act_total)  this._actTotal={...this._actTotal,...state.act_total};
-      if(state.act_plan)   this._actPlan={...this._actPlan,...state.act_plan};
+      /* 先合并锁定标记(可能来自其它设备), 后面 CSV-为准的键要靠它判断 */
+      if(state.edited){ this._editedKeys={...(this._editedKeys||{}),...state.edited}; this.saveEdited(); }
+      /* 计划量/总量: 云端只在该键被锁定(🔒)时才盖过 CSV; 未锁定键一律以 CSV 为准 */
+      if(state.act_total){const s=state.act_total;this._actTotal=this._actTotal||{};Object.keys(s).forEach(k=>{if(this.isEdited('act_total',k))this._actTotal[k]=s[k];});}
+      if(state.act_plan){const s=state.act_plan;this._actPlan=this._actPlan||{};Object.keys(s).forEach(k=>{if(this.isEdited('act_plan',k))this._actPlan[k]=s[k];});}
+      /* 实际进度(完成量): 云端权威, 照常合并 */
       if(state.act_done_m) this._actDoneM={...this._actDoneM,...state.act_done_m};
       if(state.act_hidden) this._actHidden={...this._actHidden,...state.act_hidden};
-      if(state.edited){ this._editedKeys={...(this._editedKeys||{}),...state.edited}; this.saveEdited(); }
       if(state.crit){ this._critOv={...(this._critOv||{}),...state.crit}; try{localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv));}catch(e){} if(this.applyCritOv)this.applyCritOv(); this._critPlanSet=null; }
       if(state.elem_date){ this._elemDate={...(this._elemDate||{}),...state.elem_date}; this.saveElemDate(); }
       if(state.act_def){ this._actDefs=Object.keys(state.act_def).map(id=>{const v=state.act_def[id]||{};const o={id,label:v.label||id,unit:v.unit||''};if(v.phase)o.phase=v.phase;return o;}); }
-      if(state.zdate){ this._zdate={...(this._zdate||{}),...state.zdate}; try{localStorage.setItem('rws_zdate',JSON.stringify(this._zdate));}catch(e){} }
-      if(state.act_date){ this._actDate={...(this._actDate||{}),...state.act_date}; try{localStorage.setItem('rws_act_date',JSON.stringify(this._actDate));}catch(e){} }
-      if(state.col_month){ this._colMonth={...(this._colMonth||{}),...state.col_month}; try{localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth));}catch(e){} }
+      /* 活动起止/区域起止/柱目标月 — 无锁定机制, 云端不再盖过 CSV(全部以 CSV 为准) */
+      if(state.zdate){ const s=state.zdate;this._zdate=this._zdate||{};Object.keys(s).forEach(k=>{if(this.isEdited('zdate',k))this._zdate[k]=s[k];}); try{localStorage.setItem('rws_zdate',JSON.stringify(this._zdate));}catch(e){} }
+      if(state.act_date){ const s=state.act_date;this._actDate=this._actDate||{};Object.keys(s).forEach(k=>{if(this.isEdited('act_date',k))this._actDate[k]=s[k];}); try{localStorage.setItem('rws_act_date',JSON.stringify(this._actDate));}catch(e){} }
+      if(state.col_month){ const s=state.col_month;this._colMonth=this._colMonth||{};Object.keys(s).forEach(k=>{if(this.isEdited('col_month',k))this._colMonth[k]=s[k];}); try{localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth));}catch(e){} }
       if(state.act_cmt){ this._actCmt={...(this._actCmt||{}),...state.act_cmt}; this.saveActCmt(); }
       if(Array.isArray(state.custom_cats)){const seen={};this._catAdd=[];state.custom_cats.forEach(c=>{if(c&&c.code&&!seen[c.code]){seen[c.code]=1;this._catAdd.push({code:c.code,label:c.label});}});}
       if(Array.isArray(state.custom_items)){this._elemAdd={};state.custom_items.forEach(it=>{if(!it)return;const k=it.level+'||'+it.zone_mk+'||'+it.type;(this._elemAdd[k]=this._elemAdd[k]||[]).push(it.elem_id);});}
