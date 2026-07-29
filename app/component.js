@@ -202,8 +202,15 @@ class Component extends DCLogic {
   saveAct(){try{localStorage.setItem('rws_act_total',JSON.stringify(this._actTotal||{}));localStorage.setItem('rws_act_plan',JSON.stringify(this._actPlan||{}));localStorage.setItem('rws_act_donem',JSON.stringify(this._actDoneM||{}));localStorage.setItem('rws_act_hidden',JSON.stringify(this._actHidden||{}));localStorage.setItem('rws_act_defs',JSON.stringify(this._actDefs||[]));}catch(e){}}
   saveEdited(){try{localStorage.setItem('rws_edited_keys',JSON.stringify(this._editedKeys||{}));}catch(e){}}
   isEdited(store,k){return !!(this._editedKeys||{})[store+'||'+k];}
-  markEdited(store,k){this._editedKeys=this._editedKeys||{};this._editedKeys[store+'||'+k]=true;this.saveEdited();}
-  toggleEdited(store,k){this._editedKeys=this._editedKeys||{};const kk=store+'||'+k;if(this._editedKeys[kk])delete this._editedKeys[kk];else this._editedKeys[kk]=true;this.saveEdited();this._actRerender(this._selZone());}
+  markEdited(store,k){this._editedKeys=this._editedKeys||{};const kk=store+'||'+k;this._editedKeys[kk]=true;this.saveEdited();if(typeof rwsSyncKV==='function')rwsSyncKV('edited',kk,true,null,null);}
+  toggleEdited(store,k){this._editedKeys=this._editedKeys||{};const kk=store+'||'+k;const now=!this._editedKeys[kk];if(now)this._editedKeys[kk]=true;else delete this._editedKeys[kk];this.saveEdited();
+    if(typeof rwsSyncKV==='function'){
+      rwsSyncKV('edited',kk,(now?true:null),null,null);                       // 锁状态同步
+      if(now){ const pr=k.split('||'),lv=pr[0],zmk=pr[1];                       // 锁定时把当前数值也重推, 保证云端有值
+        const mp={act_total:this._actTotal,act_plan:this._actPlan,act_done_m:this._actDoneM}[store];
+        if(mp){const v=mp[k]; if(v!=null)rwsSyncKV(store,k,v,lv,zmk);} }
+    }
+    this._actRerender(this._selZone());}
   _lockIco(store,k){if(!this.rwsIsAdmin())return '';const on=this.isEdited(store,k);return `<span class="act-lock" data-store="${store}" data-k="${this.esc(k)}" title="${on?'Locked — Import will NOT overwrite this value. Click to unlock.':'Click to lock — Import will not overwrite this value (editing still works).'}" style="cursor:pointer;font-size:11px;margin-left:2px">${on?'🔒':'🔓'}</span>`;}
   _actRerender(z){this.applyUpdates();if(this.buildRail)this.buildRail();if(this.buildTimeline)this.buildTimeline();this.render();if(this._subOpen){this.selectSubzone(this._subOpen.kind,this._subOpen.i);return;}const zz=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(zz)this.selectZone(zz);else if(z)this.selectZone(z);}
   _numOrNull(raw){const s=String(raw==null?'':raw).replace(/,/g,'').trim();const v=s===''?null:parseFloat(s);if(v!=null&&(isNaN(v)||v<0))return undefined;return v;}
@@ -546,6 +553,7 @@ class Component extends DCLogic {
       if(state.act_plan)   this._actPlan={...this._actPlan,...state.act_plan};
       if(state.act_done_m) this._actDoneM={...this._actDoneM,...state.act_done_m};
       if(state.act_hidden) this._actHidden={...this._actHidden,...state.act_hidden};
+      if(state.edited){ this._editedKeys={...(this._editedKeys||{}),...state.edited}; this.saveEdited(); }
       if(state.crit){ this._critOv={...(this._critOv||{}),...state.crit}; try{localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv));}catch(e){} if(this.applyCritOv)this.applyCritOv(); this._critPlanSet=null; }
       if(state.elem_date){ this._elemDate={...(this._elemDate||{}),...state.elem_date}; this.saveElemDate(); }
       if(state.act_def){ this._actDefs=Object.keys(state.act_def).map(id=>{const v=state.act_def[id]||{};const o={id,label:v.label||id,unit:v.unit||''};if(v.phase)o.phase=v.phase;return o;}); }
@@ -628,7 +636,7 @@ class Component extends DCLogic {
     }
     try{
       const users=await rwsAdminListUsers();
-      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map)'],['M28','M28 board · edit'],['M28_CMT','M28 board · comment']];
+      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map)'],['M28_VIEW','M28 board · view'],['M28','M28 board · edit'],['M28_CMT','M28 board · comment']];
       body.innerHTML=`<div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
         <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Add / update account</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -763,9 +771,10 @@ class Component extends DCLogic {
   zonePlanItems(lv,z,m){const zmk=z.mk||z.lid;const out=[];this._actMeta().forEach(a=>{if(this.actHidden(lv,zmk,a.id))return;const p=this.actPlan(lv,zmk,a.id,m);if(p!=null&&p>0)out.push({label:a.label,qty:p,unit:a.unit});});return out;}
   zoneHasPlan(lv,z,m){return this.zonePlanItems(lv,z,m).length>0;}
   zonePlanStarted(lv,z,m){const zmk=z.mk||z.lid;return this._actMeta().some(a=>{const d=this.actDoneMonth(lv,zmk,a.id,m);return d!=null&&d>0;});}
+  _zoneCum(lv,z){const zmk=z.mk||z.lid;let done=0,plan=0;this._actMeta().forEach(a=>{this.ACT_MONTHS.forEach(m=>{const d=this.actDoneMonth(lv,zmk,a.id,m);if(d)done+=d;const pl=this.actPlan(lv,zmk,a.id,m);if(pl)plan+=pl;});});return {done,plan};}
   zoneRollIn(lv,z,m){const zmk=z.mk||z.lid;const mi=this.ACT_MONTHS.indexOf(m);if(mi<=0)return false;return this._actMeta().some(a=>{if(this.actHidden(lv,zmk,a.id))return false;const c=this.actCarry(lv,zmk,a.id,mi);return c&&c.carryIn>0;});}
   zoneFill(z){
-    if(this.colorMode==='plan'){ const _m=this.planMonth(); if(this.zoneHasPlan(this.curLevel,z,_m)) return '#6c7ae0'; if(this.zoneRollIn(this.curLevel,z,_m)) return '#c3cbf5'; const _st=(z._p&&z._p.status)||'todo'; return _st==='done'?'#35c08e':(_st==='wip'?'#c3cbf5':'#ffffff'); }
+    if(this.colorMode==='plan'){ const _m=this.planMonth(); if(this.zoneHasPlan(this.curLevel,z,_m)) return '#6c7ae0'; const _cm=this._zoneCum(this.curLevel,z); if(_cm.done>0) return (_cm.plan>0&&_cm.done>=_cm.plan)?'#35c08e':'#f5a623'; if(this.zoneRollIn(this.curLevel,z,_m)) return '#c3cbf5'; const _st=(z._p&&z._p.status)||'todo'; return _st==='done'?'#35c08e':(_st==='wip'?'#c3cbf5':'#ffffff'); }
     if(this.colorMode==='area') return (this.CAT[z.cat]||this.CAT.NB).c;
     if(this.colorMode==='progress') return this.progColor(this.zoneDisplayPct(z).pct);
     // quantity heat
@@ -793,7 +802,7 @@ class Component extends DCLogic {
       const crit=vis&&this.showCrit&&z.crit?' critln':'';
       let op=vis?(this.colorMode==='area'?0.5:0.72):0.05;
       let planst='';
-      if(vis&&this.colorMode==='plan'){ const _m=this.planMonth(); if(this.zoneHasPlan(this.curLevel,z,_m))op=0.62; else if(this.zoneRollIn(this.curLevel,z,_m))op=0.6; else{const _st=(z._p&&z._p.status)||'todo';op=_st==='done'?0.62:(_st==='wip'?0.6:0.92);} }
+      if(vis&&this.colorMode==='plan'){ const _m=this.planMonth(); const _cm=this._zoneCum(this.curLevel,z); if(this.zoneHasPlan(this.curLevel,z,_m))op=0.62; else if(_cm.done>0)op=0.62; else if(this.zoneRollIn(this.curLevel,z,_m))op=0.6; else{const _st=(z._p&&z._p.status)||'todo';op=_st==='done'?0.62:(_st==='wip'?0.6:0.92);} }
       const _maL1=(this.curLevel==='L1'&&z.cat==='MA');   // L1 Marine 父区(ZC): ZC 层关只留边界线; 开则保持正常蓝色填充
       if(_maL1&&!this.showSubZC)op=0;
       s+=`<polygon class="zone${vis?'':' dim'}${crit}${planst}" data-i="${i}" points="${pts}" fill="${this.zoneFill(z)}" fill-opacity="${op}"/>`;
@@ -1049,6 +1058,7 @@ class Component extends DCLogic {
     } else if(this.colorMode==='plan'){
       s+='<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month)</div>';
       s+=`<div class="lr"><span class="sw" style="background:#6c7ae0"></span>Planned this month</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#f5a623"></span>Work started — in progress</div>`;
       s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:#f5a623;border:2px solid #fff;box-sizing:border-box"></span>Started work this month</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#35c08e"></span>Completed</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#c3cbf5"></span>In progress</div>`;

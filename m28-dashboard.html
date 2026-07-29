@@ -17,7 +17,19 @@
 #m28cpanel textarea{flex:1;resize:vertical;min-height:34px;font:inherit;font-size:12px;border:1px solid #cdd8e6;border-radius:8px;padding:5px;color:#0b0b0b}
 #m28cpanel button.send{border:none;background:#2a78d6;color:#fff;border-radius:8px;font-weight:700;padding:0 12px;cursor:pointer}
 </style>
-<div id="m28cpanel"><div class="hd"><span id="m28ctitle">Comments</span><span id="m28cclose" style="cursor:pointer;color:#898781">✕</span></div><div class="list" id="m28clist"></div><div class="add" id="m28cadd" style="display:none"><textarea id="m28cin" placeholder="写评论 / write a comment…"></textarea><button class="send" id="m28csend">发送</button></div></div>
+<div id="m28cpanel"><div class="hd"><span id="m28ctitle">Comments</span><span id="m28cclose" style="cursor:pointer;color:#898781">✕</span></div><div class="list" id="m28clist"></div><div class="add" id="m28cadd" style="display:none"><textarea id="m28cin" placeholder="写评论 / write a comment…"></textarea><button class="send" id="m28csend">发送</button></div>
+<div id="m28gate" style="position:fixed;inset:0;z-index:2147483600;background:#0f1420;display:none;align-items:center;justify-content:center;font-family:system-ui,Arial,sans-serif">
+  <div style="width:min(340px,92vw);background:#fff;border-radius:14px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.4)">
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px;color:#111">M28 · Sign in</div>
+    <div style="font-size:11px;color:#667;margin-bottom:16px">请用主系统账号登录(需有 M28 查看权限) / Sign in with your account (needs M28 view permission).</div>
+    <label style="font-size:10px;font-weight:700;color:#667;display:block;margin-bottom:4px">Username</label>
+    <input id="m28gu" type="text" autocomplete="username" style="width:100%;box-sizing:border-box;border:1px solid #cdd8e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px">
+    <label style="font-size:10px;font-weight:700;color:#667;display:block;margin-bottom:4px">Password</label>
+    <input id="m28gp" type="password" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1px solid #cdd8e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:12px">
+    <div id="m28ge" style="font-size:11px;color:#c8102e;margin-bottom:10px;display:none"></div>
+    <button id="m28gb" style="width:100%;border:none;background:#5b6ef5;color:#fff;font-weight:800;border-radius:8px;padding:10px;cursor:pointer">Sign in</button>
+  </div>
+</div></div>
 <script>
 window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:null};
 (function(){
@@ -67,13 +79,32 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
    b.disabled=false;
  });
  window.__m28_initComments=async function(){ await loadComments(); markItems(); };
+ function applySess(s){ window.__m28.loggedIn=!!s; window.__m28.sess=s||null;
+   var role=s&&s.role, sc=(s&&s.allowed_scopes)||[];
+   window.__m28.canEdit=!!s&&(role==='admin'||sc.indexOf('M28')>=0);
+   window.__m28.canComment=!!s&&(role==='admin'||sc.indexOf('M28_CMT')>=0);
+   window.__m28.canView=!!s&&(role==='admin'||sc.indexOf('M28_VIEW')>=0||sc.indexOf('M28')>=0||sc.indexOf('M28_CMT')>=0); }
+ var _gate=document.getElementById('m28gate');
+ function showGate(){ if(_gate)_gate.style.display='flex'; }
+ function hideGate(){ if(_gate)_gate.style.display='none'; }
+ (function(){ var b=document.getElementById('m28gb'),u=document.getElementById('m28gu'),pw=document.getElementById('m28gp'),er=document.getElementById('m28ge');
+   async function go(){ if(er)er.style.display='none'; var un=(u.value||'').trim(),pp=pw.value; if(!un||!pp)return; b.disabled=true;
+     try{ var s=await rwsLogin(un,pp); applySess(s);
+            if(!window.__m28.canView){ if(er){er.textContent='此账号没有 M28 查看权限 / no M28 view permission'; er.style.display='';} try{if(typeof rwsClearSession==='function')rwsClearSession();}catch(_){} applySess(null); }
+            else { hideGate(); if(window.__m28_initComments)window.__m28_initComments(); } }
+     catch(e){ if(er){er.textContent='登录失败 / sign-in failed: '+(e&&e.message||e); er.style.display='';} }
+     b.disabled=false; }
+   if(b)b.addEventListener('click',go);
+   if(pw)pw.addEventListener('keydown',function(e){if(e.key==='Enter')go();}); })();
  window.addEventListener('load',async function(){
-   try{ if(typeof rwsRestoreSession==='function'){ var s=await rwsRestoreSession(); if(s){ window.__m28.loggedIn=true; window.__m28.sess=s;
-     var role=s.role, sc=s.allowed_scopes||[];
-     window.__m28.canEdit=(role==='admin'||sc.indexOf('M28')>=0);
-     window.__m28.canComment=(role==='admin'||sc.indexOf('M28_CMT')>=0);
-   }} }catch(e){}
-   if(window.__m28.loggedIn && window.__m28_initComments) window.__m28_initComments();
+   var s=null; try{ if(typeof rwsRestoreSession==='function') s=await rwsRestoreSession(); }catch(e){}
+   applySess(s);
+   if(!window.__m28.canView){                          // 登录主系统 + 有 M28 查看权限 才能看
+     showGate();
+     if(window.__m28.loggedIn){ var er=document.getElementById('m28ge'); if(er){er.textContent='此账号没有 M28 查看权限 / no M28 view permission'; er.style.display='';} }
+     return;
+   }
+   if(window.__m28_initComments) window.__m28_initComments();
  });
 })();
 </script>
