@@ -206,6 +206,11 @@ class Component extends DCLogic {
   excAuto(lv,z){if((z.cat||'NB')!=='NB')return null;const d=this.excDepth(lv);return d==null?null:Math.round((z.area||0)*d);}
   excTotal(lv,z){const ov=this.actTotal(lv,z.mk||z.lid,'exc',null);return ov!=null?ov:this.excAuto(lv,z);}
   actPlan(lv,zmk,a,m){const v=(this._actPlan||{})[lv+'||'+zmk+'||'+a+'||'+m];return v==null?null:v;}
+  /* Auto total from the Activities data (zone-activity.csv → this._actPlan): sums the planned
+     quantity across all months for this zone+activity. Used as the fallback "def" for the
+     stat-grid total boxes so they auto-calculate from the CSV, but an admin override in
+     this._actTotal (typed into the box) still always wins — clearing the box restores the auto sum. */
+  actAutoTotal(lv,zmk,a){let s=0,any=false;this.ACT_MONTHS.forEach(m=>{const v=this.actPlan(lv,zmk,a,m);if(v!=null){s+=v;any=true;}});return any?Math.round(s*100)/100:null;}
   actDoneMonth(lv,zmk,a,m){const ea=this._elemAct(a);if(ea&&this._zoneHasElems(lv,zmk,ea.types))return this.elemDoneInMonth(lv,zmk,ea.types,m);const v=(this._actDoneM||{})[lv+'||'+zmk+'||'+a+'||'+m];return v==null?null:v;}
   actCumDone(lv,zmk,a){let s=0;this.ACT_MONTHS.forEach(m=>{const v=(this._actDoneM||{})[lv+'||'+zmk+'||'+a+'||'+m];if(v!=null)s+=v;});return s;}
   actCarry(lv,zmk,aid,mi){const M=this.ACT_MONTHS;let cpPrev=0,cdPrev=0;for(let i=0;i<mi;i++){cpPrev+=this.actPlan(lv,zmk,aid,M[i])||0;cdPrev+=this.actDoneMonth(lv,zmk,aid,M[i])||0;}const plan=this.actPlan(lv,zmk,aid,M[mi])||0;const done=this.actDoneMonth(lv,zmk,aid,M[mi])||0;const carryIn=Math.max(0,cpPrev-cdPrev);const required=plan;const balance=(cpPrev+plan)-(cdPrev+done);const cleared=Math.min(done,carryIn);const current=Math.max(0,done-cleared);return {carryIn,plan,done,required,balance,cleared,current,hasData:(cpPrev+cdPrev+plan+done)>0};}
@@ -1308,28 +1313,28 @@ class Component extends DCLogic {
   _actList(lv,z){
     const zmk=z.mk||z.lid, c=z.counts||{};
     const acts=[
-      {id:'earth',label:'Earthwork',unit:'m³',total:this.actTotal(lv,zmk,'earth',null)},
+      {id:'earth',label:'Earthwork',unit:'m³',total:this.actTotal(lv,zmk,'earth',this.actAutoTotal(lv,zmk,'earth'))},
       {id:'exc',label:'Excavation',unit:'m³',total:this.excTotal(lv,z)},
-      {id:'piling',label:'Piling',unit:'nos',total:this.actTotal(lv,zmk,'piling',null)},
-      {id:'demo_wall',label:'Demolition Wall',unit:'m³',total:this.actTotal(lv,zmk,'demo_wall',null)},
+      {id:'piling',label:'Piling',unit:'nos',total:this.actTotal(lv,zmk,'piling',this.actAutoTotal(lv,zmk,'piling'))},
+      {id:'demo_wall',label:'Demolition Wall',unit:'m³',total:this.actTotal(lv,zmk,'demo_wall',this.actAutoTotal(lv,zmk,'demo_wall'))},
       {id:'demo',label:'Demolition Slab',unit:'m³',total:this.actTotal(lv,zmk,'demo',null)},
-      {id:'slab_pile',label:'Slab + Pilecap',unit:'m²',total:this.actTotal(lv,zmk,'slab_pile',null)},
+      {id:'slab_pile',label:'Slab + Pilecap',unit:'m²',total:this.actTotal(lv,zmk,'slab_pile',this.actAutoTotal(lv,zmk,'slab_pile'))},
       {id:'pile',label:'Pilecap',unit:'nos',total:c.pilecap||0},
       {id:'col',label:'Column',unit:'nos',total:c.columns||0},
       {id:'ls',label:'Lift/Stairs Wall',unit:'nos',total:this.lsAll(c)},
       {id:'mbeam',label:'Steel Main Beam',unit:'nos',total:c.mainbeam||0},
       {id:'cbeam',label:'Cast Steel Main Beam',unit:'nos',total:c.mainbeam||0},
       {id:'slab',label:'Slab',unit:'m²',total:z.area||0,info:'Enter the completed area under \u201cDone\u201d based on the work stage: 40% for formwork, 50% for rebar, and 10% for slab casting.'},
-      {id:'act_corewall',label:'Core Wall',unit:'',total:this.actTotal(lv,zmk,'act_corewall',null)},
-      {id:'act_wall',label:'Wall',unit:'',total:this.actTotal(lv,zmk,'act_wall',null)},
-      {id:'act_colcorbel',label:'Column Cobel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',null)},
-      {id:'slab_top',label:'Top Slab',unit:'m²',total:this.actTotal(lv,zmk,'slab_top',null)},
-      {id:'rc',label:'RC Works',unit:'m³',total:this.actTotal(lv,zmk,'rc',null)},
-      {id:'pcbeam',label:'Precast Beam Installation',unit:'nos',total:this.actTotal(lv,zmk,'pcbeam',null)},
-      {id:'temp_stair',label:'Temp Staircase',unit:'nos',total:this.actTotal(lv,zmk,'temp_stair',null)},
-      {id:'act_cyclical',label:'Cyclical Works',unit:'',total:this.actTotal(lv,zmk,'act_cyclical',null)},
+      {id:'act_corewall',label:'Core Wall',unit:'',total:this.actTotal(lv,zmk,'act_corewall',this.actAutoTotal(lv,zmk,'act_corewall'))},
+      {id:'act_wall',label:'Wall',unit:'',total:this.actTotal(lv,zmk,'act_wall',this.actAutoTotal(lv,zmk,'act_wall'))},
+      {id:'act_colcorbel',label:'Column Cobel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',this.actAutoTotal(lv,zmk,'act_colcorbel'))},
+      {id:'slab_top',label:'Top Slab',unit:'m²',total:this.actTotal(lv,zmk,'slab_top',this.actAutoTotal(lv,zmk,'slab_top'))},
+      {id:'rc',label:'RC Works',unit:'m³',total:this.actTotal(lv,zmk,'rc',this.actAutoTotal(lv,zmk,'rc'))},
+      {id:'pcbeam',label:'Precast Beam Installation',unit:'nos',total:this.actTotal(lv,zmk,'pcbeam',this.actAutoTotal(lv,zmk,'pcbeam'))},
+      {id:'temp_stair',label:'Temp Staircase',unit:'nos',total:this.actTotal(lv,zmk,'temp_stair',this.actAutoTotal(lv,zmk,'temp_stair'))},
+      {id:'act_cyclical',label:'Cyclical Works',unit:'',total:this.actTotal(lv,zmk,'act_cyclical',this.actAutoTotal(lv,zmk,'act_cyclical'))},
     ];
-    (this._actDefs||[]).forEach(d=>acts.push({id:d.id,label:d.label,unit:d.unit||'',custom:true,total:this.actTotal(lv,zmk,d.id,null)}));
+    (this._actDefs||[]).forEach(d=>acts.push({id:d.id,label:d.label,unit:d.unit||'',custom:true,total:this.actTotal(lv,zmk,d.id,this.actAutoTotal(lv,zmk,d.id))}));
     return acts;
   }
   zpSection(z){
@@ -1455,7 +1460,7 @@ class Component extends DCLogic {
         ${this.statCell(lv,z.mk||z.lid,'area','Area m²',z.area||0)}
         ${!(z.cat==='NB'&&(lv==='B2'||lv==='B1'))?'':this.excAuto(lv,z)!=null?`<div class="stat" title="Auto-computed for new basement: area \u00d7 depth"><div class="n">${this.fmt(this.excTotal(lv,z))}</div><div class="l">Excavation m\u00b3</div><div class="statcalc">${this.fmt(z.area||0)} m\u00b2 \u00d7 ${this.excDepth(lv)} m</div></div>`:(this.rwsIsAdmin()?`<div class="stat"><input class="exc-ov-in" value="${this.actTotal(lv,z.mk||z.lid,'exc','')}" placeholder="\u2014" title="Excavation total m\u00b3 (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">Excavation m\u00b3</div></div>`:(this.actTotal(lv,z.mk||z.lid,'exc',0)?`<div class="stat"><div class="n">${this.fmt(this.actTotal(lv,z.mk||z.lid,'exc',0))}</div><div class="l">Excavation m\u00b3</div></div>`:''))}
         ${!(z.cat==='EB'&&(lv==='B2'||lv==='B1'))?'':this.rwsIsAdmin()?`<div class="stat"><input class="demo-ov-in" value="${this.actTotal(lv,z.mk||z.lid,'demo','')}" placeholder="\u2014" title="Demolition total m\u00b3 (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">Demolition m\u00b3</div></div>`:(this.actTotal(lv,z.mk||z.lid,'demo',0)?`<div class="stat"><div class="n">${this.fmt(this.actTotal(lv,z.mk||z.lid,'demo',0))}</div><div class="l">Demolition m\u00b3</div></div>`:'')}
-        ${this._actList(lv,z).filter(a=>a.id!=='exc'&&a.id!=='demo'&&(a.id!=='pile'||lv==='B2')).map(a=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,a.id);if(!this.rwsIsAdmin()&&hidden)return '';const tot=this.actTotal(lv,zmk,a.id,a.total);const lab=this.esc(a.label)+(a.unit?' '+this.esc(a.unit):'');if(this.rwsIsAdmin())return `<div class="stat"><input class="actot-ov-in" data-a="${this.esc(a.id)}" value="${tot==null?'':tot}" placeholder="—" title="${this.esc(a.label)} total (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">${lab}</div></div>`;return tot?`<div class="stat"><div class="n">${this.fmt(tot)}</div><div class="l">${lab}</div></div>`:'';}).join('')}
+        ${this._actList(lv,z).filter(a=>a.id!=='exc'&&a.id!=='demo'&&(a.id!=='pile'||lv==='B2')).map(a=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,a.id);if(!this.rwsIsAdmin()&&hidden)return '';const tot=this.actTotal(lv,zmk,a.id,a.total);const lab=this.esc(a.label)+(a.unit?' '+this.esc(a.unit):'');const _isOv=this.actTotal(lv,zmk,a.id,null)!=null;const _autoTag=(!_isOv&&tot!=null)?' <span style="font-weight:600;color:var(--faint);font-size:8px;text-transform:none">· auto</span>':'';if(this.rwsIsAdmin())return `<div class="stat"><input class="actot-ov-in" data-a="${this.esc(a.id)}" value="${tot==null?'':tot}" placeholder="—" title="${this.esc(a.label)} total (admin) — ${_isOv?'manually set; clear to restore auto-calc from the Activities data below':'auto-calculated by summing the Activities plan quantities below — type a value to override'}" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">${lab}${_autoTag}</div></div>`;return tot?`<div class="stat"><div class="n">${this.fmt(tot)}</div><div class="l">${lab}</div></div>`:'';}).join('')}
         ${(this.customCats()||[]).map(ct=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,ct.code);if(!this.rwsIsAdmin()&&hidden)return '';const ids=this.customItemsFor(lv,zmk,ct.code);if(!ids.length&&!this.rwsIsAdmin())return '';const nd=ids.filter(id=>this.elemStatus(lv+'||'+zmk+'||'+ct.code+'||'+id)==='done').length;return `<div class="stat statcust" data-jumpsec="${this.esc(ct.code)}" title="Custom category — click to open"><div class="n">${nd}/${ids.length}</div><div class="l">${this.esc(ct.label)}</div></div>`;}).join('')}
       </div>
       ${this.rwsIsAdmin()?'<div style="font-size:9.5px;color:var(--faint);margin:-6px 0 9px">Dashed boxes above are editable (admin) — press Enter or click away to save. Lift/Stair count isn\'t editable here.</div>':''}
