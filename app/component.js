@@ -938,9 +938,12 @@ class Component extends DCLogic {
         s+=`<text class="zseq" style="font-size:${(sub*0.85).toFixed(0)}px;fill:${bc}" x="${cx.toFixed(0)}" y="${(cy+sub*2.15).toFixed(0)}">${this.ordinal(z._p.seq)} pour</text>`;
       }
     });
+    const _colSeen=new Set();          /* 同一层按柱号去重: 每个柱号只画一次(去空格/忽略大小写), 彻底杜绝"两层字" */
+    const _nrm=id=>String(id||'').trim().toUpperCase();
     if(this.showColumns && this.COLUMNS && this.COLUMNS[this.curLevel]){
       const zoneByLabel={};L.zones.forEach(z=>{zoneByLabel[z.label]=z;});
       this.COLUMNS[this.curLevel].forEach((c,ci)=>{
+        const _nid=_nrm(c.id); if(_colSeen.has(_nid))return; _colSeen.add(_nid);
         const sy=H-c.y;
         const zz=zoneByLabel[c.zone];
         const st=zz?this.elemStatus(this.ekey(this.curLevel,zz,'col',c.id)):'todo';
@@ -963,7 +966,7 @@ class Component extends DCLogic {
     if(this.showColumns){   // 本地"点击放置"但还没入库的柱子(实心点); 已入库的跳过避免重复
       // 去重: 同 id 跳过; 另外按位置去重 —— 和任一正式柱子重叠(<1400)的一律跳过, 清掉已烤入正式数据后本地残留的重复
       const _nearReal=(x,y)=>_realCol.some(rc=>Math.hypot(rc.x-x,rc.y-y)<1400);
-      this.placedCols(this.curLevel).forEach(c=>{ if(_realIds.has(c.id)||_nearReal(c.x,c.y))return; const sy=H-c.y;
+      this.placedCols(this.curLevel).forEach(c=>{ const _nid=_nrm(c.id); if(_colSeen.has(_nid)||_realIds.has(c.id)||_nearReal(c.x,c.y))return; _colSeen.add(_nid); const sy=H-c.y;
         s+=`<circle class="colmk colmk-placed" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${c.crit?'#c8102e':'#8a93a3'}" stroke="#ffffff" stroke-width="220"/>`;
         s+=`<text class="collbl" x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id)}</text>`;
       });
