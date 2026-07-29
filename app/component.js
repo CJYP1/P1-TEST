@@ -796,23 +796,37 @@ class Component extends DCLogic {
   zonePlanItems(lv,z,m){const zmk=z.mk||z.lid;const out=[];this._actMeta().forEach(a=>{if(this.actHidden(lv,zmk,a.id))return;const p=this.actPlan(lv,zmk,a.id,m);if(p!=null&&p>0)out.push({label:a.label,qty:p,unit:a.unit});});return out;}
   zoneHasPlan(lv,z,m){return this.zonePlanItems(lv,z,m).length>0;}
   zonePlanStarted(lv,z,m){const zmk=z.mk||z.lid;return this._actMeta().some(a=>{const d=this.actDoneMonth(lv,zmk,a.id,m);return d!=null&&d>0;});}
+  /* 月度地图状态 — 计划线(CSV 各月计划量)和实际线(各月实际完成量)分开算, 实际优先于计划。
+     返回 state: fin_earlier(更早已完成,灰绿保留) / act_finish(本月实际完成) / act_prog(实际进行中)
+                / plan_finish(本月计划完成) / plan_this(本月计划开始或在做) / none(本月无工作) */
+  PLAN_COLORS(){return {fin_earlier:'#7c9b8a',act_finish:'#166b47',act_prog:'#5dcaa5',plan_finish:'#3f38a6',plan_this:'#a7a2e8',none:'#ffffff'};}
   _zoneMonthState(lv,z,M){
-    const zmk=z.mk||z.lid, mi=this.ACT_MONTHS.indexOf(M); if(mi<0)return {complete:false,completesThisMonth:false,completedBefore:false,anyDone:false,anyPlanThis:false};
-    let anyDone=false, anyPlanThis=false, hasTotal=false, allCompM=true, allCompPrev=true, doneBefore=false;
-    this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z)).forEach(a=>{
-      const tot=this.actTotal(lv,zmk,a.id,a.total);
-      let cumM=0,cumPrev=0; for(let i=0;i<=mi;i++){const d=this.actDoneMonth(lv,zmk,a.id,this.ACT_MONTHS[i]); if(d){cumM+=d; if(i<mi)cumPrev+=d;}}
-      if(cumM>0)anyDone=true; if(cumPrev>0)doneBefore=true;
-      const pt=this.actPlan(lv,zmk,a.id,M); if(pt!=null&&pt>0)anyPlanThis=true;
-      if(tot!=null&&tot>0){hasTotal=true; if(cumM<tot)allCompM=false; if(cumPrev<tot)allCompPrev=false;}
+    const zmk=z.mk||z.lid, AM=this.ACT_MONTHS, n=AM.length, mi=AM.indexOf(M);
+    if(mi<0)return {state:'none',colored:false};
+    const acts=this._actList(lv,z).filter(a=>a.custom||this._actApplies(a.id,lv,z));
+    const planM=new Array(n).fill(0), doneM=new Array(n).fill(0); let target=0;
+    acts.forEach(a=>{
+      const tot=this.actTotal(lv,zmk,a.id,a.total); if(tot!=null&&tot>0)target+=tot;
+      for(let i=0;i<n;i++){const p=this.actPlan(lv,zmk,a.id,AM[i]); if(p)planM[i]+=p; const d=this.actDoneMonth(lv,zmk,a.id,AM[i]); if(d)doneM[i]+=d;}
     });
-    const completeM=(hasTotal&&allCompM&&anyDone), completePrev=(hasTotal&&allCompPrev&&doneBefore);
-    return {complete:completeM, completesThisMonth:(completeM&&!completePrev), completedBefore:completePrev, anyDone, anyPlanThis};
+    let totalPlan=0; for(let i=0;i<n;i++)totalPlan+=planM[i];
+    if(!target)target=totalPlan;
+    let cumDone=0; for(let i=0;i<=mi;i++)cumDone+=doneM[i];
+    let planFinishMi=-1; for(let i=0;i<n;i++){if(planM[i]>0)planFinishMi=i;}   // 最后一个有计划量的月 = 计划完成月
+    let actFinishMi=-1; if(target>0){let c=0;for(let i=0;i<n;i++){c+=doneM[i]; if(c>=target){actFinishMi=i;break;}}}
+    let state;
+    if(actFinishMi>=0 && actFinishMi<mi) state='fin_earlier';   // 更早月份就做完 → 灰绿, 之后每月保留
+    else if(actFinishMi===mi)            state='act_finish';    // 本月实际做完
+    else if(cumDone>0)                   state='act_prog';      // 实际已开始/进行中(实际压过计划)
+    else if(planFinishMi===mi)           state='plan_finish';   // 本月计划完成(还没动)
+    else if(planM[mi]>0)                 state='plan_this';     // 本月计划开始/在做(还没动)
+    else                                 state='none';
+    return {state, colored:(state!=='none')};
   }
   _zoneCum(lv,z){const zmk=z.mk||z.lid;let done=0,plan=0;this._actMeta().forEach(a=>{this.ACT_MONTHS.forEach(m=>{const d=this.actDoneMonth(lv,zmk,a.id,m);if(d)done+=d;const pl=this.actPlan(lv,zmk,a.id,m);if(pl)plan+=pl;});});return {done,plan};}
   zoneRollIn(lv,z,m){const zmk=z.mk||z.lid;const mi=this.ACT_MONTHS.indexOf(m);if(mi<=0)return false;return this._actMeta().some(a=>{if(this.actHidden(lv,zmk,a.id))return false;const c=this.actCarry(lv,zmk,a.id,mi);return c&&c.carryIn>0;});}
   zoneFill(z){
-    if(this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); if(st.completesThisMonth) return '#166b47'; if(st.completedBefore) return '#35c08e'; if(st.anyDone) return '#a7e3c6'; if(st.anyPlanThis) return '#6c7ae0'; return '#ffffff'; }
+    if(this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); return this.PLAN_COLORS()[st.state]||'#ffffff'; }
     if(this.colorMode==='area') return (this.CAT[z.cat]||this.CAT.NB).c;
     if(this.colorMode==='progress') return this.progColor(this.zoneDisplayPct(z).pct);
     // quantity heat
@@ -840,7 +854,7 @@ class Component extends DCLogic {
       const crit=vis&&this.showCrit&&z.crit?' critln':'';
       let op=vis?(this.colorMode==='area'?0.5:0.72):0.05;
       let planst='';
-      if(vis&&this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); op=(st.complete||st.anyDone||st.anyPlanThis)?0.62:0.92; }
+      if(vis&&this.colorMode==='plan'){ const st=this._zoneMonthState(this.curLevel,z,this.planMonth()); op=st.colored?0.62:0.92; }
       const _maL1=(this.curLevel==='L1'&&z.cat==='MA');   // L1 Marine 父区(ZC): ZC 层关只留边界线; 开则保持正常蓝色填充
       if(_maL1&&!this.showSubZC)op=0;
       s+=`<polygon class="zone${vis?'':' dim'}${crit}${planst}" data-i="${i}" points="${pts}" fill="${this.zoneFill(z)}" fill-opacity="${op}"/>`;
@@ -1095,10 +1109,12 @@ class Component extends DCLogic {
       Object.keys(this.STATUS).forEach(k=>{const st=this.STATUS[k];s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(${st.v})"></span>${st.label}</div>`;});
     } else if(this.colorMode==='plan'){
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Planned (month) · as of ${this.planMonth()}</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#a7e3c6"></span>In progress (light = ongoing)</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#166b47"></span>Finished this month (dark)</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#35c08e"></span>Finished earlier (stays)</div>`;
-      s+=`<div class="lr"><span class="sw" style="background:#6c7ae0"></span>Planned this month (not started)</div>`;
+      s+=`<div style="font-size:9px;color:var(--faint);margin-bottom:4px">Actual outranks plan — a planned zone turns green once site enters real progress.</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#7c9b8a"></span>Finished earlier (stays)</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#166b47"></span>Actually finished this month</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#5dcaa5"></span>Actually started / in progress</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#3f38a6"></span>Planned to finish this month</div>`;
+      s+=`<div class="lr"><span class="sw" style="background:#a7a2e8"></span>Planned this month (not started)</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#fff;border:1px solid var(--line);box-sizing:border-box"></span>No work this month</div>`;
     } else {
       const mx=this.levelMax();const m=this.METRICS.find(x=>x.k===this.curMetric);
@@ -1244,7 +1260,7 @@ class Component extends DCLogic {
       const planned=arr.map(z=>({z,items:this.zonePlanItems(this.curLevel,z,m)})).filter(x=>x.items.length)
                       .sort((a,b)=>this.esc(a.z.label).localeCompare(this.esc(b.z.label)));
       const opts=M.map(mm=>`<option value="${mm}" ${mm===m?'selected':''}>${mm}${mm===curL?' (now)':''}</option>`).join('');
-      s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#6c7ae0">■ planned this month</b> · <b style="color:#f5a623">● started</b> · <b style="color:#35c08e">done</b> · <b style="color:#8b9bea">in progress</b> · <span style="color:#9aa0a8">faint = not started</span></span></div></div>`;
+      s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#7c9b8a">■ done (stays)</b> · <b style="color:#166b47">■ done this month</b> · <b style="color:#5dcaa5">■ in progress</b> · <b style="color:#3f38a6">■ plan finish</b> · <b style="color:#a7a2e8">■ planned</b></span></div></div>`;
       if(!planned.length){ s+=`<div class="empty" style="padding:16px 6px">No zones have planned activity in ${m}.</div>`; }
       else { s+=planned.map(({z,items})=>`<div class="planzone" data-k="${this.esc(this.zid(z))}"><div class="pz-nm"><span class="sw" style="background:${(this.CAT[z.cat]||this.CAT.NB).c}"></span>${this.esc(z.label)}${z.crit?' <span style="color:var(--crit)">◆</span>':''}</div><div class="pz-acts">${items.map(it=>`<div class="pz-act"><span>${this.esc(it.label)}</span><b>${this.fmt(it.qty)} ${this.esc(it.unit)}</b></div>`).join('')}</div></div>`).join(''); }
     }
@@ -1325,14 +1341,15 @@ class Component extends DCLogic {
       {id:'exc',label:'Excavation',unit:'m³',total:this.excTotal(lv,z)},
       {id:'piling',label:'Piling',unit:'nos',total:this.actTotal(lv,zmk,'piling',this.actAutoTotal(lv,zmk,'piling'))},
       {id:'demo_wall',label:'Demolition Wall',unit:'m³',total:this.actTotal(lv,zmk,'demo_wall',this.actAutoTotal(lv,zmk,'demo_wall'))},
-      {id:'demo',label:'Demolition Slab',unit:'m³',total:this.actTotal(lv,zmk,'demo',null)},
+      {id:'demo',label:'Demolition Slab',unit:'m³',total:this.actTotal(lv,zmk,'demo',this.actAutoTotal(lv,zmk,'demo'))},
       {id:'slab_pile',label:'Slab + Pilecap',unit:'m²',total:this.actTotal(lv,zmk,'slab_pile',this.actAutoTotal(lv,zmk,'slab_pile'))},
-      {id:'pile',label:'Pilecap',unit:'nos',total:c.pilecap||0},
-      {id:'col',label:'Column',unit:'nos',total:c.columns||0},
-      {id:'ls',label:'Lift/Stairs Wall',unit:'nos',total:this.lsAll(c)},
-      {id:'mbeam',label:'Steel Main Beam',unit:'nos',total:c.mainbeam||0},
-      {id:'cbeam',label:'Cast Steel Main Beam',unit:'nos',total:c.mainbeam||0},
-      {id:'slab',label:'Slab',unit:'m²',total:z.area||0,info:'Enter the completed area under \u201cDone\u201d based on the work stage: 40% for formwork, 50% for rebar, and 10% for slab casting.'},
+      /* 数量一律来自 CSV 各月计划量求和(可手改覆盖);没放计划量就留空 — 不再借用图纸台账数/区域面积 */
+      {id:'pile',label:'Pilecap',unit:'nos',total:this.actTotal(lv,zmk,'pile',this.actAutoTotal(lv,zmk,'pile'))},
+      {id:'col',label:'Column',unit:'nos',total:this.actTotal(lv,zmk,'col',this.actAutoTotal(lv,zmk,'col'))},
+      {id:'ls',label:'Lift/Stairs Wall',unit:'nos',total:this.actTotal(lv,zmk,'ls',this.actAutoTotal(lv,zmk,'ls'))},
+      {id:'mbeam',label:'Steel Main Beam',unit:'nos',total:this.actTotal(lv,zmk,'mbeam',this.actAutoTotal(lv,zmk,'mbeam'))},
+      {id:'cbeam',label:'Cast Steel Main Beam',unit:'nos',total:this.actTotal(lv,zmk,'cbeam',this.actAutoTotal(lv,zmk,'cbeam'))},
+      {id:'slab',label:'Slab',unit:'m²',total:this.actTotal(lv,zmk,'slab',this.actAutoTotal(lv,zmk,'slab')),info:'Enter the completed area under \u201cDone\u201d based on the work stage: 40% for formwork, 50% for rebar, and 10% for slab casting.'},
       {id:'act_corewall',label:'Core Wall',unit:'',total:this.actTotal(lv,zmk,'act_corewall',this.actAutoTotal(lv,zmk,'act_corewall'))},
       {id:'act_wall',label:'Wall',unit:'',total:this.actTotal(lv,zmk,'act_wall',this.actAutoTotal(lv,zmk,'act_wall'))},
       {id:'act_colcorbel',label:'Column Cobel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',this.actAutoTotal(lv,zmk,'act_colcorbel'))},
@@ -1676,6 +1693,8 @@ class Component extends DCLogic {
         _ms.querySelectorAll('button').forEach(b=>b.onclick=()=>{this._schMode=b.dataset.mode;if(this._schMode!=='__total')this._actMonth=this._schMode;this.buildSchedule();});
       } }
     { const _lg=this.root.querySelector('#schedlegend'); if(_lg)_lg.innerHTML='<div class="sl-item"><span class="sl-fill"></span>Solid bar = % done</div><div class="sl-item" style="color:#8a94a6">Pick <b>Total</b> or a month above, then click a zone to enter quantities &amp; dates.</div>'; }
+    /* 选中月份时: 该月有计划工作的 zone 正常显示并排在前; 没工作的浅色淡出、排到最后。Total 模式不淡化。 */
+    const _schMode=this._schMode, _schIsTotal=(_schMode==='__total');
     const areas=(filt==='all'?['NB','EB','MA']:[filt]); let outHtml='';
     areas.forEach(aK=>{ const cc=this.CAT[aK]; if(!cc)return;
       const byLev={},seen={}; let zN=0,crit=0,pctSum=0,pctN=0;
@@ -1683,7 +1702,8 @@ class Component extends DCLogic {
         if((z.cat||'NB')!==aK)return; const mk=z.mk||z.lid; const dk=lv+'||'+mk; if(seen[dk])return; seen[dk]=1;
         const label=z.label||mk; if(q&&label.toLowerCase().indexOf(q)<0)return; if(critOnly&&!z.crit)return;
         const ap=this.zoneActPct(lv,z); const pct=ap?ap.pct:null; if(pct!=null){pctSum+=pct;pctN++;} if(z.crit)crit++; zN++;
-        (byLev[lv]=byLev[lv]||[]).push({lv,mk,label,pct,crit:!!z.crit});
+        const hasWork=_schIsTotal?true:this.zoneHasPlan(lv,z,_schMode);
+        (byLev[lv]=byLev[lv]||[]).push({lv,mk,label,pct,crit:!!z.crit,has:hasWork});
       }); });
       if(!zN)return; const bpct=pctN?Math.round(pctSum/pctN):0;
       outHtml+=`<section style="background:#eef1f7;border-radius:20px;box-shadow:0 0 0 1px #aebdd1,10px 10px 22px #a8b6cb,-8px -8px 20px #ffffff;overflow:hidden;margin-bottom:20px">
@@ -1696,12 +1716,13 @@ class Component extends DCLogic {
             <div style="background:rgba(239,95,122,.1);border-radius:11px;padding:6px 11px;text-align:center;min-width:48px"><div style="font-size:14px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:#ef5f7a">${crit}</div><div style="font-size:8.5px;color:#ef5f7a;font-weight:700;text-transform:uppercase">Critical</div></div>
           </div>
         </div>`;
-      this.DATA.order.filter(lv=>byLev[lv]).forEach(lv=>{ const cards=byLev[lv]; const lk=aK+'|'+lv; const lopen=!(this._schLevClosed&&this._schLevClosed[lk]);
+      this.DATA.order.filter(lv=>byLev[lv]).forEach(lv=>{ const cards=byLev[lv]; if(!_schIsTotal)cards.sort((a,b)=>(b.has?1:0)-(a.has?1:0)); const lk=aK+'|'+lv; const lopen=!(this._schLevClosed&&this._schLevClosed[lk]);
         outHtml+=`<div class="zs-levhd" data-lk="${lk}" style="padding:11px 16px 4px;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none"><span style="font-size:10px;color:#8a94a6;width:12px;text-align:center">${lopen?'▾':'▸'}</span><span style="font-size:12.5px;font-weight:800;color:#2e3a59">${this.esc(lv)}</span><span style="font-size:10px;color:#8a94a6;font-weight:600">${cards.length} zones</span><span style="flex:1;height:1px;background:#dbe2ec"></span></div>`;
         if(lopen){ outHtml+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;padding:6px 16px 14px">`;
           cards.forEach(o=>{ const isC=o.crit; const pct=o.pct; const badge=pct==null?'—':pct+'%'; const bcol=pct==null?'#aab4c2':(pct>=99?'#218a5c':(pct>0?'#d98a2a':'#aab4c2'));
             const sel=this._schEdit&&this._schEdit.lv===o.lv&&this._schEdit.mk===o.mk;
-            outHtml+=`<div data-lv="${this.esc(o.lv)}" data-mk="${this.esc(o.mk)}" class="zsc-card" style="background:${this.zoneTint(o.label)};border-radius:13px;box-shadow:${isC?'0 0 0 3px #ef2d55,':''}${sel?'0 0 0 1px #b6c3d5,4px 4px 10px #aebccf,-3px -3px 8px #ffffff,inset 0 0 0 1.5px #4a90e2':'0 0 0 1px #c6d1de,3px 3px 8px #b3c1d3,-3px -3px 7px #ffffff'};padding:10px 12px;cursor:pointer">
+            const _dim=(!_schIsTotal&&!o.has); const _dimSty=_dim?'opacity:.28;filter:grayscale(.5);':'';
+            outHtml+=`<div data-lv="${this.esc(o.lv)}" data-mk="${this.esc(o.mk)}" class="zsc-card" title="${_dim?'本月无计划工作':''}" style="${_dimSty}background:${this.zoneTint(o.label)};border-radius:13px;box-shadow:${isC?'0 0 0 3px #ef2d55,':''}${sel?'0 0 0 1px #b6c3d5,4px 4px 10px #aebccf,-3px -3px 8px #ffffff,inset 0 0 0 1.5px #4a90e2':'0 0 0 1px #c6d1de,3px 3px 8px #b3c1d3,-3px -3px 7px #ffffff'};padding:10px 12px;cursor:pointer">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px"><span style="display:flex;align-items:center;gap:5px;min-width:0">${isC?'<span style="font-size:8px;font-weight:800;color:#fff;background:#ef2d55;border-radius:4px;padding:1px 5px;flex:0 0 auto;letter-spacing:.4px">CRIT</span>':''}<span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:#2e3a59;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${this.esc(o.label)}</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;color:${bcol}">${badge}</span></div>
               <div style="height:7px;border-radius:5px;background:#e4e9f1;box-shadow:inset 0 0 0 1px #bccadb;overflow:hidden"><div style="height:100%;border-radius:5px;width:${Math.min(pct||0,100)}%;background:${bcol}"></div></div></div>`; });
           outHtml+=`</div>`; } });
