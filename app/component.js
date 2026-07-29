@@ -164,8 +164,8 @@ class Component extends DCLogic {
     const dl=(showDone&&done.length)?done.map(c=>row(c,true)).join(''):'';
     const add=canAdd?`<div class="cmt-add"><input class="cmt-in" data-a="${aid}" placeholder="Write a comment…"><button class="hbtn cmt-send" data-a="${aid}">Send</button></div>`:'';
     return `<div class="cmtpanel">${list}${dt}${dl}${add}</div>`;}
-  setZoneDate(lv,z,which,iso){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can edit dates.');return;}const k=lv+'||'+(z.mk||z.lid);this._zdate=this._zdate||{};const o={...(this._zdate[k]||{})};o[which]=iso||'';if(!o.start&&!o.end)delete this._zdate[k];else this._zdate[k]=o;this.saveDates();if(typeof rwsSyncKV==='function')rwsSyncKV('zdate',k,(this._zdate[k]||null),null,null);this._actRerender(z);}
-  setActDate(lv,zmk,aid,which,iso){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can edit dates.');return;}const k=lv+'||'+zmk+'||'+aid;this._actDate=this._actDate||{};const o={...(this._actDate[k]||{})};o[which]=iso||'';if(!o.start&&!o.end)delete this._actDate[k];else this._actDate[k]=o;this.saveDates();if(typeof rwsSyncKV==='function')rwsSyncKV('act_date',k,(this._actDate[k]||null),null,null);this._actRerender(this._selZone());}
+  setZoneDate(lv,z,which,iso){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can edit dates.');return;}const k=lv+'||'+(z.mk||z.lid);this._zdate=this._zdate||{};const o={...(this._zdate[k]||{})};o[which]=iso||'';if(!o.start&&!o.end){delete this._zdate[k];this.unmarkEdited('zdate',k);}else{this._zdate[k]=o;this.markEdited('zdate',k);}this.saveDates();if(typeof rwsSyncKV==='function')rwsSyncKV('zdate',k,(this._zdate[k]||null),null,null);this._actRerender(z);}
+  setActDate(lv,zmk,aid,which,iso){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can edit dates.');return;}const k=lv+'||'+zmk+'||'+aid;this._actDate=this._actDate||{};const o={...(this._actDate[k]||{})};o[which]=iso||'';if(!o.start&&!o.end){delete this._actDate[k];this.unmarkEdited('act_date',k);}else{this._actDate[k]=o;this.markEdited('act_date',k);}this.saveDates();if(typeof rwsSyncKV==='function')rwsSyncKV('act_date',k,(this._actDate[k]||null),null,null);this._actRerender(this._selZone());}
   hex2rgb(h){h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
   lerpHex(a,b,t){const A=this.hex2rgb(a),B=this.hex2rgb(b);return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')';}
   progColor(p){p=this.clamp((p||0)/100,0,1);return p<0.5?this.lerpHex('#9aa0a8','#3b82f6',p/0.5):this.lerpHex('#3b82f6','#22c55e',(p-0.5)/0.5);}
@@ -223,6 +223,7 @@ class Component extends DCLogic {
   saveEdited(){try{localStorage.setItem('rws_edited_keys',JSON.stringify(this._editedKeys||{}));}catch(e){}}
   isEdited(store,k){return !!(this._editedKeys||{})[store+'||'+k];}
   markEdited(store,k){this._editedKeys=this._editedKeys||{};const kk=store+'||'+k;this._editedKeys[kk]=true;this.saveEdited();if(typeof rwsSyncKV==='function')rwsSyncKV('edited',kk,true,null,null);}
+  unmarkEdited(store,k){this._editedKeys=this._editedKeys||{};const kk=store+'||'+k;if(this._editedKeys[kk]){delete this._editedKeys[kk];this.saveEdited();if(typeof rwsSyncKV==='function')rwsSyncKV('edited',kk,null,null,null);}}
   toggleEdited(store,k){this._editedKeys=this._editedKeys||{};const kk=store+'||'+k;const now=!this._editedKeys[kk];if(now)this._editedKeys[kk]=true;else delete this._editedKeys[kk];this.saveEdited();
     if(typeof rwsSyncKV==='function'){
       rwsSyncKV('edited',kk,(now?true:null),null,null);                       // 锁状态同步
