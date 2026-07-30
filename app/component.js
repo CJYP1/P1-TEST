@@ -671,6 +671,13 @@ class Component extends DCLogic {
         if(st.act_cmt && cmp(this._actCmt,st.act_cmt)){this._actCmt={...st.act_cmt};changed=true;}                // 评论: 整份以云端为准(含删除)
         if(st.elements){const merged={...(this.elem||{}),...st.elements};if(cmp(this.elem,merged)){this.elem=merged;changed=true;}}  // 构件状态: 合并
         if(st.crit && cmp(this._critOv,st.crit)){this._critOv={...st.crit};try{localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv));}catch(e){}this.applyCritOv&&this.applyCritOv();this._critPlanSet=null;changed=true;}  // critical: 整份以云端为准(含取消)
+        if(st.slab_qty && cmp(this._zpOv,st.slab_qty)){this._zpOv={...st.slab_qty};try{localStorage.setItem('rws_zp_ov',JSON.stringify(this._zpOv));}catch(e){}this.zpApplyOv&&this.zpApplyOv();changed=true;}  // slab 实际量: 整份以云端为准
+        if(st.elem_date){const merged={...(this._elemDate||{}),...st.elem_date};if(cmp(this._elemDate,merged)){this._elemDate=merged;this.saveElemDate&&this.saveElemDate();changed=true;}}  // 构件完成日期: 合并
+        if(st.zone_updates && st.zone_updates.length){   // 进度更新记录(Save update): 追加日志, 合并去重(按 ts+pct)
+          let addedU=false;
+          st.zone_updates.forEach(row=>{const mk=row.zone_mk;if(!mk)return;const arr=this.updates[mk]=this.updates[mk]||[];const ts=row.created_at?new Date(row.created_at).getTime():Date.now();if(!arr.some(e=>e.ts===ts&&e.pct===row.pct)){arr.push({pct:row.pct,status:row.status,date:row.update_date,note:row.note,crew:row.crew,level:row.level,zone:row.zone_label,ts});addedU=true;}});
+          if(addedU){Object.keys(this.updates).forEach(mk=>this.updates[mk].sort((a,b)=>(a.ts||0)-(b.ts||0)));this.saveUpdatesStore&&this.saveUpdatesStore();changed=true;}
+        }
         if(changed){
           this.saveAct&&this.saveAct(); this.saveActCmt&&this.saveActCmt(); this.saveElem&&this.saveElem();
           this.applyUpdates&&this.applyUpdates();

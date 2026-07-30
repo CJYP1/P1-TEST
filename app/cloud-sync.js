@@ -63,22 +63,29 @@ async function rwsQueueFlush(){
       else { console.warn('[rws] dropping queued edit, server rejected it:', item, r.error); q.shift(); rwsQueueSave(q); }
     }
   } finally { _rwsFlushing = false; }
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
 }
 window.addEventListener('online', rwsQueueFlush);
 setInterval(rwsQueueFlush, 20000);
+/* 同步被后端拒绝(非离线)时提示一下 —— 以前是静默失败, 用户以为存了其实没进云端 */
+function rwsNotifyFail(r){
+  if (r && !r.ok && !r.offline && window.__rwsApp && window.__rwsApp._toast){
+    var m = (r.error && r.error.message) ? r.error.message : 'change not saved to cloud';
+    window.__rwsApp._toast('⚠ 未同步 / not saved: ' + m);
+  }
+}
 async function rwsSyncKV(store, key, value, level, zoneMk){
   const s = rwsGetSession(); if (!s) return { ok:false };
   const args = { p_token:s.token, p_store:store, p_k:key, p_value:(value==null?null:value), p_level:level||null, p_zone_mk:zoneMk||null };
   const r = await rwsCall('rws_set_kv', args);
   if (!r.ok && r.offline) rwsQueuePush('rws_set_kv', args);
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
-async function rwsAddCat(code,label){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_code:code,p_label:label};const r=await rwsCall('rws_add_cat',a);if(!r.ok&&r.offline)rwsQueuePush('rws_add_cat',a);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
-async function rwsDelCat(code){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_code:code};const r=await rwsCall('rws_del_cat',a);if(!r.ok&&r.offline)rwsQueuePush('rws_del_cat',a);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
-async function rwsAddItem(itemKey,level,zoneMk,type,elemId){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_item_key:itemKey,p_level:level,p_zone_mk:zoneMk,p_type:type,p_elem_id:elemId};const r=await rwsCall('rws_add_item',a);if(!r.ok&&r.offline)rwsQueuePush('rws_add_item',a);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
-async function rwsDelItem(itemKey){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_item_key:itemKey};const r=await rwsCall('rws_del_item',a);if(!r.ok&&r.offline)rwsQueuePush('rws_del_item',a);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
+async function rwsAddCat(code,label){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_code:code,p_label:label};const r=await rwsCall('rws_add_cat',a);if(!r.ok&&r.offline)rwsQueuePush('rws_add_cat',a);rwsNotifyFail(r);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
+async function rwsDelCat(code){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_code:code};const r=await rwsCall('rws_del_cat',a);if(!r.ok&&r.offline)rwsQueuePush('rws_del_cat',a);rwsNotifyFail(r);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
+async function rwsAddItem(itemKey,level,zoneMk,type,elemId){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_item_key:itemKey,p_level:level,p_zone_mk:zoneMk,p_type:type,p_elem_id:elemId};const r=await rwsCall('rws_add_item',a);if(!r.ok&&r.offline)rwsQueuePush('rws_add_item',a);rwsNotifyFail(r);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
+async function rwsDelItem(itemKey){const s=rwsGetSession();if(!s)return{ok:false};const a={p_token:s.token,p_item_key:itemKey};const r=await rwsCall('rws_del_item',a);if(!r.ok&&r.offline)rwsQueuePush('rws_del_item',a);rwsNotifyFail(r);if(window.__rwsApp)window.__rwsApp.rwsOnQueueChange();return r;}
 async function rwsGetState(token){
   const r = await rwsCall('rws_get_state', { p_token: token });
   if (!r.ok) throw new Error(r.error && r.error.message ? r.error.message : 'failed to load state');
@@ -89,7 +96,7 @@ async function rwsSyncElementStatus(elementKey, status){
   const args = { p_token:s.token, p_element_key:elementKey, p_status:status };
   const r = await rwsCall('rws_update_element', args);
   if (!r.ok && r.offline) rwsQueuePush('rws_update_element', args);
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
 async function rwsSyncSlabQty(qtyKey, level, zoneMk, qty){
@@ -97,7 +104,7 @@ async function rwsSyncSlabQty(qtyKey, level, zoneMk, qty){
   const args = { p_token:s.token, p_qty_key:qtyKey, p_level:level, p_zone_mk:zoneMk, p_qty:qty };
   const r = await rwsCall('rws_update_slab_qty', args);
   if (!r.ok && r.offline) rwsQueuePush('rws_update_slab_qty', args);
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
 async function rwsAddZoneUpdate(a){
@@ -105,7 +112,7 @@ async function rwsAddZoneUpdate(a){
   const args = { p_token:s.token, p_zone_mk:a.zoneMk, p_level:a.level, p_zone_label:a.zoneLabel, p_pct:a.pct, p_status:a.status, p_date:a.date, p_note:a.note, p_crew:a.crew };
   const r = await rwsCall('rws_add_zone_update', args);
   if (!r.ok && r.offline) rwsQueuePush('rws_add_zone_update', args);
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
 async function rwsSyncQty(qtyKey, level, zoneMk, field, value){
@@ -113,7 +120,7 @@ async function rwsSyncQty(qtyKey, level, zoneMk, field, value){
   const args = { p_token:s.token, p_qty_key:qtyKey, p_level:level, p_zone_mk:zoneMk, p_field:field, p_value:value };
   const r = await rwsCall('rws_update_qty', args);
   if (!r.ok && r.offline) rwsQueuePush('rws_update_qty', args);
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
 async function rwsSyncPlanQty(planKey, level, zoneMk, value){
@@ -121,7 +128,7 @@ async function rwsSyncPlanQty(planKey, level, zoneMk, value){
   const args = { p_token:s.token, p_plan_key:planKey, p_level:level, p_zone_mk:zoneMk, p_value:value };
   const r = await rwsCall('rws_update_plan_qty', args);
   if (!r.ok && r.offline) rwsQueuePush('rws_update_plan_qty', args);
-  if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
+  rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
 async function rwsAdminActivityLog(limit){ const s=rwsGetSession(); if(!s) throw new Error('not logged in'); const r=await rwsCall('rws_admin_activity_log',{p_token:s.token,p_limit:limit||300}); if(!r.ok) throw new Error(r.error&&r.error.message||'failed'); return r.data; }
