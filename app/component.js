@@ -1101,6 +1101,14 @@ class Component extends DCLogic {
         const bp=this._coreBuf.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         s+=`<polyline points="${bp}" fill="#c8102e" fill-opacity="0.1" stroke="#c8102e" stroke-width="420" stroke-dasharray="900,500" style="pointer-events:none"/>`;
         this._coreBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#c8102e" style="pointer-events:none"/>`;});}
+      // Lift 矩形(admin 画的) — 蓝色
+      const lfArr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[this.curLevel])||[];
+      lfArr.forEach((w,wi)=>{ if(!w.pts||w.pts.length<3)return;
+        const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
+        const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
+        s+=`<polygon class="liftwall" data-lwi="${wi}" points="${pp}" fill="#2a6bd6" fill-opacity="0.2" stroke="#1d4ed8" stroke-width="500" style="cursor:${this._drawingLift?'pointer':'default'}"/>`;
+        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="#123a8a" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(w.id)}</text>`;});
+      if(this._drawingLift&&this._liftBuf&&this._liftBuf.length){this._liftBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#1d4ed8" style="pointer-events:none"/>`;});}
     }
     s+=_colHtml;   /* 柱子放到最后 → 浮在 Marine 子区图层之上, 柱名可见、可点选 */
     this.svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);
@@ -1111,6 +1119,7 @@ class Component extends DCLogic {
     this.colLOD();
     if(_ulDrag){const im=this.svg.querySelector('.underlayimg');if(im)im.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const u=this._curUnderlay();if(!u)return;const r=this.svg.getBoundingClientRect();const sx=this.vb.w/r.width,sy=this.vb.h/r.height;let lx=ev.clientX,ly=ev.clientY;const mv=e=>{u.x+=(e.clientX-lx)*sx;u.y+=(e.clientY-ly)*sy;lx=e.clientX;ly=e.clientY;const cx=(u.x+u.w/2).toFixed(1),cy=(u.y+u.h/2).toFixed(1);im.setAttribute('x',u.x.toFixed(1));im.setAttribute('y',u.y.toFixed(1));im.setAttribute('transform',`rotate(${u.rot||0} ${cx} ${cy})`);};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);this._saveUnderlay();};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
     this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{if(!this._drawingCore)return;ev.stopPropagation();this._delCoreWall(this.curLevel,+el.dataset.cwi);}));   // 画模式下点已画的墙 = 删除
+    this.svg.querySelectorAll('.liftwall').forEach(el=>el.addEventListener('click',ev=>{if(!this._drawingLift)return;ev.stopPropagation();this._delLift(this.curLevel,+el.dataset.lwi);}));   // 画 lift 模式下点已画的 lift = 删除
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
@@ -1216,7 +1225,7 @@ class Component extends DCLogic {
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
     const _nHid=((this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[this.curLevel])||[]).length;
-    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
+    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${this._drawingLift?`<span class="szchip on" data-k="__liftcancel" style="border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.12)">✕ 取消 Lift (点两角)</span>`:`<span class="szchip" data-k="__drawlift">▭ 画 Lift</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
     p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.k;
@@ -1226,6 +1235,8 @@ class Component extends DCLogic {
       if(k==='__corefin'){this._coreFinish();return;}
       if(k==='__coreundo'){this._coreUndo();return;}
       if(k==='__corecancel'){this._coreCancel();return;}
+      if(k==='__drawlift'){this.toggleDrawLift();return;}
+      if(k==='__liftcancel'){this._liftCancel();return;}
       if(k==='__ulload'){this.underlayPick();return;}
       if(k==='__uladj'){this.toggleUnderlayAdjust();return;}
       if(k==='__ulrm'){this.underlayRemove();return;}
@@ -1378,7 +1389,7 @@ class Component extends DCLogic {
   savePlacedCols(){try{localStorage.setItem('rws_col_add',JSON.stringify(this._colAdd||{}));}catch(e){}}
   togglePlaceCol(){if(!this.rwsIsAdmin())return;this._placingCol=!this._placingCol;if(this._placingCol){this._drawingCore=false;this._hidingCol=false;}if(this.svg)this.svg.style.cursor=this._placingCol?'crosshair':'';this.refreshSubzPanel();}
   /* ---- 在图上画 Core Wall(多点围一块多边形, admin) —— 存 settings, 云端同步 ---- */
-  toggleDrawCore(){if(!this.rwsIsAdmin())return;this._drawingCore=!this._drawingCore;this._coreBuf=[];if(this._drawingCore){this._placingCol=false;this._hidingCol=false;}if(this.svg)this.svg.style.cursor=this._drawingCore?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  toggleDrawCore(){if(!this.rwsIsAdmin())return;this._drawingCore=!this._drawingCore;this._coreBuf=[];if(this._drawingCore){this._placingCol=false;this._hidingCol=false;this._drawingLift=false;}if(this.svg)this.svg.style.cursor=this._drawingCore?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _coreClickAt(clientX,clientY){if(!this._drawingCore||!this.rwsIsAdmin())return;const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;let sx,sy;
     try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());sx=p.x;sy=p.y;}
     catch(e){const r=this.svg.getBoundingClientRect();sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w;sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;}
@@ -1395,6 +1406,21 @@ class Component extends DCLogic {
     const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts,zone:zoneLabel});this._saveCoreWalls();this._coreBuf=[];this._drawingCore=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
     if(this._inputModal)this._inputModal({title:'Core Wall 名称 / name',label:'这道 core wall 的编号('+(zoneLabel||lv)+')',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
   _delCoreWall(lv,idx){this._confirmModal('删除这道 Core Wall?',()=>{const arr=(this._appCfg&&this._appCfg.coreWalls&&this._appCfg.coreWalls[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveCoreWalls();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
+  /* ---- 在图上画 Lift(两点画矩形, admin) —— 存 settings, 云端同步 ---- */
+  toggleDrawLift(){if(!this.rwsIsAdmin())return;this._drawingLift=!this._drawingLift;this._liftBuf=[];if(this._drawingLift){this._placingCol=false;this._hidingCol=false;this._drawingCore=false;}if(this.svg)this.svg.style.cursor=this._drawingLift?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _liftClickAt(clientX,clientY){if(!this._drawingLift||!this.rwsIsAdmin())return;const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;let sx,sy;
+    try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());sx=p.x;sy=p.y;}
+    catch(e){const r=this.svg.getBoundingClientRect();sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w;sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;}
+    this._liftBuf=this._liftBuf||[];this._liftBuf.push([sx,H-sy]);
+    if(this._liftBuf.length<2){this._toast('再点对角的另一个角 / click the opposite corner');this.render();return;}
+    const a=this._liftBuf[0],b=this._liftBuf[1];const rectPts=[[a[0],a[1]],[b[0],a[1]],[b[0],b[1]],[a[0],b[1]]];
+    const cx=(a[0]+b[0])/2,cy=(a[1]+b[1])/2;let zoneLabel='';const z=(L.zones||[]).find(zz=>zz.ring&&this.ptIn(zz.ring,cx,cy));if(z)zoneLabel=z.label;
+    this._appCfg=this._appCfg||{};const lf=this._appCfg.lifts=this._appCfg.lifts||{};const arr=lf[lv]=lf[lv]||[];const defId=(zoneLabel?zoneLabel.replace(/\s+/g,''):lv)+'-LIFT'+(arr.length+1);
+    const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts:rectPts,zone:zoneLabel});this._saveLifts();this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
+    if(this._inputModal)this._inputModal({title:'Lift 名称 / name',label:'这个 lift 的编号('+(zoneLabel||lv)+')',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
+  _liftCancel(){this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _saveLifts(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','lifts',this._appCfg.lifts||{},null,null);}
+  _delLift(lv,idx){this._confirmModal('删除这个 Lift?',()=>{const arr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
   /* ---- 描图底图(本地图片, 垫在地图下方, 只本地不同步) ---- */
   _curUnderlay(){return this._underlay&&this._underlay[this.curLevel];}
   underlayPick(){if(!this.rwsIsAdmin())return;const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=()=>{const f=inp.files&&inp.files[0];if(f)this._underlayLoad(f);};inp.click();}
@@ -2076,7 +2102,7 @@ class Component extends DCLogic {
       svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);this.colLOD();},{passive:false});
     let dragging=false,last=null,downXY=null;
     svg.addEventListener('mousedown',ev=>{dragging=true;last=[ev.clientX,ev.clientY];downXY=[ev.clientX,ev.clientY];svg.classList.add('drag');});
-    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._ulAligning){this._ulAlignClick(ev.clientX,ev.clientY);}else if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}});
+    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._ulAligning){this._ulAlignClick(ev.clientX,ev.clientY);}else if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}else if(this._drawingLift){this._liftClickAt(ev.clientX,ev.clientY);}});
     window.addEventListener('mouseup',()=>{dragging=false;svg.classList.remove('drag');});
     window.addEventListener('mousemove',ev=>{if(!dragging)return;const r=svg.getBoundingClientRect();
       this.vb.x-=(ev.clientX-last[0])/r.width*this.vb.w;this.vb.y-=(ev.clientY-last[1])/r.height*this.vb.h;last=[ev.clientX,ev.clientY];
