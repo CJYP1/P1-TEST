@@ -64,7 +64,7 @@ class Component extends DCLogic {
     this.vb = {x:0,y:0,w:1,h:1}; this.base = {x:0,y:0,w:1,h:1};
     this.bindGlobal();
     this.buildRail(); this.buildMetrics(); this.buildTimeline();
-    this.root.querySelector('#foot').innerHTML = 'Zones coloured by construction area / derived progress / quantity heat. Geometry & quantities from RWS P1 CJ source; progress comes from element check-offs and manual zone updates; zones with no data show 0% (Not started).';
+    this.root.querySelector('#foot').innerHTML = '';
     this.render();
     this.rwsBoot();
     if(this._rwsPullTimer)clearInterval(this._rwsPullTimer);
