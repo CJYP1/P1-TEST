@@ -4,8 +4,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app/cloud-sync.js"></script>
 <style>
-.m28-cbtn{display:inline-flex;align-items:center;gap:2px;margin-left:6px;font-size:11px;font-weight:700;color:#2a78d6;cursor:pointer;border:1px solid #cdd8e6;border-radius:8px;padding:0 6px;line-height:18px;vertical-align:middle;background:#fff}
-.m28-cbtn.has{background:#eaf2fc}
+.m28-cbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;font-size:12px;cursor:pointer;border:1px solid #d99e00;border-radius:5px;width:23px;height:20px;line-height:1;vertical-align:middle;background:#ffcf33;box-shadow:0 1px 2px rgba(0,0,0,.22)}
+.m28-cbtn .cbadge{position:absolute;top:-9px;right:-9px;background:#e5343a;color:#fff;font-size:12px;font-weight:800;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px #fff;padding:0 3px}
 #m28cpanel{position:fixed;z-index:2147483000;width:300px;max-width:92vw;background:#fff;border:1px solid #c3c2b7;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;font-family:system-ui,Arial,sans-serif}
 #m28cpanel .hd{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid #eee;font-weight:800;font-size:12px;color:#0b0b0b}
 #m28cpanel .list{max-height:230px;overflow:auto;padding:8px 12px}
@@ -69,7 +69,7 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
        var btn=th.querySelector('.m28-cbtn');
        if(!btn){ btn=document.createElement('span'); btn.className='m28-cbtn'; th.appendChild(btn);
          btn.addEventListener('click',function(ev){ ev.stopPropagation(); openP(key,btn); }); }
-       btn.className='m28-cbtn'+(n>0?' has':''); btn.textContent='💬'+(n>0?n:'');
+       btn.className='m28-cbtn'+(n>0?' has':''); btn.innerHTML='💬'+(n>0?'<span class="cbadge">'+n+'</span>':'');
      });
    });
  }
@@ -80,7 +80,13 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
    }catch(e){ alert('发送失败: '+(e&&e.message||e)); }
    b.disabled=false;
  });
- window.__m28_initComments=async function(){ await loadComments(); markItems(); };
+ var _m28poll=null;
+ function startM28Poll(){ if(_m28poll)return; _m28poll=setInterval(async function(){ if(!window.__m28.sess)return;
+   try{ await loadComments(); markItems();
+     var ae=document.activeElement, typing=ae&&ae.id==='m28cin'&&ae.value;
+     if(curItem&&panel&&panel.style.display==='block'&&!typing) renderList(curItem);   /* 面板开着且没在打字才刷新 */
+   }catch(e){} }, 20000); }
+ window.__m28_initComments=async function(){ await loadComments(); markItems(); startM28Poll(); };
  /* 分页 → 主页 area scope 映射: EB/NB 复用主页权限; 其余(L2/L3/L4/Ramp/TST/Hoarding)归 M28_OTHER */
  function m28ScopeFor(level){ if(level==='b2'||level==='l1')return 'EB'; if(level==='nb-b2'||level==='nb-l1')return 'NB'; return 'M28_OTHER'; }
  function applySess(s){ window.__m28.loggedIn=!!s; window.__m28.sess=s||null;

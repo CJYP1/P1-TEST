@@ -155,10 +155,12 @@ class Component extends DCLogic {
   addActCmt(lv,zmk,aid,text){text=(text||'').trim();if(!text)return;if(!(this.rwsIsAdmin()||this.rwsCanComment(lv,zmk))){this.rwsDeny('You cannot comment on this area.');return;}const s=(typeof rwsGetSession==='function'&&rwsGetSession())||{};const ts=new Date().toISOString();const k=lv+'||'+zmk+'||'+aid+'||'+ts+'_'+Math.random().toString(36).slice(2,6);const v={t:text,by:s.username||'user',ts};this._actCmt=this._actCmt||{};this._actCmt[k]=v;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,v,lv,zmk);this._actRerender(this._selZone());}
   resolveActCmt(k,done){const o=(this._actCmt||{})[k];if(!o)return;const p=k.split('||');if(!(this.rwsIsAdmin()||this.rwsCanComment(p[0],p[1]))){this.rwsDeny('You cannot comment on this area.');return;}if(done)o.done=true;else delete o.done;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,o,p[0],p[1]);this._actRerender(this._selZone());}
   delActCmt(k){if(!this.rwsIsAdmin())return;if(this._actCmt)delete this._actCmt[k];this.saveActCmt();if(typeof rwsSyncKV==='function'){const p=k.split('||');rwsSyncKV('act_cmt',k,null,p[0],p[1]);}this._actRerender(this._selZone());}
-  _cmtBtn(lv,zmk,aid){const n=this.actCmts(lv,zmk,aid).filter(c=>!c.done).length;return `<span class="actcmt-btn" data-a="${aid}" title="Comments — click to open/close" style="cursor:pointer;font-size:11px;margin-left:8px;color:${n?'var(--accent)':'var(--dim)'}">💬${n?' '+n:''}</span>`;}
+  _cmtBtn(lv,zmk,aid){const n=this.actCmts(lv,zmk,aid).filter(c=>!c.done).length;return `<span class="actcmt-btn" data-a="${aid}" title="Comments — click to open/close" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:8px;width:23px;height:20px;background:#ffcf33;border:1px solid #d99e00;border-radius:5px;box-shadow:0 1px 2px rgba(0,0,0,.22);font-size:12px">💬${n?`<span style="position:absolute;top:-9px;right:-9px;background:#e5343a;color:#fff;font-size:12px;font-weight:800;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px var(--panel,#fff);padding:0 3px">${n}</span>`:''}</span>`;}
   _cmtPanel(lv,zmk,aid){if(this._cmtOpen!==lv+'||'+zmk+'||'+aid)return '';const all=this.actCmts(lv,zmk,aid);const admin=this.rwsIsAdmin();const canAdd=admin||this.rwsCanComment(lv,zmk);   // 评论需要 CMT; 范围跟随授权区域(只勾 CMT=全区)
-    const open=all.filter(c=>!c.done), done=all.filter(c=>c.done), showDone=!!this._cmtShowDone;
-    const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${canAdd?(res?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen">↩</span>':' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done — hides it (kept in cloud)">✓</span>'):''}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete">✕</span>':''}</span></div>`;
+    const open=all.filter(c=>!c.done), done=all.filter(c=>c.done);
+    const showDone=(this._cmtShowDone===undefined)?admin:!!this._cmtShowDone;   /* admin 默认展开已 done 的评论, 可再折叠 */
+    /* 未处理评论: canAdd(admin+CMT)可勾 done(✓); 已处理评论的 reopen(↩)只有 admin 能看/点; 删除(✕)仅 admin */
+    const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${res?(admin?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen (admin)">↩</span>':''):(canAdd?' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done — hides it (kept in cloud)">✓</span>':'')}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete (admin)">✕</span>':''}</span></div>`;
     const list=open.length?open.map(c=>row(c,false)).join(''):'<div class="empty" style="padding:4px 2px">no open comments</div>';
     const dt=done.length?`<div class="cmt-doneToggle" style="font-size:10px;color:var(--faint);cursor:pointer;margin-top:5px">${showDone?'▾':'▸'} ${done.length} done</div>`:'';
     const dl=(showDone&&done.length)?done.map(c=>row(c,true)).join(''):'';
@@ -519,9 +521,7 @@ class Component extends DCLogic {
     const u=this._rwsUser;
     try{if(this.DATA&&this.root.querySelector('#rail'))this.buildRail();}catch(_e){}
     if(!u){info.textContent='';lo.style.display='none';ab.style.display='none';adminOnly.forEach(b=>b.style.display='none');return;}
-    let areaTxt='';
-    if(u.role!=='admin'){const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];areaTxt=a.length?' · '+a.map(c=>AL[c]||c).join(', '):' · read-only';}
-    info.textContent='👤 '+(u.display_name||u.username)+(u.role==='admin'?' (admin)':areaTxt);
+    info.textContent='👤 '+(u.display_name||u.username);   /* 只显示用户名(权限区域不再列在这里) */
     lo.style.display='';
     ab.style.display=(u.role==='admin')?'':'none';
     adminOnly.forEach(b=>b.style.display=(u.role==='admin')?'':'none');
@@ -618,6 +618,25 @@ class Component extends DCLogic {
     }catch(e){ console.warn('[rws] cloud state pull skipped (offline?)',e); }
     rwsQueueFlush();
     this.rwsMaybeDailyExport();
+    this.rwsStartCmtPoll();
+  }
+  /* 评论近实时: 每 ~20s 从云端拉一次评论(只应用 act_cmt, 不动其它数据), 有变化且没在打字就刷新, 免得手动刷新才看到新评论 */
+  rwsStartCmtPoll(){
+    if(this._cmtPollId)return;
+    this._cmtPollId=setInterval(async()=>{
+      try{
+        const s=(typeof rwsGetSession==='function')&&rwsGetSession(); if(!s)return;
+        const st=await rwsGetState(s.token); if(!st||!st.act_cmt)return;
+        const before=JSON.stringify(this._actCmt||{});
+        this._actCmt={...(this._actCmt||{}),...st.act_cmt};
+        this.saveActCmt();
+        if(JSON.stringify(this._actCmt||{})!==before){
+          const ae=document.activeElement;
+          const typing=ae&&ae.classList&&ae.classList.contains('cmt-in')&&ae.value;
+          if(!typing&&this.selKey){const z=this._selZone&&this._selZone();if(z)this._actRerender(z);}
+        }
+      }catch(e){}
+    }, 20000);
   }
   async rwsOpenChanges(){
     const modal=this.root.querySelector('#rwsChangesModal');
