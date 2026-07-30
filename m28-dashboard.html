@@ -4,8 +4,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app/cloud-sync.js"></script>
 <style>
-.m28-cbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;font-size:12px;cursor:pointer;border:1px solid #d99e00;border-radius:5px;width:23px;height:20px;line-height:1;vertical-align:middle;background:#ffcf33;box-shadow:0 1px 2px rgba(0,0,0,.22)}
-.m28-cbtn .cbadge{position:absolute;top:-9px;right:-9px;background:#e5343a;color:#fff;font-size:12px;font-weight:800;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px #fff;padding:0 3px}
+.m28-cbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;cursor:pointer;vertical-align:middle;line-height:0}
+.m28-cbtn svg{display:block}
+.m28-cbtn .cbadge{position:absolute;top:-8px;right:-8px;background:#e5343a;color:#fff;font-size:11px;font-weight:800;min-width:17px;height:17px;line-height:17px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px #fff;padding:0 3px}
 #m28cpanel{position:fixed;z-index:2147483000;width:300px;max-width:92vw;background:#fff;border:1px solid #c3c2b7;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;font-family:system-ui,Arial,sans-serif}
 #m28cpanel .hd{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid #eee;font-weight:800;font-size:12px;color:#0b0b0b}
 #m28cpanel .list{max-height:230px;overflow:auto;padding:8px 12px}
@@ -69,7 +70,7 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
        var btn=th.querySelector('.m28-cbtn');
        if(!btn){ btn=document.createElement('span'); btn.className='m28-cbtn'; th.appendChild(btn);
          btn.addEventListener('click',function(ev){ ev.stopPropagation(); openP(key,btn); }); }
-       btn.className='m28-cbtn'+(n>0?' has':''); btn.innerHTML='💬'+(n>0?'<span class="cbadge">'+n+'</span>':'');
+       btn.className='m28-cbtn'+(n>0?' has':''); btn.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 4h14a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 19 16H10l-4.2 3.6A.6.6 0 0 1 5 19.1V16a2.5 2.5 0 0 1-2.5-2.5v-7A2.5 2.5 0 0 1 5 4z" fill="#ffd43b" stroke="#d9a400" stroke-width="1.2"/><line x1="7.5" y1="8.6" x2="16.5" y2="8.6" stroke="#8a6a00" stroke-width="1.5" stroke-linecap="round"/><line x1="7.5" y1="11.4" x2="14" y2="11.4" stroke="#8a6a00" stroke-width="1.5" stroke-linecap="round"/></svg>'+(n>0?'<span class="cbadge">'+n+'</span>':'');
      });
    });
  }

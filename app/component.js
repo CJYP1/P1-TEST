@@ -155,12 +155,13 @@ class Component extends DCLogic {
   addActCmt(lv,zmk,aid,text){text=(text||'').trim();if(!text)return;if(!(this.rwsIsAdmin()||this.rwsCanComment(lv,zmk))){this.rwsDeny('You cannot comment on this area.');return;}const s=(typeof rwsGetSession==='function'&&rwsGetSession())||{};const ts=new Date().toISOString();const k=lv+'||'+zmk+'||'+aid+'||'+ts+'_'+Math.random().toString(36).slice(2,6);const v={t:text,by:s.username||'user',ts};this._actCmt=this._actCmt||{};this._actCmt[k]=v;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,v,lv,zmk);this._actRerender(this._selZone());}
   resolveActCmt(k,done){const o=(this._actCmt||{})[k];if(!o)return;const p=k.split('||');if(!(this.rwsIsAdmin()||this.rwsCanComment(p[0],p[1]))){this.rwsDeny('You cannot comment on this area.');return;}if(done)o.done=true;else delete o.done;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,o,p[0],p[1]);this._actRerender(this._selZone());}
   delActCmt(k){if(!this.rwsIsAdmin())return;if(this._actCmt)delete this._actCmt[k];this.saveActCmt();if(typeof rwsSyncKV==='function'){const p=k.split('||');rwsSyncKV('act_cmt',k,null,p[0],p[1]);}this._actRerender(this._selZone());}
-  _cmtBtn(lv,zmk,aid){const n=this.actCmts(lv,zmk,aid).filter(c=>!c.done).length;return `<span class="actcmt-btn" data-a="${aid}" title="Comments — click to open/close" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:8px;width:23px;height:20px;background:#ffcf33;border:1px solid #d99e00;border-radius:5px;box-shadow:0 1px 2px rgba(0,0,0,.22);font-size:12px">💬${n?`<span style="position:absolute;top:-9px;right:-9px;background:#e5343a;color:#fff;font-size:12px;font-weight:800;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px var(--panel,#fff);padding:0 3px">${n}</span>`:''}</span>`;}
+  _cmtBubbleSVG(){return `<svg viewBox="0 0 24 24" width="20" height="20" style="display:block"><path d="M5 4h14a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 19 16H10l-4.2 3.6A.6.6 0 0 1 5 19.1V16a2.5 2.5 0 0 1-2.5-2.5v-7A2.5 2.5 0 0 1 5 4z" fill="#ffd43b" stroke="#d9a400" stroke-width="1.2"/><line x1="7.5" y1="8.6" x2="16.5" y2="8.6" stroke="#8a6a00" stroke-width="1.5" stroke-linecap="round"/><line x1="7.5" y1="11.4" x2="14" y2="11.4" stroke="#8a6a00" stroke-width="1.5" stroke-linecap="round"/></svg>`;}
+  _cmtBtn(lv,zmk,aid){const n=this.actCmts(lv,zmk,aid).filter(c=>!c.done).length;return `<span class="actcmt-btn" data-a="${aid}" title="Comments" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:8px">${this._cmtBubbleSVG()}${n?`<span style="position:absolute;top:-8px;right:-8px;background:#e5343a;color:#fff;font-size:11px;font-weight:800;min-width:17px;height:17px;line-height:17px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px var(--panel,#fff);padding:0 3px">${n}</span>`:''}</span>`;}
   _cmtPanel(lv,zmk,aid){if(this._cmtOpen!==lv+'||'+zmk+'||'+aid)return '';const all=this.actCmts(lv,zmk,aid);const admin=this.rwsIsAdmin();const canAdd=admin||this.rwsCanComment(lv,zmk);   // 评论需要 CMT; 范围跟随授权区域(只勾 CMT=全区)
     const open=all.filter(c=>!c.done), done=all.filter(c=>c.done);
     const showDone=(this._cmtShowDone===undefined)?admin:!!this._cmtShowDone;   /* admin 默认展开已 done 的评论, 可再折叠 */
     /* 未处理评论: canAdd(admin+CMT)可勾 done(✓); 已处理评论的 reopen(↩)只有 admin 能看/点; 删除(✕)仅 admin */
-    const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${res?(admin?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen (admin)">↩</span>':''):(canAdd?' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done — hides it (kept in cloud)">✓</span>':'')}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete (admin)">✕</span>':''}</span></div>`;
+    const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${res?(admin?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen (admin)">↩</span>':''):(canAdd?' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done">✓</span>':'')}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete (admin)">✕</span>':''}</span></div>`;
     const list=open.length?open.map(c=>row(c,false)).join(''):'<div class="empty" style="padding:4px 2px">no open comments</div>';
     const dt=done.length?`<div class="cmt-doneToggle" style="font-size:10px;color:var(--faint);cursor:pointer;margin-top:5px">${showDone?'▾':'▸'} ${done.length} done</div>`:'';
     const dl=(showDone&&done.length)?done.map(c=>row(c,true)).join(''):'';
@@ -512,8 +513,8 @@ class Component extends DCLogic {
   rwsOnQueueChange(){
     const n=rwsQueueSize(); const b=this.root&&this.root.querySelector('#rwsQueueBadge'); if(!b||!this._rwsUser)return;
     b.style.display='';
-    if(n>0){b.textContent='⏳ '+n+' pending sync';b.style.color='var(--crit)';}
-    else {b.textContent='☁ Synced';b.style.color='var(--done)';}
+    if(n>0){b.textContent='⏳ '+n+' saving…';b.style.color='var(--crit)';}
+    else {b.textContent='✓ Saved';b.style.color='var(--done)';}
   }
   rwsRenderUserBar(){
     const info=this.root.querySelector('#rwsUserInfo'), lo=this.root.querySelector('#rwsLogoutBtn'), ab=this.root.querySelector('#rwsAdminBtn'), jb=this.root.querySelector('#exportJson');
@@ -1928,7 +1929,7 @@ class Component extends DCLogic {
     this.root.querySelector('#loadLock').addEventListener('click',()=>lf.click());
     lf.addEventListener('change',e=>{const f=e.target.files[0];if(f)this.loadLock(f);lf.value='';});
     const _cc=this.root.querySelector('#rwsClearCache'); if(_cc) _cc.addEventListener('click',()=>{
-      if(!confirm('Clear local cache?\n\nThis removes stale local data (plan/actual quantities, overrides, statuses) from this browser, then reloads.\n\n• Cloud-saved data is NOT affected\n• Your login is NOT affected\n• Latest data is reloaded from the cloud after refresh')) return;
+      if(!confirm('Clear local cache?\n\nThis removes stale local data (plan/actual quantities, overrides, statuses) from this browser, then reloads.\n\n• Cloud-saved data is NOT affected\n• Your login is NOT affected\n• Latest data is reloaded after refresh')) return;
       var keys=['rws_zp_ov','rws_zp_plan_ov','rws_qty_ov','rws_crit_ov','rws_edited_keys','rws_elem_status','rws_zone_updates','rws_act_total','rws_act_plan','rws_act_donem','rws_act_hidden','rws_act_defs','rws_act_date','rws_act_cmt','rws_col_month','rws_zdate','rws_elem_date','rws_cat_add','rws_elem_add','rws_last_daily_export','rws_offline_queue'];
       keys.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
       alert('Local cache cleared — reloading.'); location.reload();
@@ -2152,7 +2153,7 @@ class Component extends DCLogic {
       this.saveElem();this.saveUpdatesStore();if(this.saveAct)this.saveAct();if(this.saveElemDate)this.saveElemDate();try{localStorage.setItem('rws_zp_ov',JSON.stringify(this._zpOv||{}));localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv||{}));localStorage.setItem('rws_qty_ov',JSON.stringify(this._qtyOv||{}));}catch(e){}if(this.zpApplyOv)this.zpApplyOv();if(this.applyQtyOv)this.applyQtyOv();if(this.applyCritOv)this.applyCritOv();this.applyUpdates();
       this.buildRail();this.buildTimeline();this.render();this.refreshUpdBadge();
       if(this.selKey){const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(z)this.selectZone(z);}
-      alert('Imported ✓\n• Plan (monthly) entries: '+planN+'\n• Actual-done entries: '+actN+'\n• Critical marks: '+critN+'\n• Element statuses now done: '+this.doneCount()+'\nData saved locally and synced to the cloud. Open a zone and switch months to see the Plan values.');
+      alert('Imported ✓\n• Plan (monthly) entries: '+planN+'\n• Actual-done entries: '+actN+'\n• Critical marks: '+critN+'\n• Element statuses now done: '+this.doneCount()+'\nSaved. Open a zone and switch months to see the Plan values.');
     }catch(err){alert('Could not parse file: '+err.message);}};
     r.readAsText(file);
   }
