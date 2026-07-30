@@ -1459,6 +1459,9 @@ class Component extends DCLogic {
     ov.querySelectorAll('.__pk').forEach(el=>el.addEventListener('click',()=>{const it=items[+el.dataset.i];close();onPick&&onPick(it);}));
   }
   _shapeLabel(w){return w.id||((w.link&&w.link.id)||'');}
+  /* 元素 id → 它所属的 Core Wall 编号(反查 CW_GROUPS, 含拼写变体) */
+  _cwOf(id){if(!id)return '';if(!this.__cwRev){this.__cwRev={};const G=(typeof window!=='undefined'&&window.CW_GROUPS)||{};for(const cw in G){const g=G[cw]||{};[...(g.lifts||[]),...(g.stairs||[]),...(g.cores||[])].forEach(x=>{this.__cwRev[x]=cw;});}}return this.__cwRev[id]||'';}
+  _cwTag(id){const cw=this._cwOf(id);return cw?`<span class="cwtag" title="属于核心筒 ${this.esc(cw)}" style="display:inline-block;background:rgba(217,138,42,.16);color:#b35a1f;border:1px solid rgba(217,138,42,.55);border-radius:5px;padding:0 5px;font-size:9px;font-weight:800;margin-left:6px;vertical-align:middle">${this.esc(cw)}</span>`:'';}
   /* 按名字自动匹配数据: CW 编号→整组 lift/stair(查 window.CW_GROUPS), 或名字直接对上某个元素 id. 在形状所在层/区里解析. */
   _autoLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];
     const name=(w&&w.id||'').trim();if(!name)return[];lv=lv||this.curLevel;
@@ -1476,11 +1479,9 @@ class Component extends DCLogic {
   _shapeLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];return this._autoLinks(w,lv);}
   _shapeLinkColor(w,baseFill,baseStroke,lv){const ls=this._shapeLinks(w,lv);if(!ls.length)return[baseFill,baseStroke];const sts=ls.map(l=>this.elemStatus(l.lv+'||'+l.zmk+'||'+l.type+'||'+l.id));if(sts.every(s=>s==='done'))return['#35c08e','#218a5c'];if(sts.some(s=>s==='done'||s==='wip'))return['#e2b45c','#b8801f'];return[baseFill,baseStroke];}
   _linksFloorRange(w,lv){const name=(w&&w.id||'').trim();const g=(name&&typeof window!=='undefined'&&window.CW_GROUPS)?window.CW_GROUPS[name]:null;if(g&&g.f&&g.t){const a=this._floorOrd(g.f),b=this._floorOrd(g.t);if(a!=null&&b!=null)return [Math.min(a,b),Math.max(a,b)];}const ls=this._shapeLinks(w,lv);let lo=null,hi=null;ls.forEach(l=>{const r=this._linkFloorRange(l);if(r){lo=(lo==null?r[0]:Math.min(lo,r[0]));hi=(hi==null?r[1]:Math.max(hi,r[1]));}});return (lo==null)?null:[lo,hi];}
-  _openShape(w,lv){const ls=this._shapeLinks(w,lv);if(!ls.length){this._toast&&this._toast('名字 "'+this._shapeLabel(w)+'" 没对上数据 / no match');return;}if(ls.length===1){this._openLink(ls[0]);return;}
-    const old=document.getElementById('__shapeOpen');if(old)old.remove();const ov=document.createElement('div');ov.id='__shapeOpen';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.4);z-index:2147483601;display:flex;align-items:center;justify-content:center';
-    const rows=ls.map((l,i)=>`<div class="__so" data-i="${i}" style="cursor:pointer;padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:5px;font-size:12px"><b>${this.esc(l.id)}</b> <span style="color:var(--faint);font-size:10px">${l.type}</span></div>`).join('');
-    ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:16px 18px;width:min(320px,90vw);max-height:78vh;overflow:auto;box-shadow:0 18px 50px rgba(0,0,0,.35)"><div style="font-weight:800;font-size:13px;margin-bottom:10px">${this.esc(this._shapeLabel(w))} · 包含 ${ls.length} 项</div>${rows}<button class="hbtn" id="__so_cancel" style="padding:7px 12px;margin-top:6px">关闭</button></div>`;
-    document.body.appendChild(ov);const close=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#__so_cancel').addEventListener('click',close);ov.querySelectorAll('.__so').forEach(el=>el.addEventListener('click',()=>{const l=ls[+el.dataset.i];close();this._openLink(l);}));}
+  _openShape(w,lv){const ls=this._shapeLinks(w,lv);if(!ls.length){this._toast&&this._toast('名字 "'+this._shapeLabel(w)+'" 没对上数据 / no match');return;}
+    /* 不弹清单窗 —— 直接跳到这个区的 Core/Lift/Stair Wall 清单(成员在那里带 CW 标签) */
+    this._openLink(ls[0]);}
   /* 楼层名 → 序号(B2最低). L4=…, 'M'夹层+0.5, 忽略'(Shaft only)'等括注 */
   _floorOrd(name){if(name==null)return null;let s=String(name).replace(/\([^)]*\)/g,'').trim().toUpperCase();if(s==='B2')return -2;if(s==='B1')return -1;if(s==='B1M')return -0.5;const m=s.match(/^L(\d+)(M)?$/);if(m)return (parseInt(m[1],10)-1)+(m[2]?0.5:0);return null;}
   _linkElem(link){if(!link)return null;const L=this.DATA.levels[link.lv];if(!L)return null;const z=(L.zones||[]).find(x=>(x.mk||x.lid)===link.zmk);if(!z)return null;const arr=link.type==='lift'?z.lifts:link.type==='stair'?z.stairs:link.type==='core'?z.cores:null;if(!arr)return null;return arr.find(x=>((typeof x==='string')?x:x.id)===link.id)||null;}
@@ -1596,7 +1597,8 @@ class Component extends DCLogic {
     return items.map(x=>{const id=(typeof x==='string')?x:x.id;const key=this.ekey(lv,z,type,id);const crit=critFn&&critFn(x);
       const dc=this.elDateCtl(key);
       const idHtml=(type==='col')?`<span class="id collink" data-colid="${this.esc(id)}" title="Show this column on the plan">${this.esc(id)}</span>`:`<span class="id">${this.esc(id)}</span>`;
-      return `<div class="idrow ${crit?'crit':''}">${idHtml}<span class="meta">${metaFn?metaFn(x):''}</span>${this.elChip(key)}${dc}</div>`;}).join('');}
+      const cwTag=(type==='lift'||type==='stair')?this._cwTag(id):'';
+      return `<div class="idrow ${crit?'crit':''}">${idHtml}${cwTag}<span class="meta">${metaFn?metaFn(x):''}</span>${this.elChip(key)}${dc}</div>`;}).join('');}
 
   /* ---------- schedule-record (ZP) integration — enriches the detail panel only; map unchanged ---------- */
   zpNorm(s){return String(s).replace(/[^a-z0-9]/gi,'').toLowerCase();}
