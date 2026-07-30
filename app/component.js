@@ -124,7 +124,7 @@ class Component extends DCLogic {
   _collSecInline(lv,z,title,cnt,type,items,html){const ck=(items||[]).map(x=>this.ekey(lv,z,type,typeof x==='string'?x:x.id));const nd=ck.filter(k=>this.elemStatus(k)==='done').length;return `<details class="sec elemnest" data-sec="${type}" style="margin:6px 0 2px;border-left:2px solid color-mix(in srgb,var(--accent) 32%,transparent);padding-left:10px;border-radius:0 8px 8px 0"><summary class="t">${title} <span>${nd}/${cnt} done · <span class="allbtn" data-bulk="${type}">All ✓</span></span></summary>${html}</details>`;}
   _idNote(){return `<div style="font-size:9.5px;line-height:1.35;color:var(--faint);font-style:italic;margin:5px 2px 2px;padding-left:2px">IDs listed as reference. For the actual structural element ID &amp; specification, please refer to the latest structural design plan.</div>`;}
   _actElemSec(lv,z,aid){
-    if(aid==='col')   return (z.cols&&z.cols.length)  ? this._collSecInline(lv,z,'Column list',z.cols.length,'col',z.cols,this.colHtmlFor(lv,z)+this._idNote()) : '';
+    if(aid==='col'){const _cl=(z.cols||[]).filter(x=>!this._colHidden(lv,(typeof x==='string')?x:x.id));return _cl.length? this._collSecInline(lv,z,'Column list',_cl.length,'col',_cl,this.colHtmlFor(lv,z)+this._idNote()) : '';}
     if(aid==='pile')  return (z.piles&&z.piles.length&&!this._pileHiddenForEB(lv,z.mk||z.lid))? this._collSecInline(lv,z,'Pile-cap list',z.piles.length,'pile',z.piles,this.elRows(lv,z,'pile',z.piles,x=>this.esc(x.rl||''),'none listed')) : '';
     if(aid==='mbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Steel-main-beam list',z.beams.length,'beam',z.beams,this.elRows(lv,z,'beam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='cbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Cast-s-main-beam list',z.beams.length,'cbeam',z.beams,this.elRows(lv,z,'cbeam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
@@ -156,7 +156,7 @@ class Component extends DCLogic {
   colHtmlFor(lv,z){const zoneCrit=!!z.crit;
     const _isC=x=>{const id=(typeof x==='string')?x:(x&&x.id);return zoneCrit||!!(x&&x.c)||!!(this._marineCritSet&&this._marineCritSet.has(String(id||'').trim().toUpperCase()));};   /* critical = 整区关键 / 台账标的 / marine-col-map 标的 —— 与地图红色一致 */
     const meta=x=>this.esc(x.sz||'')+(_isC(x)?' · crit':''),cf=x=>_isC(x);
-    const cols=z.cols||[];
+    const cols=(z.cols||[]).filter(x=>!this._colHidden(lv,(typeof x==='string')?x:x.id));   // 隐藏的柱子不在清单里显示
     /* Always show the full column list (regardless of per-column target month) — every column
        is outlined/highlighted (via critFn) when its own flag is set OR when the whole zone is a
        critical zone, so a critical zone's columns are visibly called out even if none are
@@ -221,6 +221,10 @@ class Component extends DCLogic {
   userMonthCutoff(){return (this._appCfg&&this._appCfg.userMonthCutoff)||"Aug'26";}   /* 用户可见到哪个月(admin 可在后台改, 云端同步; 默认 Aug'26) */
   visMonths(){const M=this.ACT_MONTHS;if(this.rwsIsAdmin())return M;const i=M.indexOf(this.userMonthCutoff());return i>=0?M.slice(0,i+1):M;}
   setUserMonthCutoff(m){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can change this.');return;}if(this.ACT_MONTHS.indexOf(m)<0)return;this._appCfg=this._appCfg||{};this._appCfg.userMonthCutoff=m;try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','userMonthCutoff',m,null,null);this.render();}
+  /* 按楼层隐藏柱子(admin 地图点选, 云端同步) —— 该层不显示这些柱(地图点 + 清单都不显示) */
+  _colHidden(lv,id){const h=(this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[lv])||[];return h.indexOf(id)>=0;}
+  toggleHideCol(id){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can hide columns.');return;}this._appCfg=this._appCfg||{};const hc=this._appCfg.hideCols=this._appCfg.hideCols||{};const lv=this.curLevel;const arr=hc[lv]=hc[lv]||[];const i=arr.indexOf(id);if(i>=0)arr.splice(i,1);else arr.push(id);if(!arr.length)delete hc[lv];try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','hideCols',this._appCfg.hideCols||{},null,null);this.render();}
+  toggleHideColMode(){if(!this.rwsIsAdmin())return;this._hidingCol=!this._hidingCol;if(this._placingCol&&this._hidingCol)this._placingCol=false;this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   actDefaultMonthVis(){const dm=this.actDefaultMonth(),VM=this.visMonths();return VM.indexOf(dm)>=0?dm:VM[VM.length-1];}
   actTotal(lv,zmk,a,def){const v=(this._actTotal||{})[lv+'||'+zmk+'||'+a];return v==null?def:v;}
   /* Auto excavation volume — NEW BASEMENT only: B1 area×8.5m, B2 area×6m */
@@ -1040,6 +1044,7 @@ class Component extends DCLogic {
       const zoneByLabel={};L.zones.forEach(z=>{zoneByLabel[z.label]=z;});
       this.COLUMNS[this.curLevel].forEach((c,ci)=>{
         const _nid=_nrm(c.id); if(_colSeen.has(_nid))return; _colSeen.add(_nid);
+        const _hid=this._colHidden(this.curLevel,c.id); if(_hid&&!this._hidingCol)return;   // 隐藏的柱: 平时不画; 隐藏模式下淡显以便恢复
         const sy=H-c.y;
         const zz=zoneByLabel[c.zone];
         const st=zz?this.elemStatus(this.ekey(this.curLevel,zz,'col',c.id)):'todo';
@@ -1047,8 +1052,8 @@ class Component extends DCLogic {
         const _uT=this._colUnderT(c);
         const _crit=!!(this._marineCritSet&&this._marineCritSet.has(_nid)) || (/^WF-1C/i.test(c.id)&&!!c.crit);   /* marine-col-map 标 critical, 或 WF-1C 系列自身 crit → 红 */
         const _red=_uT||_crit;
-        _colHtml+=`<circle class="colmk${_uT?' colmk-t':''}" data-ci="${ci}" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${fill}" stroke="${_red?'#c8102e':'#ffffff'}" stroke-width="${_uT?560:220}"/>`;
-        _colHtml+=`<text class="collbl" ${_red?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id.replace('WF-B2','').replace('MK-B2','MK-'))}</text>`;
+        _colHtml+=`<circle class="colmk${_uT?' colmk-t':''}" data-ci="${ci}"${_hid?' opacity="0.28" stroke-dasharray="500,400"':''} cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${fill}" stroke="${_red?'#c8102e':'#ffffff'}" stroke-width="${_uT?560:220}"/>`;
+        _colHtml+=`<text class="collbl" ${_red?`style="fill:#c8102e"`:''}${_hid?' opacity="0.3"':''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id.replace('WF-B2','').replace('MK-B2','MK-'))}</text>`;
       });
     }
     const _realCol=(this.COLUMNS&&this.COLUMNS[this.curLevel])||[];
@@ -1064,7 +1069,7 @@ class Component extends DCLogic {
     if(this.showColumns){   // 本地"点击放置"但还没入库的柱子(实心点); 已入库的跳过避免重复
       // 去重: 同 id 跳过; 另外按位置去重 —— 和任一正式柱子重叠(<1400)的一律跳过, 清掉已烤入正式数据后本地残留的重复
       const _nearReal=(x,y)=>_realCol.some(rc=>Math.hypot(rc.x-x,rc.y-y)<1400);
-      this.placedCols(this.curLevel).forEach(c=>{ const _nid=_nrm(c.id); if(_colSeen.has(_nid)||_realIds.has(c.id)||_nearReal(c.x,c.y))return; _colSeen.add(_nid); const sy=H-c.y;
+      this.placedCols(this.curLevel).forEach(c=>{ const _nid=_nrm(c.id); if(_colSeen.has(_nid)||_realIds.has(c.id)||_nearReal(c.x,c.y))return; if(this._colHidden(this.curLevel,c.id)&&!this._hidingCol)return; _colSeen.add(_nid); const sy=H-c.y;
         const _pc=!!c.crit||!!(this._marineCritSet&&this._marineCritSet.has(_nid));   /* 本地放置柱: 自身 crit 或 marine 表标了 critical → 红 */
         _colHtml+=`<circle class="colmk colmk-placed" cx="${c.x.toFixed(0)}" cy="${sy.toFixed(0)}" r="980" fill="${_pc?'#c8102e':'#8a93a3'}" stroke="#ffffff" stroke-width="220"/>`;
         _colHtml+=`<text class="collbl" ${_pc?`style="fill:#c8102e"`:''} x="${c.x.toFixed(0)}" y="${(sy-2300).toFixed(0)}">${this.esc(c.id)}</text>`;
@@ -1112,6 +1117,7 @@ class Component extends DCLogic {
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
       el.addEventListener('click',ev=>{ev.stopPropagation();
         const c=this.COLUMNS[this.curLevel][+el.dataset.ci];
+        if(this._hidingCol){this.toggleHideCol(c.id);return;}   // 隐藏模式: 点柱子 = 隐藏/恢复
         const z=L.zones.find(zz=>zz.label===c.zone);
         if(!z)return;
         this.selKey=this.zid(z);this.selectZone(z);this.paintSel();this.paintTimelineSel();
@@ -1191,11 +1197,13 @@ class Component extends DCLogic {
     const SL=this.SUBZONES&&this.SUBZONES[this.curLevel];
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
-    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}`:'';
+    const _nHid=((this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[this.curLevel])||[]).length;
+    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}`:'';
     p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.k;
       if(k==='__place'){this.togglePlaceCol();return;}
+      if(k==='__hidecol'){this.toggleHideColMode();return;}
       if(k==='__expcol'){this.exportPlacedCols();return;}
       if(k==='ZC')this.showSubZC=!this.showSubZC;else if(k==='C')this.showSubC=!this.showSubC;else if(k==='P')this.showSubP=!this.showSubP;
       this.buildMetrics();this.render();}));
