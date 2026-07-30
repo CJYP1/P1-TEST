@@ -130,7 +130,9 @@ class Component extends DCLogic {
     if(aid==='mbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Steel-main-beam list',z.beams.length,'beam',z.beams,this.elRows(lv,z,'beam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='cbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Cast-s-main-beam list',z.beams.length,'cbeam',z.beams,this.elRows(lv,z,'cbeam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='ls'){ let h='';
-      /* lift 已挪到 Core Wall 卡片下显示(保留原数据键), 这里只剩 staircase */
+      /* Core / Lift / Stair 三样合并在同一个活动(Core/Lift/Stair Wall)下 */
+      if(z.cores&&z.cores.length)  h+=this._collSecInline(lv,z,'Core Wall list',z.cores.length,'core',z.cores,this.elRows(lv,z,'core',z.cores,null,'none'));
+      if(z.lifts&&z.lifts.length)  h+=this._collSecInline(lv,z,'Lift list',z.lifts.length,'lift',z.lifts,this.elRows(lv,z,'lift',z.lifts,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no lifts'));
       if(z.stairs&&z.stairs.length)h+=this._collSecInline(lv,z,'Staircase list',z.stairs.length,'stair',z.stairs,this.elRows(lv,z,'stair',z.stairs,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no stairs'));
       return h; }
     return '';
@@ -1091,25 +1093,26 @@ class Component extends DCLogic {
      _dr(_subL.C,'subC','#b35a1f',false,this.showSubC);
      _dr(_subL.P,'subP','#7c3aed',true,this.showSubP);}
     /* Core Wall 多边形(admin 画的) + 正在画的临时轮廓 */
-    { const cwArr=(this._appCfg&&this._appCfg.coreWalls&&this._appCfg.coreWalls[this.curLevel])||[];
-      cwArr.forEach((w,wi)=>{ if(!w.pts||w.pts.length<3)return;
+    if(this.showCoreWalls!==false){ this._shapesForLevel('core').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
         const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
-        const _cc=this._shapeLinkColor(w,'#d98a2a','#b35a1f');
-        s+=`<polygon class="corewall" data-cwi="${wi}" points="${pp}" fill="${_cc[0]}" fill-opacity="0.22" stroke="${_cc[1]}" stroke-width="520" style="cursor:pointer"/>`;
-        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(w.link?w.link.id:w.id)}${w.link?' 🔗':''}</text>`;});
+        const _cc=this._shapeLinkColor(w,'#d98a2a','#b35a1f',swlv); const _foreign=(swlv!==this.curLevel); const _lk=this._shapeLinks(w,swlv).length;
+        s+=`<polygon class="corewall" data-cwi="${wi}" data-cwlv="${swlv}" points="${pp}" fill="${_cc[0]}" fill-opacity="${_foreign?0.14:0.22}" stroke="${_cc[1]}" stroke-width="520"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
+        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}${_lk?' 🔗':''}</text>`;});
+      }
       if(this._drawingCore&&this._coreBuf&&this._coreBuf.length){
         const bp=this._coreBuf.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         s+=`<polyline points="${bp}" fill="#c8102e" fill-opacity="0.1" stroke="#c8102e" stroke-width="420" stroke-dasharray="900,500" style="pointer-events:none"/>`;
         this._coreBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#c8102e" style="pointer-events:none"/>`;});}
       // Lift 矩形(admin 画的) — 蓝色
-      const lfArr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[this.curLevel])||[];
-      lfArr.forEach((w,wi)=>{ if(!w.pts||w.pts.length<3)return;
+      if(this.showLifts!==false){ this._shapesForLevel('lift').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
         const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
-        const _lc=this._shapeLinkColor(w,'#2a6bd6','#1d4ed8');
-        s+=`<polygon class="liftwall" data-lwi="${wi}" points="${pp}" fill="${_lc[0]}" fill-opacity="0.2" stroke="${_lc[1]}" stroke-width="500" style="cursor:pointer"/>`;
-        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_lc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(w.link?w.link.id:w.id)}${w.link?' 🔗':''}</text>`;});
+        const _lc=this._shapeLinkColor(w,'#2a6bd6','#1d4ed8',swlv); const _foreign=(swlv!==this.curLevel); const _lk=this._shapeLinks(w,swlv).length;
+        s+=`<polygon class="liftwall" data-lwi="${wi}" data-lwlv="${swlv}" points="${pp}" fill="${_lc[0]}" fill-opacity="${_foreign?0.13:0.2}" stroke="${_lc[1]}" stroke-width="500"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
+        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_lc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}${_lk?' 🔗':''}</text>`;});
+      }
+      { const lfArr=[];
       if(this._drawingLift&&this._liftBuf&&this._liftBuf.length){
         if(this._liftBuf.length>=2){const r0=this.proj(this._liftBuf[0],H),r1=this.proj(this._liftBuf[1],H);s+=`<line x1="${r0[0].toFixed(0)}" y1="${r0[1].toFixed(0)}" x2="${r1[0].toFixed(0)}" y2="${r1[1].toFixed(0)}" stroke="#1d4ed8" stroke-width="420" stroke-dasharray="800,500" style="pointer-events:none"/>`;}
         this._liftBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#1d4ed8" style="pointer-events:none"/>`;});}
@@ -1122,8 +1125,8 @@ class Component extends DCLogic {
     this.svg.innerHTML=_uHtml+s;   /* 底图垫在最底层 */
     this.colLOD();
     if(_ulDrag){const im=this.svg.querySelector('.underlayimg');if(im)im.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const u=this._curUnderlay();if(!u)return;const r=this.svg.getBoundingClientRect();const sx=this.vb.w/r.width,sy=this.vb.h/r.height;let lx=ev.clientX,ly=ev.clientY;const mv=e=>{u.x+=(e.clientX-lx)*sx;u.y+=(e.clientY-ly)*sy;lx=e.clientX;ly=e.clientY;const cx=(u.x+u.w/2).toFixed(1),cy=(u.y+u.h/2).toFixed(1);im.setAttribute('x',u.x.toFixed(1));im.setAttribute('y',u.y.toFixed(1));im.setAttribute('transform',`rotate(${u.rot||0} ${cx} ${cy})`);};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);this._saveUnderlay();};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
-    this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.cwi;ev.stopPropagation();if(this._drawingCore){this._shapeMenu('core',idx);return;}const w=this._shapeArr('core')[idx];if(w&&w.link)this._openLink(w.link);else this._relinkShape('core',idx);}));   // 画模式=菜单(重链/删); 平时=有链接就打开, 没链接就选一条挂上
-    this.svg.querySelectorAll('.liftwall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.lwi;ev.stopPropagation();if(this._drawingLift){this._shapeMenu('lift',idx);return;}const w=this._shapeArr('lift')[idx];if(w&&w.link)this._openLink(w.link);else this._relinkShape('lift',idx);}));
+    this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.cwi;const slv=el.dataset.cwlv||this.curLevel;ev.stopPropagation();if(this._drawingCore){this._shapeMenu('core',idx,slv);return;}this._openShape(this._shapeArr('core',slv)[idx],slv);}));   // 画模式=菜单(删/改名); 平时=按名字自动匹配的数据打开
+    this.svg.querySelectorAll('.liftwall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.lwi;const slv=el.dataset.lwlv||this.curLevel;ev.stopPropagation();if(this._drawingLift){this._shapeMenu('lift',idx,slv);return;}this._openShape(this._shapeArr('lift',slv)[idx],slv);}));
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
@@ -1229,10 +1232,14 @@ class Component extends DCLogic {
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
     const _nHid=((this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[this.curLevel])||[]).length;
-    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${this._drawingLift?`<span class="szchip on" style="border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.12)">画 Lift: 点3下(一条边+宽度)</span><span class="szchip" data-k="__liftcancel">取消</span>`:`<span class="szchip" data-k="__drawlift">▭ 画 Lift(可斜)</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
+    const _adminOpen=this._editToolsOpen||this._placingCol||this._hidingCol||this._drawingCore||this._drawingLift||this._underlayAdjust;
+    const _editToolsStr=this.rwsIsAdmin()?`<span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${this._drawingLift?`<span class="szchip on" style="border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.12)">画 Staircase: 点3下(一条边+宽度)</span><span class="szchip" data-k="__liftcancel">取消</span>`:`<span class="szchip" data-k="__drawlift">▭ 画 Staircase(可斜)</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
+    const _editBtn=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${_adminOpen?'on':''}" data-k="__edittoggle" style="${_adminOpen?'border-color:#5b6bd6;color:#5b6bd6;background:rgba(91,107,214,.12)':''}">✎ Edit${_adminOpen?' ✕':''}</span>`:'';
+    const _adminTools=_editBtn+(_adminOpen?_editToolsStr:'');
     p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.k;
+      if(k==='__edittoggle'){this._editToolsOpen=!this._editToolsOpen;this.refreshSubzPanel();return;}
       if(k==='__place'){this.togglePlaceCol();return;}
       if(k==='__hidecol'){this.toggleHideColMode();return;}
       if(k==='__drawcore'){this.toggleDrawCore();return;}
@@ -1408,9 +1415,9 @@ class Component extends DCLogic {
     this._appCfg=this._appCfg||{};const cw=this._appCfg.coreWalls=this._appCfg.coreWalls||{};const arr=cw[lv]=cw[lv]||[];
     const defId=(zoneLabel?zoneLabel.replace(/\s+/g,''):lv)+'-CW'+(arr.length+1);
     const done2=()=>{this._saveCoreWalls();this._coreBuf=[];this._drawingCore=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
-    const pick=(it)=>{arr.push({id:it.id,pts,zone:zoneLabel,link:{lv,zmk,type:it.type,id:it.id}});done2();};
-    const free=()=>{const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts,zone:zoneLabel});done2();};if(this._inputModal)this._inputModal({title:'Core Wall 名称 / name',label:'这道 core wall 的编号('+(zoneLabel||lv)+')',placeholder:defId,ok:'保存',onOk:save});else save(defId);};
-    this._pickLinkModal(lv,zmk,zoneLabel,pick,free);}
+    /* 只填名字, 按名字自动匹配数据(CW 编号→整组 lift/stair, 或直接对上元素 id) */
+    const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts,zone:zoneLabel});done2();};
+    if(this._inputModal)this._inputModal({title:'Core Wall 名称 / name',label:'编号(按名字自动匹配数据, 如 CW3B)',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
   _delCoreWall(lv,idx){this._confirmModal('删除这道 Core Wall?',()=>{const arr=(this._appCfg&&this._appCfg.coreWalls&&this._appCfg.coreWalls[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveCoreWalls();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
   /* ---- 在图上画 Lift(两点画矩形, admin) —— 存 settings, 云端同步 ---- */
   toggleDrawLift(){if(!this.rwsIsAdmin())return;this._drawingLift=!this._drawingLift;this._liftBuf=[];if(this._drawingLift){this._placingCol=false;this._hidingCol=false;this._drawingCore=false;}if(this.svg)this.svg.style.cursor=this._drawingLift?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
@@ -1426,11 +1433,11 @@ class Component extends DCLogic {
     const d=(c[0]-a[0])*px+(c[1]-a[1])*py;   // 第三点到 AB 的有向距离 = 宽度
     const rectPts=[[a[0],a[1]],[b[0],b[1]],[b[0]+px*d,b[1]+py*d],[a[0]+px*d,a[1]+py*d]];
     const cx=rectPts.reduce((s2,p)=>s2+p[0],0)/4,cy=rectPts.reduce((s2,p)=>s2+p[1],0)/4;let zoneLabel='';const z=(L.zones||[]).find(zz=>zz.ring&&this.ptIn(zz.ring,cx,cy));if(z)zoneLabel=z.label;const zmk=z?(z.mk||z.lid):'';
-    this._appCfg=this._appCfg||{};const lf=this._appCfg.lifts=this._appCfg.lifts||{};const arr=lf[lv]=lf[lv]||[];const defId=(zoneLabel?zoneLabel.replace(/\s+/g,''):lv)+'-LIFT'+(arr.length+1);
+    this._appCfg=this._appCfg||{};const lf=this._appCfg.lifts=this._appCfg.lifts||{};const arr=lf[lv]=lf[lv]||[];const defId=(zoneLabel?zoneLabel.replace(/\s+/g,''):lv)+'-STAIR'+(arr.length+1);
     const done2=()=>{this._saveLifts();this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
-    const pick=(it)=>{arr.push({id:it.id,pts:rectPts,zone:zoneLabel,link:{lv,zmk,type:it.type,id:it.id}});done2();};
-    const free=()=>{const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts:rectPts,zone:zoneLabel});done2();};if(this._inputModal)this._inputModal({title:'Lift 名称 / name',label:'这个 lift 的编号('+(zoneLabel||lv)+')',placeholder:defId,ok:'保存',onOk:save});else save(defId);};
-    this._pickLinkModal(lv,zmk,zoneLabel,pick,free);}
+    /* 只填名字, 按名字自动匹配 staircase 数据 */
+    const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts:rectPts,zone:zoneLabel});done2();};
+    if(this._inputModal)this._inputModal({title:'Staircase 名称 / name',label:'编号(按名字自动匹配数据, 如 P1-ST-01B)',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
   _liftCancel(){this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _saveLifts(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','lifts',this._appCfg.lifts||{},null,null);}
   _delLift(lv,idx){this._confirmModal('删除这个 Lift?',()=>{const arr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
@@ -1451,17 +1458,42 @@ class Component extends DCLogic {
     ov.querySelector('#__pk_free').addEventListener('click',()=>{close();onFree&&onFree();});
     ov.querySelectorAll('.__pk').forEach(el=>el.addEventListener('click',()=>{const it=items[+el.dataset.i];close();onPick&&onPick(it);}));
   }
-  _shapeLinkColor(w,baseFill,baseStroke){if(!w.link)return[baseFill,baseStroke];const st=this.elemStatus(w.link.lv+'||'+w.link.zmk+'||'+w.link.type+'||'+w.link.id);if(st==='done')return['#35c08e','#218a5c'];if(st==='wip')return['#e2b45c','#b8801f'];return[baseFill,baseStroke];}
-  _shapeArr(kind){const m=kind==='core'?'coreWalls':'lifts';return (this._appCfg&&this._appCfg[m]&&this._appCfg[m][this.curLevel])||[];}
-  _shapeZmk(w){const lv=this.curLevel,L=this.DATA.levels[lv];if(!w.pts||!w.pts.length)return '';const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length,cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length;let z=(L.zones||[]).find(zz=>zz.ring&&this.ptIn(zz.ring,cx,cy));if(!z&&w.zone)z=(L.zones||[]).find(zz=>zz.label===w.zone);return z?(z.mk||z.lid):'';}
-  _relinkShape(kind,idx){const arr=this._shapeArr(kind);const w=arr[idx];if(!w)return;const lv=this.curLevel;const zmk=this._shapeZmk(w);const z=((this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===zmk);const zoneLabel=z?z.label:(w.zone||'');const saveFn=()=>{if(kind==='core')this._saveCoreWalls();else this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
+  _shapeLabel(w){return w.id||((w.link&&w.link.id)||'');}
+  /* 按名字自动匹配数据: CW 编号→整组 lift/stair(查 window.CW_GROUPS), 或名字直接对上某个元素 id. 在形状所在层/区里解析. */
+  _autoLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];
+    const name=(w&&w.id||'').trim();if(!name)return[];lv=lv||this.curLevel;
+    const zmk=this._shapeZmk(w,lv);if(!zmk)return[];
+    const z=((this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===zmk);if(!z)return[];
+    const out=[],seen=new Set();
+    const add=(type,id)=>{const k=type+'|'+id;if(seen.has(k))return;const arr=type==='lift'?z.lifts:type==='stair'?z.stairs:type==='core'?z.cores:null;if(!arr)return;const hit=arr.find(x=>((typeof x==='string')?x:x.id)===id);if(hit){seen.add(k);out.push({lv,zmk,type,id});}};
+    const g=(typeof window!=='undefined'&&window.CW_GROUPS)?window.CW_GROUPS[name]:null;
+    if(g){(g.lifts||[]).forEach(id=>add('lift',id));(g.stairs||[]).forEach(id=>add('stair',id));(g.cores||[]).forEach(id=>add('core',id));}
+    ['core','lift','stair'].forEach(type=>{const arr=type==='core'?z.cores:type==='lift'?z.lifts:z.stairs;(arr||[]).forEach(x=>{const id=(typeof x==='string')?x:x.id;if(id===name)add(type,id);});});
+    return out;}
+  _shapeLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];return this._autoLinks(w,lv);}
+  _shapeLinkColor(w,baseFill,baseStroke,lv){const ls=this._shapeLinks(w,lv);if(!ls.length)return[baseFill,baseStroke];const sts=ls.map(l=>this.elemStatus(l.lv+'||'+l.zmk+'||'+l.type+'||'+l.id));if(sts.every(s=>s==='done'))return['#35c08e','#218a5c'];if(sts.some(s=>s==='done'||s==='wip'))return['#e2b45c','#b8801f'];return[baseFill,baseStroke];}
+  _linksFloorRange(w,lv){const ls=this._shapeLinks(w,lv);let lo=null,hi=null;ls.forEach(l=>{const r=this._linkFloorRange(l);if(r){lo=(lo==null?r[0]:Math.min(lo,r[0]));hi=(hi==null?r[1]:Math.max(hi,r[1]));}});return (lo==null)?null:[lo,hi];}
+  _openShape(w,lv){const ls=this._shapeLinks(w,lv);if(!ls.length){this._toast&&this._toast('名字 "'+this._shapeLabel(w)+'" 没对上数据 / no match');return;}if(ls.length===1){this._openLink(ls[0]);return;}
+    const old=document.getElementById('__shapeOpen');if(old)old.remove();const ov=document.createElement('div');ov.id='__shapeOpen';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.4);z-index:2147483601;display:flex;align-items:center;justify-content:center';
+    const rows=ls.map((l,i)=>`<div class="__so" data-i="${i}" style="cursor:pointer;padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:5px;font-size:12px"><b>${this.esc(l.id)}</b> <span style="color:var(--faint);font-size:10px">${l.type}</span></div>`).join('');
+    ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:16px 18px;width:min(320px,90vw);max-height:78vh;overflow:auto;box-shadow:0 18px 50px rgba(0,0,0,.35)"><div style="font-weight:800;font-size:13px;margin-bottom:10px">${this.esc(this._shapeLabel(w))} · 包含 ${ls.length} 项</div>${rows}<button class="hbtn" id="__so_cancel" style="padding:7px 12px;margin-top:6px">关闭</button></div>`;
+    document.body.appendChild(ov);const close=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#__so_cancel').addEventListener('click',close);ov.querySelectorAll('.__so').forEach(el=>el.addEventListener('click',()=>{const l=ls[+el.dataset.i];close();this._openLink(l);}));}
+  /* 楼层名 → 序号(B2最低). L4=…, 'M'夹层+0.5, 忽略'(Shaft only)'等括注 */
+  _floorOrd(name){if(name==null)return null;let s=String(name).replace(/\([^)]*\)/g,'').trim().toUpperCase();if(s==='B2')return -2;if(s==='B1')return -1;if(s==='B1M')return -0.5;const m=s.match(/^L(\d+)(M)?$/);if(m)return (parseInt(m[1],10)-1)+(m[2]?0.5:0);return null;}
+  _linkElem(link){if(!link)return null;const L=this.DATA.levels[link.lv];if(!L)return null;const z=(L.zones||[]).find(x=>(x.mk||x.lid)===link.zmk);if(!z)return null;const arr=link.type==='lift'?z.lifts:link.type==='stair'?z.stairs:link.type==='core'?z.cores:null;if(!arr)return null;return arr.find(x=>((typeof x==='string')?x:x.id)===link.id)||null;}
+  _linkFloorRange(link){const e=this._linkElem(link);if(!e||typeof e==='string')return null;const a=this._floorOrd(e.f),b=this._floorOrd(e.t);if(a==null||b==null)return null;return [Math.min(a,b),Math.max(a,b)];}
+  /* 收集当前层要显示的形状: 本层画的 + 有链接且 f→t 范围覆盖本层的(在别层画的). 返回 {w,lv,idx} */
+  _shapesForLevel(kind){const m=kind==='core'?'coreWalls':'lifts';const store=(this._appCfg&&this._appCfg[m])||{};const cur=this.curLevel,curOrd=this._floorOrd(cur);const out=[],seen=new Set();Object.keys(store).forEach(lv=>{(store[lv]||[]).forEach((w,idx)=>{if(!w||!w.pts||w.pts.length<3)return;let show=(lv===cur);if(!show&&curOrd!=null){const rng=this._linksFloorRange(w,lv);if(rng&&curOrd>=rng[0]-1e-6&&curOrd<=rng[1]+1e-6)show=true;}if(show){const k=lv+'|'+idx;if(!seen.has(k)){seen.add(k);out.push({w,lv,idx});}}});});return out;}
+  _shapeArr(kind,lv){lv=lv||this.curLevel;const m=kind==='core'?'coreWalls':'lifts';return (this._appCfg&&this._appCfg[m]&&this._appCfg[m][lv])||[];}
+  _shapeZmk(w,lv){lv=lv||this.curLevel;const L=this.DATA.levels[lv];if(!L||!w.pts||!w.pts.length)return '';const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length,cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length;let z=(L.zones||[]).find(zz=>zz.ring&&this.ptIn(zz.ring,cx,cy));if(!z&&w.zone)z=(L.zones||[]).find(zz=>zz.label===w.zone);return z?(z.mk||z.lid):'';}
+  _relinkShape(kind,idx,srcLv){const lv=srcLv||this.curLevel;const arr=this._shapeArr(kind,lv);const w=arr[idx];if(!w)return;const zmk=this._shapeZmk(w,lv);const z=((this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===zmk);const zoneLabel=z?z.label:(w.zone||'');const saveFn=()=>{if(kind==='core')this._saveCoreWalls();else this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
     this._pickLinkModal(lv,zmk,zoneLabel,(it)=>{w.link={lv,zmk,type:it.type,id:it.id};w.id=it.id;saveFn();},()=>{if(this._inputModal)this._inputModal({title:'名称 / name',label:'编号',placeholder:w.id||'',ok:'保存',onOk:(v)=>{w.id=(v||'').trim()||w.id;delete w.link;saveFn();}});});}
-  _shapeMenu(kind,idx){const arr=this._shapeArr(kind);const w=arr[idx];if(!w)return;const old=document.getElementById('__shapeMenu');if(old)old.remove();const ov=document.createElement('div');ov.id='__shapeMenu';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.4);z-index:2147483601;display:flex;align-items:center;justify-content:center';
+  _shapeMenu(kind,idx,srcLv){const lv=srcLv||this.curLevel;const arr=this._shapeArr(kind,lv);const w=arr[idx];if(!w)return;const old=document.getElementById('__shapeMenu');if(old)old.remove();const ov=document.createElement('div');ov.id='__shapeMenu';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.4);z-index:2147483601;display:flex;align-items:center;justify-content:center';
     ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:16px 18px;width:min(300px,90vw);box-shadow:0 18px 50px rgba(0,0,0,.35)"><div style="font-weight:800;font-size:13px;margin-bottom:12px">${this.esc(w.link?w.link.id:w.id)} · ${kind==='core'?'Core Wall':'Lift'}</div><div style="display:flex;flex-direction:column;gap:8px"><button class="hbtn" id="__sm_link" style="padding:8px">${w.link?'重新链接 / 换一条':'链接到数据'}</button><button class="hbtn" id="__sm_del" style="padding:8px;color:var(--crit)">删除</button><button class="hbtn" id="__sm_cancel" style="padding:8px">取消</button></div></div>`;
     document.body.appendChild(ov);const close=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)close();});
     ov.querySelector('#__sm_cancel').addEventListener('click',close);
-    ov.querySelector('#__sm_link').addEventListener('click',()=>{close();this._relinkShape(kind,idx);});
-    ov.querySelector('#__sm_del').addEventListener('click',()=>{close();if(kind==='core')this._delCoreWall(this.curLevel,idx);else this._delLift(this.curLevel,idx);});}
+    ov.querySelector('#__sm_link').addEventListener('click',()=>{close();this._relinkShape(kind,idx,lv);});
+    ov.querySelector('#__sm_del').addEventListener('click',()=>{close();if(kind==='core')this._delCoreWall(lv,idx);else this._delLift(lv,idx);});}
   _openLink(link){if(!link)return;const lv=link.lv;if(this.curLevel!==lv){this.curLevel=lv;this._applyOvlForLevel&&this._applyOvlForLevel(lv);this.syncRail&&this.syncRail();this.buildMetrics&&this.buildMetrics();this.render();}
     const z=((this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===link.zmk);if(!z)return;this.selKey=this.zid(z);this.selectZone(z);this.paintSel&&this.paintSel();
     const key=this.ekey(lv,z,link.type,link.id);
@@ -1623,11 +1655,10 @@ class Component extends DCLogic {
       /* 数量一律来自 CSV 各月计划量求和(可手改覆盖);没放计划量就留空 — 不再借用图纸台账数/区域面积 */
       {id:'pile',label:'Pilecap',unit:'nos',total:this.actTotal(lv,zmk,'pile',this.actAutoTotal(lv,zmk,'pile'))},
       {id:'col',label:'Column',unit:'nos',total:this.actTotal(lv,zmk,'col',this.actAutoTotal(lv,zmk,'col'))},
-      {id:'ls',label:'Lift/Stairs Wall',unit:'nos',total:this.actTotal(lv,zmk,'ls',this.actAutoTotal(lv,zmk,'ls'))},
+      {id:'ls',label:'Core/Lift/Stair Wall',unit:'nos',total:this.actTotal(lv,zmk,'ls',this.actAutoTotal(lv,zmk,'ls'))},
       {id:'mbeam',label:'Steel Main Beam',unit:'nos',total:this.actTotal(lv,zmk,'mbeam',this.actAutoTotal(lv,zmk,'mbeam'))},
       {id:'cbeam',label:'Cast Steel Main Beam',unit:'nos',total:this.actTotal(lv,zmk,'cbeam',this.actAutoTotal(lv,zmk,'cbeam'))},
       {id:'slab',label:'Slab',unit:'m²',total:this.actTotal(lv,zmk,'slab',this.actAutoTotal(lv,zmk,'slab')),info:'Enter the completed area under \u201cDone\u201d based on the work stage: 40% for formwork, 50% for rebar, and 10% for slab casting.'},
-      {id:'act_corewall',label:'Core Wall',unit:'',total:this.actTotal(lv,zmk,'act_corewall',this.actAutoTotal(lv,zmk,'act_corewall'))},
       {id:'act_wall',label:'Wall',unit:'',total:this.actTotal(lv,zmk,'act_wall',this.actAutoTotal(lv,zmk,'act_wall'))},
       {id:'act_colcorbel',label:'Column Cobel',unit:'',total:this.actTotal(lv,zmk,'act_colcorbel',this.actAutoTotal(lv,zmk,'act_colcorbel'))},
       {id:'slab_top',label:'Top Slab',unit:'m²',total:this.actTotal(lv,zmk,'slab_top',this.actAutoTotal(lv,zmk,'slab_top'))},
@@ -1676,7 +1707,7 @@ class Component extends DCLogic {
       const _noWorkThisMonth=admin&&plan==null&&dm==null;
       /* Core Wall activity card: embed the existing Core Walls element checklist (same list,
          same saved status — just moved here from the old standalone bottom-of-page section) */
-      const _coreListHtml=(a.id==='act_corewall')?(((z.cores&&z.cores.length)?this.collSecFor(lv,z,'Core Walls',z.cores.length,'core',z.cores,this.elRows(lv,z,'core',z.cores,null,'none')):'')+((z.lifts&&z.lifts.length)?this.collSecFor(lv,z,'Lifts',z.lifts.length,'lift',z.lifts,this.elRows(lv,z,'lift',z.lifts,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no lifts')):'')):'';
+      const _coreListHtml='';  /* Core/Lift/Stair 已统一到 ls 活动清单(见 _actElemSec) */
       return `<div class="actcard ${hidden?'act-off':''}${_noWorkThisMonth?' act-nowork':''}"><div class="actrow">${chk}<span class="actlbl">${a.label}${_noWorkThisMonth?' <span class="noworktag" title="No planned or done quantity for '+this.esc(sm)+' — this activity isn\'t scheduled for this zone this month">— no work this month</span>':''}${(admin&&hidden)?' <span class="hiddentag">hidden from users</span>':''}${(a.custom&&admin)?' <span class="lnk actdel" data-a="'+a.id+'" style="color:var(--crit);cursor:pointer" title="Delete custom activity">✕</span>':''}</span><span class="actbar"><i style="width:${Math.min(pct||0,100)}%;background:${bc}"></i></span><span class="actpct" style="color:${bc}">${pct==null?'—':pct+'%'}</span>${this._cmtBtn(lv,zmk,a.id)}</div>`+
         (a.info?`<div class="actinfotext">&#9432; ${this.esc(a.info)}</div>`:``)+
         `<div class="actsub"><span class="am">${sm}</span><span class="am2">Plan</span>${planCell}${_editBadge(_planEdited)}${this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="asep">|</span><span class="am2">Done</span>${doneCell}${_editBadge(_doneEdited)}${this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="acum">${sm}: ${this.fmt(cg.done)}${plan==null?'':' / '+this.fmt(plan)} ${a.unit}</span></div>`+actDateLine+carryLine+mn+this._cmtPanel(lv,zmk,a.id)+_coreListHtml+this._actElemSecFull(lv,z,a.id)+'</div>';
@@ -2134,6 +2165,11 @@ class Component extends DCLogic {
       mkToggle(this.showBeams,`<span style="width:16px;border-top:2px solid var(--beam);display:inline-block"></span>Steel main beams`,()=>{this.showBeams=!this.showBeams;this.buildMetrics();this.render();});
     if(this.COLUMNS && this.COLUMNS[this.curLevel])
       mkToggle(this.showColumns,`<span style="width:9px;height:9px;border-radius:50%;background:#8a93a3;display:inline-block"></span>Columns`,()=>{this.showColumns=!this.showColumns;this.buildMetrics();this.render();});
+    { const _hasCW=this._appCfg&&this._appCfg.coreWalls&&Object.values(this._appCfg.coreWalls).some(a=>a&&a.length);
+      const _hasLF=this._appCfg&&this._appCfg.lifts&&Object.values(this._appCfg.lifts).some(a=>a&&a.length);
+      if(_hasCW) mkToggle(this.showCoreWalls!==false,`<span style="width:10px;height:10px;background:#d98a2a;display:inline-block;border-radius:2px"></span>Core walls`,()=>{this.showCoreWalls=(this.showCoreWalls===false);this.buildMetrics();this.render();});
+      if(_hasLF) mkToggle(this.showLifts!==false,`<span style="width:10px;height:10px;background:#2a6bd6;display:inline-block;border-radius:2px"></span>Lifts`,()=>{this.showLifts=(this.showLifts===false);this.buildMetrics();this.render();});
+    }
     this.refreshSubzPanel();
   }
 
