@@ -130,7 +130,7 @@ class Component extends DCLogic {
     if(aid==='mbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Steel-main-beam list',z.beams.length,'beam',z.beams,this.elRows(lv,z,'beam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='cbeam') return (z.beams&&z.beams.length)? this._collSecInline(lv,z,'Cast-s-main-beam list',z.beams.length,'cbeam',z.beams,this.elRows(lv,z,'cbeam',z.beams,x=>this.esc(x.sz||''),'none listed')+this._idNote()) : '';
     if(aid==='ls'){ let h='';
-      if(z.lifts&&z.lifts.length)  h+=this._collSecInline(lv,z,'Lift list',z.lifts.length,'lift',z.lifts,this.elRows(lv,z,'lift',z.lifts,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no lifts'));
+      /* lift 已挪到 Core Wall 卡片下显示(保留原数据键), 这里只剩 staircase */
       if(z.stairs&&z.stairs.length)h+=this._collSecInline(lv,z,'Staircase list',z.stairs.length,'stair',z.stairs,this.elRows(lv,z,'stair',z.stairs,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no stairs'));
       return h; }
     return '';
@@ -1676,7 +1676,7 @@ class Component extends DCLogic {
       const _noWorkThisMonth=admin&&plan==null&&dm==null;
       /* Core Wall activity card: embed the existing Core Walls element checklist (same list,
          same saved status — just moved here from the old standalone bottom-of-page section) */
-      const _coreListHtml=(a.id==='act_corewall'&&z.cores&&z.cores.length)?this.collSecFor(lv,z,'Core Walls',z.cores.length,'core',z.cores,this.elRows(lv,z,'core',z.cores,null,'none')):'';
+      const _coreListHtml=(a.id==='act_corewall')?(((z.cores&&z.cores.length)?this.collSecFor(lv,z,'Core Walls',z.cores.length,'core',z.cores,this.elRows(lv,z,'core',z.cores,null,'none')):'')+((z.lifts&&z.lifts.length)?this.collSecFor(lv,z,'Lifts',z.lifts.length,'lift',z.lifts,this.elRows(lv,z,'lift',z.lifts,x=>x.f?'<span class="span">'+this.esc(x.f)+' → '+this.esc(x.t)+'</span>':'','no lifts')):'')):'';
       return `<div class="actcard ${hidden?'act-off':''}${_noWorkThisMonth?' act-nowork':''}"><div class="actrow">${chk}<span class="actlbl">${a.label}${_noWorkThisMonth?' <span class="noworktag" title="No planned or done quantity for '+this.esc(sm)+' — this activity isn\'t scheduled for this zone this month">— no work this month</span>':''}${(admin&&hidden)?' <span class="hiddentag">hidden from users</span>':''}${(a.custom&&admin)?' <span class="lnk actdel" data-a="'+a.id+'" style="color:var(--crit);cursor:pointer" title="Delete custom activity">✕</span>':''}</span><span class="actbar"><i style="width:${Math.min(pct||0,100)}%;background:${bc}"></i></span><span class="actpct" style="color:${bc}">${pct==null?'—':pct+'%'}</span>${this._cmtBtn(lv,zmk,a.id)}</div>`+
         (a.info?`<div class="actinfotext">&#9432; ${this.esc(a.info)}</div>`:``)+
         `<div class="actsub"><span class="am">${sm}</span><span class="am2">Plan</span>${planCell}${_editBadge(_planEdited)}${this._lockIco('act_plan',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="asep">|</span><span class="am2">Done</span>${doneCell}${_editBadge(_doneEdited)}${this._lockIco('act_done_m',lv+'||'+zmk+'||'+a.id+'||'+sm)}<span class="acum">${sm}: ${this.fmt(cg.done)}${plan==null?'':' / '+this.fmt(plan)} ${a.unit}</span></div>`+actDateLine+carryLine+mn+this._cmtPanel(lv,zmk,a.id)+_coreListHtml+this._actElemSecFull(lv,z,a.id)+'</div>';
