@@ -401,7 +401,12 @@ begin
   if p_store not in ('act_total','act_plan','act_done_m','act_hidden','elem_date','act_def','crit','zdate','act_date','col_month','act_cmt') then raise exception 'bad store'; end if;
   if s.role <> 'admin' then
     if p_store in ('act_total','act_plan','act_hidden','act_def','crit','zdate','act_date','col_month') then raise exception 'admin only'; end if;
-    if not _rws_area_ok(s.allowed_scopes, p_level, p_zone_mk) then raise exception 'not permitted: outside your assigned area'; end if;
+    if p_store = 'act_cmt' then
+      -- 评论/标完成: 有 CMT(写评论) 或 有本区编辑权限(现场做工的可标完成) 即可; 精确到区由前端控制
+      if not ( (coalesce(s.allowed_scopes,'[]'::jsonb) ? 'CMT') or _rws_area_ok(s.allowed_scopes, p_level, p_zone_mk) ) then raise exception 'not permitted: no comment or area permission'; end if;
+    else
+      if not _rws_area_ok(s.allowed_scopes, p_level, p_zone_mk) then raise exception 'not permitted: outside your assigned area'; end if;
+    end if;
   end if;
   select value into old from rws_kv where store = p_store and k = p_k;
   if p_value is null then delete from rws_kv where store = p_store and k = p_k;

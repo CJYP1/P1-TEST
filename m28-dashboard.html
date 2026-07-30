@@ -35,6 +35,7 @@
 </div>
 <script>
 window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:null};
+window.__m28toast=function(msg){var h=document.getElementById('__m28toast');if(!h){h=document.createElement('div');h.id='__m28toast';h.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2147483646;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;font-family:system-ui,Arial,sans-serif';document.body.appendChild(h);}var t=document.createElement('div');t.style.cssText='pointer-events:auto;cursor:pointer;max-width:min(460px,92vw);background:#fff;color:#1a1a19;border:1px solid #d9dee6;border-left:4px solid #5b6ef5;border-radius:10px;padding:11px 15px;box-shadow:0 10px 34px rgba(0,0,0,.28);font-size:13px;line-height:1.5;white-space:pre-line';t.textContent=String(msg==null?'':msg);h.appendChild(t);var kill=function(){t.style.transition='opacity .2s';t.style.opacity='0';setTimeout(function(){t.remove();},200);};t.addEventListener('click',kill);setTimeout(kill,4000);};
 (function(){
  function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
  function fmtTs(t){try{return new Date(t).toLocaleString();}catch(e){return '';}}
@@ -78,7 +79,7 @@ window.__m28={loggedIn:false,canEdit:false,canComment:false,comments:{},sess:nul
    if(!curItem||!(window.__m28.canCommentLevel&&window.__m28.canCommentLevel(window.__m28._curLevel)))return; var body=inp.value.trim(); if(!body)return; var b=this; b.disabled=true;
    try{ await rwsCall('rws_m28_comment_add',{p_token:rwsGetSession().token,p_item_id:curItem,p_body:body});
         inp.value=''; await loadComments(); renderList(curItem); markItems();
-   }catch(e){ alert('发送失败: '+(e&&e.message||e)); }
+   }catch(e){ window.__m28toast('发送失败 / send failed: '+(e&&e.message||e)); }
    b.disabled=false;
  });
  var _m28poll=null;

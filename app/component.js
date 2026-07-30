@@ -153,15 +153,16 @@ class Component extends DCLogic {
   saveActCmt(){try{localStorage.setItem('rws_act_cmt',JSON.stringify(this._actCmt||{}));}catch(e){}}
   actCmts(lv,zmk,aid){const pre=lv+'||'+zmk+'||'+aid+'||';const o=this._actCmt||{};return Object.keys(o).filter(k=>k.indexOf(pre)===0).map(k=>({k,...o[k]})).sort((a,b)=>String(a.ts||'').localeCompare(String(b.ts||'')));}
   addActCmt(lv,zmk,aid,text){text=(text||'').trim();if(!text)return;if(!(this.rwsIsAdmin()||this.rwsCanComment(lv,zmk))){this.rwsDeny('You cannot comment on this area.');return;}const s=(typeof rwsGetSession==='function'&&rwsGetSession())||{};const ts=new Date().toISOString();const k=lv+'||'+zmk+'||'+aid+'||'+ts+'_'+Math.random().toString(36).slice(2,6);const v={t:text,by:s.username||'user',ts};this._actCmt=this._actCmt||{};this._actCmt[k]=v;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,v,lv,zmk);this._actRerender(this._selZone());}
-  resolveActCmt(k,done){const o=(this._actCmt||{})[k];if(!o)return;const p=k.split('||');if(!(this.rwsIsAdmin()||this.rwsCanComment(p[0],p[1]))){this.rwsDeny('You cannot comment on this area.');return;}if(done)o.done=true;else delete o.done;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,o,p[0],p[1]);this._actRerender(this._selZone());}
+  resolveActCmt(k,done){const o=(this._actCmt||{})[k];if(!o)return;const p=k.split('||');if(!(this.rwsIsAdmin()||this.rwsCanComment(p[0],p[1])||this.rwsScopeOk(p[0],p[1]))){this.rwsDeny('You cannot change this comment.');return;}if(done)o.done=true;else delete o.done;this.saveActCmt();if(typeof rwsSyncKV==='function')rwsSyncKV('act_cmt',k,o,p[0],p[1]);this._actRerender(this._selZone());}
   delActCmt(k){if(!this.rwsIsAdmin())return;if(this._actCmt)delete this._actCmt[k];this.saveActCmt();if(typeof rwsSyncKV==='function'){const p=k.split('||');rwsSyncKV('act_cmt',k,null,p[0],p[1]);}this._actRerender(this._selZone());}
   _cmtBubbleSVG(){return `<svg viewBox="0 0 24 24" width="20" height="20" style="display:block"><path d="M5 4h14a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 19 16H10l-4.2 3.6A.6.6 0 0 1 5 19.1V16a2.5 2.5 0 0 1-2.5-2.5v-7A2.5 2.5 0 0 1 5 4z" fill="#ffd43b" stroke="#d9a400" stroke-width="1.2"/><line x1="7.5" y1="8.6" x2="16.5" y2="8.6" stroke="#8a6a00" stroke-width="1.5" stroke-linecap="round"/><line x1="7.5" y1="11.4" x2="14" y2="11.4" stroke="#8a6a00" stroke-width="1.5" stroke-linecap="round"/></svg>`;}
   _cmtBtn(lv,zmk,aid){const n=this.actCmts(lv,zmk,aid).filter(c=>!c.done).length;return `<span class="actcmt-btn" data-a="${aid}" title="Comments" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;justify-content:center;margin-left:8px">${this._cmtBubbleSVG()}${n?`<span style="position:absolute;top:-8px;right:-8px;background:#e5343a;color:#fff;font-size:11px;font-weight:800;min-width:17px;height:17px;line-height:17px;text-align:center;border-radius:9px;box-shadow:0 0 0 2px var(--panel,#fff);padding:0 3px">${n}</span>`:''}</span>`;}
-  _cmtPanel(lv,zmk,aid){if(this._cmtOpen!==lv+'||'+zmk+'||'+aid)return '';const all=this.actCmts(lv,zmk,aid);const admin=this.rwsIsAdmin();const canAdd=admin||this.rwsCanComment(lv,zmk);   // 评论需要 CMT; 范围跟随授权区域(只勾 CMT=全区)
+  _cmtPanel(lv,zmk,aid){if(this._cmtOpen!==lv+'||'+zmk+'||'+aid)return '';const all=this.actCmts(lv,zmk,aid);const admin=this.rwsIsAdmin();const canAdd=admin||this.rwsCanComment(lv,zmk);   // 写评论需要 CMT; 范围跟随授权区域(只勾 CMT=全区)
+    const canResolve=admin||canAdd||this.rwsScopeOk(lv,zmk);   // 勾"完成"放宽: 本区的编辑人(现场做工的)也能标完成, 不必是评论人
     const open=all.filter(c=>!c.done), done=all.filter(c=>c.done);
     const showDone=(this._cmtShowDone===undefined)?admin:!!this._cmtShowDone;   /* admin 默认展开已 done 的评论, 可再折叠 */
-    /* 未处理评论: canAdd(admin+CMT)可勾 done(✓); 已处理评论的 reopen(↩)只有 admin 能看/点; 删除(✕)仅 admin */
-    const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${res?(admin?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen (admin)">↩</span>':''):(canAdd?' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done">✓</span>':'')}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete (admin)">✕</span>':''}</span></div>`;
+    /* 未处理评论: canResolve(admin+CMT+本区编辑人)可勾 done(✓); 已处理的 reopen(↩)只有 admin; 删除(✕)仅 admin */
+    const row=(c,res)=>`<div class="cmtrow${res?' cmt-done':''}"><span class="cmt-t">${this.esc(c.t)}</span><span class="cmt-m">— ${this.esc(c.by||'')} · ${String(c.ts||'').slice(0,10)}${res?(admin?' <span class="cmt-unresolve" data-k="'+this.esc(c.k)+'" title="Reopen (admin)">↩</span>':''):(canResolve?' <span class="cmt-resolve" data-k="'+this.esc(c.k)+'" title="Mark done">✓</span>':'')}${admin?' <span class="cmt-del" data-k="'+this.esc(c.k)+'" title="Delete (admin)">✕</span>':''}</span></div>`;
     const list=open.length?open.map(c=>row(c,false)).join(''):'<div class="empty" style="padding:4px 2px">no open comments</div>';
     const dt=done.length?`<div class="cmt-doneToggle" style="font-size:10px;color:var(--faint);cursor:pointer;margin-top:5px">${showDone?'▾':'▸'} ${done.length} done</div>`:'';
     const dl=(showDone&&done.length)?done.map(c=>row(c,true)).join(''):'';
@@ -267,6 +268,37 @@ class Component extends DCLogic {
     ov.querySelector('#__im_ok').addEventListener('click',submit);
     ov.addEventListener('keydown',e=>{if(e.key==='Enter')submit();if(e.key==='Escape')close();});
   }
+  /* 内置提示(替代浏览器 alert): 顶部居中小弹窗, 点一下或几秒后自动消失; 支持多行 */
+  _toast(msg,ms){
+    let host=document.getElementById('__toastHost');
+    if(!host){host=document.createElement('div');host.id='__toastHost';host.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2147483600;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none';document.body.appendChild(host);}
+    const t=document.createElement('div');
+    t.style.cssText='pointer-events:auto;cursor:pointer;max-width:min(460px,92vw);background:var(--panel,#fff);color:var(--txt,#1a1a1a);border:1px solid var(--line,#d9dee6);border-left:4px solid var(--accent,#4a90e2);border-radius:10px;padding:11px 15px;box-shadow:0 10px 34px rgba(0,0,0,.28);font-size:13px;line-height:1.5;white-space:pre-line;font-family:inherit';
+    t.textContent=String(msg==null?'':msg);
+    host.appendChild(t);
+    const dur=ms||Math.min(9000,3200+String(msg||'').length*45);
+    const kill=()=>{t.style.transition='opacity .2s';t.style.opacity='0';setTimeout(()=>t.remove(),200);};
+    t.addEventListener('click',kill);
+    setTimeout(kill,dur);
+  }
+  /* 内置确认(替代浏览器 confirm): 回调式 —— _confirmModal(msg, onOk[, onCancel]) */
+  _confirmModal(msg,onOk,onCancel){
+    const old=document.getElementById('__confirmModal');if(old)old.remove();
+    const ov=document.createElement('div');ov.id='__confirmModal';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.45);z-index:2147483601;display:flex;align-items:center;justify-content:center';
+    ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:20px 22px;width:min(380px,92vw);box-shadow:0 18px 50px rgba(0,0,0,.35);font-size:13px">
+      <div style="font-size:13.5px;line-height:1.55;white-space:pre-line;margin-bottom:16px">${this.esc(String(msg==null?'':msg))}</div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button id="__cm_cancel" class="hbtn" style="padding:7px 14px">Cancel</button>
+        <button id="__cm_ok" class="hbtn" style="padding:7px 16px;background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700">OK</button>
+      </div></div>`;
+    document.body.appendChild(ov);
+    const close=()=>ov.remove();
+    ov.querySelector('#__cm_cancel').addEventListener('click',()=>{close();onCancel&&onCancel();});
+    ov.addEventListener('click',e=>{if(e.target===ov){close();onCancel&&onCancel();}});
+    ov.querySelector('#__cm_ok').addEventListener('click',()=>{close();onOk&&onOk();});
+    ov.addEventListener('keydown',e=>{if(e.key==='Escape'){close();onCancel&&onCancel();}});
+  }
   _actAddModal(z){
     const old=document.getElementById('__actAddModal');if(old)old.remove();
     const ov=document.createElement('div');ov.id='__actAddModal';
@@ -320,7 +352,7 @@ class Component extends DCLogic {
     ov.addEventListener('keydown',e=>{if(e.key==='Enter')submit();if(e.key==='Escape')close();});
   }
   addCustomAct(label,unit,phase){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can add activities.');return;}label=(label||'').trim();if(!label)return;const id='act_'+label.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,20)+'_'+Math.random().toString(36).slice(2,5);this._actDefs=this._actDefs||[];const def={id,label,unit:(unit||'').trim()};if(phase)def.phase=phase;this._actDefs.push(def);this.saveAct();rwsSyncKV('act_def',id,{label,unit:(unit||'').trim(),...(phase?{phase}:{})},null,null);this._actRerender(this._selZone());}
-  delCustomAct(id){if(!this.rwsIsAdmin())return;if(!confirm('Delete this custom activity everywhere?'))return;this._actDefs=(this._actDefs||[]).filter(d=>d.id!==id);this.saveAct();rwsSyncKV('act_def',id,null,null,null);this._actRerender(this._selZone());}
+  delCustomAct(id){if(!this.rwsIsAdmin())return;this._confirmModal('Delete this custom activity everywhere?',()=>{this._actDefs=(this._actDefs||[]).filter(d=>d.id!==id);this.saveAct();rwsSyncKV('act_def',id,null,null,null);this._actRerender(this._selZone());});}
   customCats(){return this._catAdd||(this._catAdd=[]);}
   customItemsFor(lv,zmk,type){return (this._elemAdd&&this._elemAdd[lv+'||'+zmk+'||'+type])||[];}
   saveCustom(){try{localStorage.setItem('rws_cat_add',JSON.stringify(this._catAdd||[]));localStorage.setItem('rws_elem_add',JSON.stringify(this._elemAdd||{}));}catch(e){}}
@@ -333,8 +365,8 @@ class Component extends DCLogic {
     const ids=this.customItemsFor(lv,zmk,code);if(!ids.length)return '';
     const rows=ids.map(id=>{const key=lv+'||'+zmk+'||'+code+'||'+id;return `<div class="idrow"><span class="id">${this.esc(id)}</span><span class="meta"></span>${this.elChip(key)}${this.elDateCtl(key)}${admin?`<span class="allbtn cdel" data-del="${this.esc(code+'||'+id)}" style="color:var(--crit);cursor:pointer;margin-left:6px" title="Delete item">\u2715</span>`:''}</div>`;}).join('');
     return `<div style="margin:4px 0 2px;border-left:2px solid color-mix(in srgb,var(--accent) 32%,transparent);padding-left:10px;border-radius:0 8px 8px 0">${rows}</div>`;}
-  delCustomCat(code){if(!this.rwsIsAdmin())return;if(!confirm('Delete this category and its items everywhere?'))return;this._catAdd=this.customCats().filter(c=>c.code!==code);Object.keys(this._elemAdd||{}).forEach(k=>{if(k.split('||')[2]===code)delete this._elemAdd[k];});this.saveCustom();rwsDelCat(code);this._actRerender(this._selZone());}
-  addCustomItem(lv,zmk,type,id){if(!this.rwsIsAdmin()){this.rwsDeny('Not allowed.');return;}id=(id||'').trim();if(!id||id.indexOf('||')>=0)return;const k=lv+'||'+zmk+'||'+type;const arr=this._elemAdd[k]||(this._elemAdd[k]=[]);if(arr.indexOf(id)>=0){alert('That ID already exists here.');return;}arr.push(id);this.saveCustom();rwsAddItem(lv+'||'+zmk+'||'+type+'||'+id,lv,zmk,type,id);this._actRerender(this._selZone());}
+  delCustomCat(code){if(!this.rwsIsAdmin())return;this._confirmModal('Delete this category and its items everywhere?',()=>{this._catAdd=this.customCats().filter(c=>c.code!==code);Object.keys(this._elemAdd||{}).forEach(k=>{if(k.split('||')[2]===code)delete this._elemAdd[k];});this.saveCustom();rwsDelCat(code);this._actRerender(this._selZone());});}
+  addCustomItem(lv,zmk,type,id){if(!this.rwsIsAdmin()){this.rwsDeny('Not allowed.');return;}id=(id||'').trim();if(!id||id.indexOf('||')>=0)return;const k=lv+'||'+zmk+'||'+type;const arr=this._elemAdd[k]||(this._elemAdd[k]=[]);if(arr.indexOf(id)>=0){this._toast('That ID already exists here.');return;}arr.push(id);this.saveCustom();rwsAddItem(lv+'||'+zmk+'||'+type+'||'+id,lv,zmk,type,id);this._actRerender(this._selZone());}
   delCustomItem(lv,zmk,type,id){if(!this.rwsIsAdmin())return;const k=lv+'||'+zmk+'||'+type;this._elemAdd[k]=(this._elemAdd[k]||[]).filter(x=>x!==id);if(!this._elemAdd[k].length)delete this._elemAdd[k];const ek=lv+'||'+zmk+'||'+type+'||'+id;delete this.elem[ek];this.saveElem();this.saveCustom();rwsDelItem(ek);this._actRerender(this._selZone());}
   _custCatSec(lv,z,ct,admin,nested){const zmk=z.mk||z.lid;const code=ct.code;const hidden=this.actHidden(lv,zmk,code);if(!admin&&hidden)return '';const ids=this.customItemsFor(lv,zmk,code);const nd=ids.filter(id=>this.elemStatus(lv+'||'+zmk+'||'+code+'||'+id)==='done').length;const rows=ids.length?ids.map(id=>{const key=lv+'||'+zmk+'||'+code+'||'+id;return `<div class="idrow"><span class="id">${this.esc(id)}</span><span class="meta"></span>${this.elChip(key)}${this.elDateCtl(key)}${admin?`<span class="allbtn cdel" data-del="${this.esc(code+'||'+id)}" style="color:var(--crit);cursor:pointer;margin-left:6px" title="Delete item">✕</span>`:''}</div>`;}).join(''):'<div class="empty">no items yet</div>';const vis=admin?`<input type="checkbox" class="catvis" data-a="${code}" ${hidden?'':'checked'} title="Show this category to site users" style="margin-right:6px">`:'';const add=admin?` · <span class="allbtn cadd" data-cat="${code}" style="color:var(--accent);cursor:pointer">+ add</span>`:'';const del=admin?` · <span class="allbtn cdelcat" data-cat="${code}" style="color:var(--crit);cursor:pointer">delete</span>`:'';return `<details class="sec ${(admin&&hidden)?'act-off':''}${nested?' elemnest':''}" data-sec="${code}"${nested?' style="margin:6px 0 2px;border-left:2px solid color-mix(in srgb,var(--accent) 32%,transparent);padding-left:10px;border-radius:0 8px 8px 0"':''}><summary class="t">${vis}${this.esc(ct.label)}${(admin&&hidden)?' <span class="hiddentag">hidden from users</span>':''} <span>${nd}/${ids.length} done${add}${del}</span></summary>${rows}</details>`;}
   _custSecHtml(lv,z,admin){let out=(this.customCats()||[]).filter(ct=>!this._catAct(ct)).map(ct=>this._custCatSec(lv,z,ct,admin,false)).join('');return out;}
@@ -509,7 +541,7 @@ class Component extends DCLogic {
   rwsHasScope(code){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return a.indexOf(code)>=0;}
   /* 评论权限: 必须有 CMT。范围跟随被授权的区域 —— 勾了区域就只能评论那些区; 只勾 CMT(没勾任何区)= 全区可评 */
   rwsCanComment(lv,zmk){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];if(a.indexOf('CMT')<0)return false;const AREAS=['EB','NB','MA','M28_OTHER'];const hasArea=AREAS.some(c=>a.indexOf(c)>=0);if(!hasArea)return true;return a.indexOf(this.zoneCat(lv,zmk))>=0;}
-  rwsDeny(msg){alert(msg||'You are not allowed to change that.');}
+  rwsDeny(msg){this._toast(msg||'You are not allowed to change that.');}
   rwsOnQueueChange(){
     const n=rwsQueueSize(); const b=this.root&&this.root.querySelector('#rwsQueueBadge'); if(!b||!this._rwsUser)return;
     b.style.display='';
@@ -619,25 +651,34 @@ class Component extends DCLogic {
     }catch(e){ console.warn('[rws] cloud state pull skipped (offline?)',e); }
     rwsQueueFlush();
     this.rwsMaybeDailyExport();
-    this.rwsStartCmtPoll();
+    this.rwsStartLivePoll();
   }
-  /* 评论近实时: 每 ~20s 从云端拉一次评论(只应用 act_cmt, 不动其它数据), 有变化且没在打字就刷新, 免得手动刷新才看到新评论 */
-  rwsStartCmtPoll(){
-    if(this._cmtPollId)return;
-    this._cmtPollId=setInterval(async()=>{
+  /* 实际层近实时同步: 每 ~15s 从云端拉一次"现场实际"数据 —— 实际完成量(act_done_m)、构件完成状态(elements)、
+     评论(act_cmt)。这三类以云端为准: 完成量/评论整份替换(可传播删除), 构件状态合并(保留台账种子)。
+     有变化且用户没在打字时才刷新, 避免打断编辑。计划量/日期等不在此列(仍以 CSV/手改为准)。 */
+  rwsStartLivePoll(){
+    if(this._livePollId)return;
+    const cmp=(a,b)=>JSON.stringify(a||{})!==JSON.stringify(b||{});
+    this._livePollId=setInterval(async()=>{
       try{
         const s=(typeof rwsGetSession==='function')&&rwsGetSession(); if(!s)return;
-        const st=await rwsGetState(s.token); if(!st||!st.act_cmt)return;
-        const before=JSON.stringify(this._actCmt||{});
-        this._actCmt={...(this._actCmt||{}),...st.act_cmt};
-        this.saveActCmt();
-        if(JSON.stringify(this._actCmt||{})!==before){
-          const ae=document.activeElement;
-          const typing=ae&&ae.classList&&ae.classList.contains('cmt-in')&&ae.value;
-          if(!typing&&this.selKey){const z=this._selZone&&this._selZone();if(z)this._actRerender(z);}
+        if(typeof rwsQueueSize==='function'&&rwsQueueSize()>0)return;   // 有待同步的先不拉, 免得把本地未传的回退
+        const ae=document.activeElement;
+        if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA')&&(ae.value!==''||ae.type==='date'))return;  // 正在编辑就跳过这轮
+        const st=await rwsGetState(s.token); if(!st)return;
+        let changed=false;
+        if(st.act_done_m && cmp(this._actDoneM,st.act_done_m)){this._actDoneM={...st.act_done_m};changed=true;}   // 完成量: 整份以云端为准(含删除)
+        if(st.act_cmt && cmp(this._actCmt,st.act_cmt)){this._actCmt={...st.act_cmt};changed=true;}                // 评论: 整份以云端为准(含删除)
+        if(st.elements){const merged={...(this.elem||{}),...st.elements};if(cmp(this.elem,merged)){this.elem=merged;changed=true;}}  // 构件状态: 合并
+        if(changed){
+          this.saveAct&&this.saveAct(); this.saveActCmt&&this.saveActCmt(); this.saveElem&&this.saveElem();
+          this.applyUpdates&&this.applyUpdates();
+          this.render&&this.render();
+          if(this.selKey){const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(z)this.selectZone(z);}
+          this.refreshUpdBadge&&this.refreshUpdBadge();
         }
       }catch(e){}
-    }, 20000);
+    }, 15000);
   }
   async rwsOpenChanges(){
     const modal=this.root.querySelector('#rwsChangesModal');
@@ -723,7 +764,7 @@ class Component extends DCLogic {
       }));
       body.querySelector('#rwsNuSave').addEventListener('click',async()=>{
         const username=body.querySelector('#rwsNuUser').value.trim();
-        if(!username){alert('username required');return;}
+        if(!username){this._toast('username required');return;}
         try{
           await rwsAdminUpsertUser({
             username, password:body.querySelector('#rwsNuPass').value,
@@ -733,7 +774,7 @@ class Component extends DCLogic {
             active:true
           });
           this.rwsRenderAdmin();
-        }catch(e){ alert('Could not save: '+e.message); }
+        }catch(e){ this._toast('Could not save: '+e.message); }
       });
     }catch(e){ body.innerHTML='<div class="empty">Could not load accounts: '+this.esc(e.message)+'</div>'; }
   }
@@ -1568,7 +1609,7 @@ class Component extends DCLogic {
     sb.querySelectorAll('[data-bulk-all]').forEach(el=>el.addEventListener('click',()=>this.setZoneElems(this.curLevel,z,el.dataset.bulkAll)));
     sb.querySelectorAll('.cnewcat-act').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const aid=el.dataset.a;const lab=el.dataset.lab||'status';this._inputModal({title:'Add to '+lab+' list',label:lab+' item ID / Area / Vol / Nos. etc',placeholder:'e.g. CX19-CY41',ok:'Add',onOk:(id)=>{const code=this._ensureActItemsCat(aid);this.addCustomItem(this.curLevel,z.mk||z.lid,code,id);}});}));
     sb.querySelectorAll('.cadd').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();this._inputModal({title:'Add item',label:'Item ID / mark',placeholder:'e.g. W-1',ok:'Add',onOk:(id)=>this.addCustomItem(this.curLevel,z.mk||z.lid,el.dataset.cat,id)});}));
-    sb.querySelectorAll('.cdel').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const q=el.dataset.del.split('||');if(confirm('Delete '+q[1]+'?'))this.delCustomItem(this.curLevel,z.mk||z.lid,q[0],q[1]);}));
+    sb.querySelectorAll('.cdel').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const q=el.dataset.del.split('||');this._confirmModal('Delete '+q[1]+'?',()=>this.delCustomItem(this.curLevel,z.mk||z.lid,q[0],q[1]));}));
     sb.querySelectorAll('.cdelcat').forEach(el=>el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();this.delCustomCat(el.dataset.cat);}));
     sb.querySelectorAll('.catvis').forEach(el=>el.addEventListener('click',ev=>ev.stopPropagation()));
     sb.querySelectorAll('.catvis').forEach(el=>el.addEventListener('change',()=>this.setActVis(this.curLevel,z.mk||z.lid,el.dataset.a,el.checked,z)));
@@ -1929,10 +1970,11 @@ class Component extends DCLogic {
     this.root.querySelector('#loadLock').addEventListener('click',()=>lf.click());
     lf.addEventListener('change',e=>{const f=e.target.files[0];if(f)this.loadLock(f);lf.value='';});
     const _cc=this.root.querySelector('#rwsClearCache'); if(_cc) _cc.addEventListener('click',()=>{
-      if(!confirm('Clear local cache?\n\nThis removes stale local data (plan/actual quantities, overrides, statuses) from this browser, then reloads.\n\n• Cloud-saved data is NOT affected\n• Your login is NOT affected\n• Latest data is reloaded after refresh')) return;
-      var keys=['rws_zp_ov','rws_zp_plan_ov','rws_qty_ov','rws_crit_ov','rws_edited_keys','rws_elem_status','rws_zone_updates','rws_act_total','rws_act_plan','rws_act_donem','rws_act_hidden','rws_act_defs','rws_act_date','rws_act_cmt','rws_col_month','rws_zdate','rws_elem_date','rws_cat_add','rws_elem_add','rws_last_daily_export','rws_offline_queue'];
-      keys.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
-      alert('Local cache cleared — reloading.'); location.reload();
+      this._confirmModal('Clear local cache?\n\nThis removes stale local data (plan/actual quantities, overrides, statuses) from this browser, then reloads.\n\n• Cloud-saved data is NOT affected\n• Your login is NOT affected\n• Latest data is reloaded after refresh',()=>{
+        var keys=['rws_zp_ov','rws_zp_plan_ov','rws_qty_ov','rws_crit_ov','rws_edited_keys','rws_elem_status','rws_zone_updates','rws_act_total','rws_act_plan','rws_act_donem','rws_act_hidden','rws_act_defs','rws_act_date','rws_act_cmt','rws_col_month','rws_zdate','rws_elem_date','rws_cat_add','rws_elem_add','rws_last_daily_export','rws_offline_queue'];
+        keys.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+        location.reload();
+      });
     });
     this.root.querySelector('#mExport').addEventListener('click',()=>this.exportExcel());
     this.root.querySelector('#mClose').addEventListener('click',()=>this.root.querySelector('#modal').classList.remove('open'));
@@ -2079,7 +2121,7 @@ class Component extends DCLogic {
     return out;
   }
   _downloadJson(obj,name){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},400);}
-  async exportFullJson(){if(!this.rwsIsAdmin()){this.rwsDeny&&this.rwsDeny('Only admin can export the full JSON.');return;}const btn=this.root.querySelector('#exportJson');if(btn)btn.textContent='⏳ Building…';try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_full_'+new Date().toISOString().slice(0,10)+'.json');}catch(e){alert('Export failed: '+e.message);}finally{if(btn)btn.textContent='⬇ Full JSON';}}
+  async exportFullJson(){if(!this.rwsIsAdmin()){this.rwsDeny&&this.rwsDeny('Only admin can export the full JSON.');return;}const btn=this.root.querySelector('#exportJson');if(btn)btn.textContent='⏳ Building…';try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_full_'+new Date().toISOString().slice(0,10)+'.json');}catch(e){this._toast('Export failed: '+e.message);}finally{if(btn)btn.textContent='⬇ Full JSON';}}
   async rwsMaybeDailyExport(){if(!this.rwsIsAdmin())return;const today=new Date().toISOString().slice(0,10);let last='';try{last=localStorage.getItem('rws_last_daily_export')||'';}catch(e){}if(last===today)return;try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_daily_'+today+'.json');localStorage.setItem('rws_last_daily_export',today);}catch(e){console.warn('[rws] daily export failed',e);}}
   snapshot(){return {v:2,project:'RWS P1 CJ',savedAt:new Date().toISOString(),elem:this.elem,elemDate:this._elemDate,updates:this.updates,zpOv:this._zpOv,crit:this._critOv,actTotal:this._actTotal,actPlan:this._actPlan,actDoneM:this._actDoneM,actHidden:this._actHidden,actDefs:this._actDefs,catAdd:this._catAdd,elemAdd:this._elemAdd,editedKeys:this._editedKeys,actDate:this._actDate,colMonth:this._colMonth,actCmt:this._actCmt};}
   saveLock(){
@@ -2148,13 +2190,13 @@ class Component extends DCLogic {
           // CSV fallback
           txt.split(/\r?\n/).forEach(line=>{const c=line.split(',').map(x=>x.replace(/^"|"$/g,'').trim());if(c.length>=5&&/elementid/i.test(line)===false&&c[3]){const idp=this.labelMap[c[0]+'||'+c[1]];if(!idp)return;const st=codeOf(c[4]);const key=c[0]+'||'+idp+'||'+c[2]+'||'+c[3];if(st!=='todo'){this.elem[key]=st;elemN++;}}});
         }
-        if(!elemN){alert('No recognisable element detail found in the file (needs an Element Detail table).');return;}
+        if(!elemN){this._toast('No recognisable element detail found in the file (needs an Element Detail table).');return;}
       }
       this.saveElem();this.saveUpdatesStore();if(this.saveAct)this.saveAct();if(this.saveElemDate)this.saveElemDate();try{localStorage.setItem('rws_zp_ov',JSON.stringify(this._zpOv||{}));localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv||{}));localStorage.setItem('rws_qty_ov',JSON.stringify(this._qtyOv||{}));}catch(e){}if(this.zpApplyOv)this.zpApplyOv();if(this.applyQtyOv)this.applyQtyOv();if(this.applyCritOv)this.applyCritOv();this.applyUpdates();
       this.buildRail();this.buildTimeline();this.render();this.refreshUpdBadge();
       if(this.selKey){const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(z)this.selectZone(z);}
-      alert('Imported ✓\n• Plan (monthly) entries: '+planN+'\n• Actual-done entries: '+actN+'\n• Critical marks: '+critN+'\n• Element statuses now done: '+this.doneCount()+'\nSaved. Open a zone and switch months to see the Plan values.');
-    }catch(err){alert('Could not parse file: '+err.message);}};
+      this._toast('Imported ✓\n• Plan (monthly) entries: '+planN+'\n• Actual-done entries: '+actN+'\n• Critical marks: '+critN+'\n• Element statuses now done: '+this.doneCount()+'\nSaved. Open a zone and switch months to see the Plan values.');
+    }catch(err){this._toast('Could not parse file: '+err.message);}};
     r.readAsText(file);
   }
 }
