@@ -1440,7 +1440,7 @@ class Component extends DCLogic {
     if(this._inputModal)this._inputModal({title:'Staircase 名称 / name',label:'编号(按名字自动匹配数据, 如 P1-ST-01B)',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
   _liftCancel(){this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _saveLifts(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','lifts',this._appCfg.lifts||{},null,null);}
-  _delLift(lv,idx){this._confirmModal('删除这个 Lift?',()=>{const arr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
+  _delLift(lv,idx){this._confirmModal('删除这个 Staircase?',()=>{const arr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
   /* 画完形状时: 从所在分区的现有 lift/stair/core 里选一条挂到这个形状上(链接) */
   _pickLinkModal(lv,zmk,zoneLabel,onPick,onFree){
     const z=((this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===zmk);
@@ -1469,10 +1469,13 @@ class Component extends DCLogic {
     const g=(typeof window!=='undefined'&&window.CW_GROUPS)?window.CW_GROUPS[name]:null;
     if(g){(g.lifts||[]).forEach(id=>add('lift',id));(g.stairs||[]).forEach(id=>add('stair',id));(g.cores||[]).forEach(id=>add('core',id));}
     ['core','lift','stair'].forEach(type=>{const arr=type==='core'?z.cores:type==='lift'?z.lifts:z.stairs;(arr||[]).forEach(x=>{const id=(typeof x==='string')?x:x.id;if(id===name)add(type,id);});});
+    /* 没有 CW 编号的核心筒: 形状取分区名 → 挂上这个分区全部 lift + stair */
+    const norm=s=>String(s||'').replace(/\s+/g,'').toUpperCase();
+    if(norm(name)===norm(z.label)){(z.lifts||[]).forEach(x=>add('lift',(typeof x==='string')?x:x.id));(z.stairs||[]).forEach(x=>add('stair',(typeof x==='string')?x:x.id));}
     return out;}
   _shapeLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];return this._autoLinks(w,lv);}
   _shapeLinkColor(w,baseFill,baseStroke,lv){const ls=this._shapeLinks(w,lv);if(!ls.length)return[baseFill,baseStroke];const sts=ls.map(l=>this.elemStatus(l.lv+'||'+l.zmk+'||'+l.type+'||'+l.id));if(sts.every(s=>s==='done'))return['#35c08e','#218a5c'];if(sts.some(s=>s==='done'||s==='wip'))return['#e2b45c','#b8801f'];return[baseFill,baseStroke];}
-  _linksFloorRange(w,lv){const ls=this._shapeLinks(w,lv);let lo=null,hi=null;ls.forEach(l=>{const r=this._linkFloorRange(l);if(r){lo=(lo==null?r[0]:Math.min(lo,r[0]));hi=(hi==null?r[1]:Math.max(hi,r[1]));}});return (lo==null)?null:[lo,hi];}
+  _linksFloorRange(w,lv){const name=(w&&w.id||'').trim();const g=(name&&typeof window!=='undefined'&&window.CW_GROUPS)?window.CW_GROUPS[name]:null;if(g&&g.f&&g.t){const a=this._floorOrd(g.f),b=this._floorOrd(g.t);if(a!=null&&b!=null)return [Math.min(a,b),Math.max(a,b)];}const ls=this._shapeLinks(w,lv);let lo=null,hi=null;ls.forEach(l=>{const r=this._linkFloorRange(l);if(r){lo=(lo==null?r[0]:Math.min(lo,r[0]));hi=(hi==null?r[1]:Math.max(hi,r[1]));}});return (lo==null)?null:[lo,hi];}
   _openShape(w,lv){const ls=this._shapeLinks(w,lv);if(!ls.length){this._toast&&this._toast('名字 "'+this._shapeLabel(w)+'" 没对上数据 / no match');return;}if(ls.length===1){this._openLink(ls[0]);return;}
     const old=document.getElementById('__shapeOpen');if(old)old.remove();const ov=document.createElement('div');ov.id='__shapeOpen';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.4);z-index:2147483601;display:flex;align-items:center;justify-content:center';
     const rows=ls.map((l,i)=>`<div class="__so" data-i="${i}" style="cursor:pointer;padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:5px;font-size:12px"><b>${this.esc(l.id)}</b> <span style="color:var(--faint);font-size:10px">${l.type}</span></div>`).join('');
@@ -1489,10 +1492,11 @@ class Component extends DCLogic {
   _relinkShape(kind,idx,srcLv){const lv=srcLv||this.curLevel;const arr=this._shapeArr(kind,lv);const w=arr[idx];if(!w)return;const zmk=this._shapeZmk(w,lv);const z=((this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===zmk);const zoneLabel=z?z.label:(w.zone||'');const saveFn=()=>{if(kind==='core')this._saveCoreWalls();else this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
     this._pickLinkModal(lv,zmk,zoneLabel,(it)=>{w.link={lv,zmk,type:it.type,id:it.id};w.id=it.id;saveFn();},()=>{if(this._inputModal)this._inputModal({title:'名称 / name',label:'编号',placeholder:w.id||'',ok:'保存',onOk:(v)=>{w.id=(v||'').trim()||w.id;delete w.link;saveFn();}});});}
   _shapeMenu(kind,idx,srcLv){const lv=srcLv||this.curLevel;const arr=this._shapeArr(kind,lv);const w=arr[idx];if(!w)return;const old=document.getElementById('__shapeMenu');if(old)old.remove();const ov=document.createElement('div');ov.id='__shapeMenu';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.4);z-index:2147483601;display:flex;align-items:center;justify-content:center';
-    ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:16px 18px;width:min(300px,90vw);box-shadow:0 18px 50px rgba(0,0,0,.35)"><div style="font-weight:800;font-size:13px;margin-bottom:12px">${this.esc(w.link?w.link.id:w.id)} · ${kind==='core'?'Core Wall':'Lift'}</div><div style="display:flex;flex-direction:column;gap:8px"><button class="hbtn" id="__sm_link" style="padding:8px">${w.link?'重新链接 / 换一条':'链接到数据'}</button><button class="hbtn" id="__sm_del" style="padding:8px;color:var(--crit)">删除</button><button class="hbtn" id="__sm_cancel" style="padding:8px">取消</button></div></div>`;
+    const _nlk=this._shapeLinks(w,lv).length;
+    ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:16px 18px;width:min(300px,90vw);box-shadow:0 18px 50px rgba(0,0,0,.35)"><div style="font-weight:800;font-size:13px;margin-bottom:4px">${this.esc(this._shapeLabel(w))} · ${kind==='core'?'Core Wall':'Staircase'}</div><div style="font-size:10.5px;color:var(--faint);margin-bottom:12px">${_nlk?('按名字匹配到 '+_nlk+' 项数据'):'名字没对上数据 — 改成正确编号即可自动匹配'}</div><div style="display:flex;flex-direction:column;gap:8px"><button class="hbtn" id="__sm_ren" style="padding:8px">改名 / rename</button><button class="hbtn" id="__sm_del" style="padding:8px;color:var(--crit)">删除</button><button class="hbtn" id="__sm_cancel" style="padding:8px">取消</button></div></div>`;
     document.body.appendChild(ov);const close=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)close();});
     ov.querySelector('#__sm_cancel').addEventListener('click',close);
-    ov.querySelector('#__sm_link').addEventListener('click',()=>{close();this._relinkShape(kind,idx,lv);});
+    ov.querySelector('#__sm_ren').addEventListener('click',()=>{close();if(this._inputModal)this._inputModal({title:'改名 / rename',label:'编号(按名字自动匹配数据)',placeholder:w.id||'',ok:'保存',onOk:(v)=>{w.id=(v||'').trim()||w.id;delete w.link;delete w.links;if(kind==='core')this._saveCoreWalls();else this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});});
     ov.querySelector('#__sm_del').addEventListener('click',()=>{close();if(kind==='core')this._delCoreWall(lv,idx);else this._delLift(lv,idx);});}
   _openLink(link){if(!link)return;const lv=link.lv;if(this.curLevel!==lv){this.curLevel=lv;this._applyOvlForLevel&&this._applyOvlForLevel(lv);this.syncRail&&this.syncRail();this.buildMetrics&&this.buildMetrics();this.render();}
     const z=((this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===link.zmk);if(!z)return;this.selKey=this.zid(z);this.selectZone(z);this.paintSel&&this.paintSel();
@@ -2168,7 +2172,7 @@ class Component extends DCLogic {
     { const _hasCW=this._appCfg&&this._appCfg.coreWalls&&Object.values(this._appCfg.coreWalls).some(a=>a&&a.length);
       const _hasLF=this._appCfg&&this._appCfg.lifts&&Object.values(this._appCfg.lifts).some(a=>a&&a.length);
       if(_hasCW) mkToggle(this.showCoreWalls!==false,`<span style="width:10px;height:10px;background:#d98a2a;display:inline-block;border-radius:2px"></span>Core walls`,()=>{this.showCoreWalls=(this.showCoreWalls===false);this.buildMetrics();this.render();});
-      if(_hasLF) mkToggle(this.showLifts!==false,`<span style="width:10px;height:10px;background:#2a6bd6;display:inline-block;border-radius:2px"></span>Lifts`,()=>{this.showLifts=(this.showLifts===false);this.buildMetrics();this.render();});
+      if(_hasLF) mkToggle(this.showLifts!==false,`<span style="width:10px;height:10px;background:#2a6bd6;display:inline-block;border-radius:2px"></span>Staircase`,()=>{this.showLifts=(this.showLifts===false);this.buildMetrics();this.render();});
     }
     this.refreshSubzPanel();
   }
