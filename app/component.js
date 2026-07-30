@@ -1104,11 +1104,12 @@ class Component extends DCLogic {
     }
     s+=_colHtml;   /* 柱子放到最后 → 浮在 Marine 子区图层之上, 柱名可见、可点选 */
     this.svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);
-    const _u=this._curUnderlay(); let _uHtml='';
-    if(_u&&_u.src){const cx=(_u.x+_u.w/2).toFixed(1),cy=(_u.y+_u.h/2).toFixed(1);_uHtml=`<image class="underlayimg" href="${_u.src}" x="${_u.x.toFixed(1)}" y="${_u.y.toFixed(1)}" width="${_u.w.toFixed(1)}" height="${_u.h.toFixed(1)}" opacity="${_u.op||0.5}" transform="rotate(${_u.rot||0} ${cx} ${cy})" preserveAspectRatio="none" style="pointer-events:${this._underlayAdjust?'auto':'none'};cursor:${this._underlayAdjust?'move':'default'}"/>`;}
+    const _u=this._curUnderlay(); let _uHtml=''; const _ulDrag=this._underlayAdjust&&!this._ulAligning;
+    if(_u&&_u.src){const cx=(_u.x+_u.w/2).toFixed(1),cy=(_u.y+_u.h/2).toFixed(1);_uHtml=`<image class="underlayimg" href="${_u.src}" x="${_u.x.toFixed(1)}" y="${_u.y.toFixed(1)}" width="${_u.w.toFixed(1)}" height="${_u.h.toFixed(1)}" opacity="${_u.op||0.5}" transform="rotate(${_u.rot||0} ${cx} ${cy})" preserveAspectRatio="none" style="pointer-events:${_ulDrag?'auto':'none'};cursor:${_ulDrag?'move':'default'}"/>`;}
+    if(this._ulAligning&&this._ulAlignPts){this._ulAlignPts.forEach((pp,i)=>{const col=(i%2===0)?'#c8102e':'#1d4ed8';_uHtml+=`<circle cx="${pp[0].toFixed(1)}" cy="${pp[1].toFixed(1)}" r="520" fill="${col}" stroke="#fff" stroke-width="150" style="pointer-events:none"/>`;});}
     this.svg.innerHTML=_uHtml+s;   /* 底图垫在最底层 */
     this.colLOD();
-    if(this._underlayAdjust){const im=this.svg.querySelector('.underlayimg');if(im)im.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const u=this._curUnderlay();if(!u)return;const r=this.svg.getBoundingClientRect();const sx=this.vb.w/r.width,sy=this.vb.h/r.height;let lx=ev.clientX,ly=ev.clientY;const mv=e=>{u.x+=(e.clientX-lx)*sx;u.y+=(e.clientY-ly)*sy;lx=e.clientX;ly=e.clientY;const cx=(u.x+u.w/2).toFixed(1),cy=(u.y+u.h/2).toFixed(1);im.setAttribute('x',u.x.toFixed(1));im.setAttribute('y',u.y.toFixed(1));im.setAttribute('transform',`rotate(${u.rot||0} ${cx} ${cy})`);};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);this._saveUnderlay();};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
+    if(_ulDrag){const im=this.svg.querySelector('.underlayimg');if(im)im.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const u=this._curUnderlay();if(!u)return;const r=this.svg.getBoundingClientRect();const sx=this.vb.w/r.width,sy=this.vb.h/r.height;let lx=ev.clientX,ly=ev.clientY;const mv=e=>{u.x+=(e.clientX-lx)*sx;u.y+=(e.clientY-ly)*sy;lx=e.clientX;ly=e.clientY;const cx=(u.x+u.w/2).toFixed(1),cy=(u.y+u.h/2).toFixed(1);im.setAttribute('x',u.x.toFixed(1));im.setAttribute('y',u.y.toFixed(1));im.setAttribute('transform',`rotate(${u.rot||0} ${cx} ${cy})`);};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);this._saveUnderlay();};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
     this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{if(!this._drawingCore)return;ev.stopPropagation();this._delCoreWall(this.curLevel,+el.dataset.cwi);}));   // 画模式下点已画的墙 = 删除
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
@@ -1215,7 +1216,7 @@ class Component extends DCLogic {
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
     const _nHid=((this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[this.curLevel])||[]).length;
-    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span><span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
+    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
     p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.k;
@@ -1234,6 +1235,8 @@ class Component extends DCLogic {
       if(k==='__ulsc+'){this._ulAdjust('sc+');return;}
       if(k==='__ulrot-'){this._ulAdjust('rot-');return;}
       if(k==='__ulrot+'){this._ulAdjust('rot+');return;}
+      if(k==='__ulalign'){this.startUlAlign();return;}
+      if(k==='__ulaligncancel'){this._ulAlignCancel();return;}
       if(k==='__expcol'){this.exportPlacedCols();return;}
       if(k==='ZC')this.showSubZC=!this.showSubZC;else if(k==='C')this.showSubC=!this.showSubC;else if(k==='P')this.showSubP=!this.showSubP;
       this.buildMetrics();this.render();}));
@@ -1405,6 +1408,22 @@ class Component extends DCLogic {
     else if(kind==='sc+'){const nw=u.w*1.1,nh=u.h*1.1;u.x=cx-nw/2;u.y=cy-nh/2;u.w=nw;u.h=nh;}
     else if(kind==='rot-')u.rot=(u.rot||0)-5;else if(kind==='rot+')u.rot=(u.rot||0)+5;
     this._saveUnderlay();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  /* 两点对齐: 底图/地图各点两个对应点, 自动算缩放+旋转+平移(相似变换) */
+  _svgPt(clientX,clientY){try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());return [p.x,p.y];}catch(e){const r=this.svg.getBoundingClientRect();return [this.vb.x+(clientX-r.left)/r.width*this.vb.w,this.vb.y+(clientY-r.top)/r.height*this.vb.h];}}
+  startUlAlign(){if(!this._curUnderlay())return;this._ulAligning=true;this._underlayAdjust=true;this._ulAlignPts=[];this._toast('① 在底图上点一个能认出的特征点(交点/柱位等)');this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _ulAlignCancel(){this._ulAligning=false;this._ulAlignPts=[];this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _ulAlignClick(clientX,clientY){if(!this._ulAligning)return;this._ulAlignPts=this._ulAlignPts||[];this._ulAlignPts.push(this._svgPt(clientX,clientY));const n=this._ulAlignPts.length;
+    if(n===1)this._toast('② 在地图上点这个特征点"应该在"的位置');
+    else if(n===2)this._toast('③ 在底图上点第二个特征点');
+    else if(n===3)this._toast('④ 在地图上点第二个点应该在的位置');
+    else if(n>=4){const a=this._ulAlignPts;this._ulApplyAlign(a[0],a[1],a[2],a[3]);this._ulAligning=false;this._ulAlignPts=[];this._toast('对齐完成 ✓');this.refreshSubzPanel&&this.refreshSubzPanel();}
+    this.render();}
+  _ulApplyAlign(p1,q1,p2,q2){const u=this._curUnderlay();if(!u)return;
+    const dp=Math.hypot(p2[0]-p1[0],p2[1]-p1[1])||1;const s=Math.hypot(q2[0]-q1[0],q2[1]-q1[1])/dp;
+    const th=Math.atan2(q2[1]-q1[1],q2[0]-q1[0])-Math.atan2(p2[1]-p1[1],p2[0]-p1[0]);const cos=Math.cos(th),sin=Math.sin(th);
+    const C=[u.x+u.w/2,u.y+u.h/2],vx=C[0]-p1[0],vy=C[1]-p1[1];
+    const Cx=q1[0]+s*(cos*vx-sin*vy),Cy=q1[1]+s*(sin*vx+cos*vy);
+    u.w*=s;u.h*=s;u.rot=(u.rot||0)+th*180/Math.PI;u.x=Cx-u.w/2;u.y=Cy-u.h/2;this._saveUnderlay();this.render();}
   _placeColAt(clientX,clientY){
     if(!this._placingCol||!this.rwsIsAdmin())return;
     const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;
@@ -2057,7 +2076,7 @@ class Component extends DCLogic {
       svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);this.colLOD();},{passive:false});
     let dragging=false,last=null,downXY=null;
     svg.addEventListener('mousedown',ev=>{dragging=true;last=[ev.clientX,ev.clientY];downXY=[ev.clientX,ev.clientY];svg.classList.add('drag');});
-    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}});
+    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._ulAligning){this._ulAlignClick(ev.clientX,ev.clientY);}else if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}});
     window.addEventListener('mouseup',()=>{dragging=false;svg.classList.remove('drag');});
     window.addEventListener('mousemove',ev=>{if(!dragging)return;const r=svg.getBoundingClientRect();
       this.vb.x-=(ev.clientX-last[0])/r.width*this.vb.w;this.vb.y-=(ev.clientY-last[1])/r.height*this.vb.h;last=[ev.clientX,ev.clientY];
