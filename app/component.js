@@ -670,6 +670,7 @@ class Component extends DCLogic {
         if(st.act_done_m && cmp(this._actDoneM,st.act_done_m)){this._actDoneM={...st.act_done_m};changed=true;}   // 完成量: 整份以云端为准(含删除)
         if(st.act_cmt && cmp(this._actCmt,st.act_cmt)){this._actCmt={...st.act_cmt};changed=true;}                // 评论: 整份以云端为准(含删除)
         if(st.elements){const merged={...(this.elem||{}),...st.elements};if(cmp(this.elem,merged)){this.elem=merged;changed=true;}}  // 构件状态: 合并
+        if(st.crit && cmp(this._critOv,st.crit)){this._critOv={...st.crit};try{localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv));}catch(e){}this.applyCritOv&&this.applyCritOv();this._critPlanSet=null;changed=true;}  // critical: 整份以云端为准(含取消)
         if(changed){
           this.saveAct&&this.saveAct(); this.saveActCmt&&this.saveActCmt(); this.saveElem&&this.saveElem();
           this.applyUpdates&&this.applyUpdates();
