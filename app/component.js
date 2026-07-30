@@ -56,6 +56,7 @@ class Component extends DCLogic {
     try{this._catAdd=JSON.parse(localStorage.getItem('rws_cat_add')||'[]');}catch(e){this._catAdd=[];}
     try{this._elemAdd=JSON.parse(localStorage.getItem('rws_elem_add')||'{}');}catch(e){this._elemAdd={};}
     try{this._colAdd=JSON.parse(localStorage.getItem('rws_col_add')||'{}');}catch(e){this._colAdd={};}   // 管理员在地图上放置的柱子(Marine 等)
+    try{this._appCfg=JSON.parse(localStorage.getItem('rws_app_cfg')||'{}');}catch(e){this._appCfg={};}   // 全局设置(云端同步): 用户可见月份截止 userMonthCutoff 等
     this.loadUpdates();
     this.loadElem();
     this.deriveProgress();
@@ -217,7 +218,9 @@ class Component extends DCLogic {
   /* ---------- zone activities: per-month plan / actual (Total + Planned/Done by month) ---------- */
   actCurLabel(){const AB={January:'Jan',February:'Feb',March:'Mar',April:'Apr',May:'May',June:'Jun',July:'Jul',August:'Aug',September:'Sep',October:'Oct',November:'Nov',December:'Dec'};const p=((this.ZP&&this.ZP.current)||'July 2026').split(' ');return (AB[p[0]]||p[0])+"'"+String(p[1]||'2026').slice(2);}
   actDefaultMonth(){const c=this.actCurLabel();return this.ACT_MONTHS.indexOf(c)>=0?c:this.ACT_MONTHS[this.ACT_MONTHS.length-1];}
-  visMonths(){const M=this.ACT_MONTHS;if(this.rwsIsAdmin())return M;const i=M.indexOf("Aug'26");return i>=0?M.slice(0,i+1):M;}
+  userMonthCutoff(){return (this._appCfg&&this._appCfg.userMonthCutoff)||"Aug'26";}   /* 用户可见到哪个月(admin 可在后台改, 云端同步; 默认 Aug'26) */
+  visMonths(){const M=this.ACT_MONTHS;if(this.rwsIsAdmin())return M;const i=M.indexOf(this.userMonthCutoff());return i>=0?M.slice(0,i+1):M;}
+  setUserMonthCutoff(m){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can change this.');return;}if(this.ACT_MONTHS.indexOf(m)<0)return;this._appCfg=this._appCfg||{};this._appCfg.userMonthCutoff=m;try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','userMonthCutoff',m,null,null);this.render();}
   actDefaultMonthVis(){const dm=this.actDefaultMonth(),VM=this.visMonths();return VM.indexOf(dm)>=0?dm:VM[VM.length-1];}
   actTotal(lv,zmk,a,def){const v=(this._actTotal||{})[lv+'||'+zmk+'||'+a];return v==null?def:v;}
   /* Auto excavation volume — NEW BASEMENT only: B1 area×8.5m, B2 area×6m */
@@ -642,6 +645,7 @@ class Component extends DCLogic {
       if(state.act_date){ const s=state.act_date;this._actDate=this._actDate||{};Object.keys(s).forEach(k=>{if(this.isEdited('act_date',k))this._actDate[k]=s[k];}); try{localStorage.setItem('rws_act_date',JSON.stringify(this._actDate));}catch(e){} }
       if(state.col_month){ const s=state.col_month;this._colMonth=this._colMonth||{};Object.keys(s).forEach(k=>{if(this.isEdited('col_month',k))this._colMonth[k]=s[k];}); try{localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth));}catch(e){} }
       if(state.act_cmt){ this._actCmt={...(this._actCmt||{}),...state.act_cmt}; this.saveActCmt(); }
+      if(state.settings){ this._appCfg={...(this._appCfg||{}),...state.settings}; try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){} }   // 全局设置(用户可见月份等)
       if(Array.isArray(state.custom_cats)){const seen={};this._catAdd=[];state.custom_cats.forEach(c=>{if(c&&c.code&&!seen[c.code]){seen[c.code]=1;this._catAdd.push({code:c.code,label:c.label});}});}
       if(Array.isArray(state.custom_items)){this._elemAdd={};state.custom_items.forEach(it=>{if(!it)return;const k=it.level+'||'+it.zone_mk+'||'+it.type;(this._elemAdd[k]=this._elemAdd[k]||[]).push(it.elem_id);});}
       if(state.custom_cats||state.custom_items)this.saveCustom();
@@ -683,6 +687,7 @@ class Component extends DCLogic {
         if(st.act_cmt && cmp(this._actCmt,st.act_cmt)){this._actCmt={...st.act_cmt};changed=true;}                // 评论: 整份以云端为准(含删除)
         if(st.elements){const merged={...(this.elem||{}),...st.elements};if(cmp(this.elem,merged)){this.elem=merged;changed=true;}}  // 构件状态: 合并
         if(st.crit && cmp(this._critOv,st.crit)){this._critOv={...st.crit};try{localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv));}catch(e){}this.applyCritOv&&this.applyCritOv();this._critPlanSet=null;changed=true;}  // critical: 整份以云端为准(含取消)
+        if(st.settings && cmp(this._appCfg,st.settings)){this._appCfg={...st.settings};try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}changed=true;}  // 全局设置(用户可见月份): 实时同步
         if(st.slab_qty && cmp(this._zpOv,st.slab_qty)){this._zpOv={...st.slab_qty};try{localStorage.setItem('rws_zp_ov',JSON.stringify(this._zpOv));}catch(e){}this.zpApplyOv&&this.zpApplyOv();changed=true;}  // slab 实际量: 整份以云端为准
         if(st.elem_date){const merged={...(this._elemDate||{}),...st.elem_date};if(cmp(this._elemDate,merged)){this._elemDate=merged;this.saveElemDate&&this.saveElemDate();changed=true;}}  // 构件完成日期: 合并
         if(st.zone_updates && st.zone_updates.length){   // 进度更新记录(Save update): 追加日志, 合并去重(按 ts+pct)
@@ -769,10 +774,18 @@ class Component extends DCLogic {
         <button class="hbtn primary" id="rwsNuSave">Save account</button>
         <div style="font-size:9.5px;color:var(--faint);margin-top:6px">A "user" account can change status and actual completed quantities only inside the areas checked above. The M28 board: any signed-in user can view; editing reuses these areas (Existing/New Basement unlock M28's EB/NB pages, "M28 · L2/L3/L4…" covers the rest); commenting needs the "Comment" box: with area boxes ticked it comments only in those areas; with Comment ticked and no area, it comments in every area (main map + M28). Admins can edit everything (plans, totals) and manage accounts.</div>
       </div>
+      <div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
+        <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">User visibility · months</div>
+        <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--txt)">Users can see months up to
+          <select id="rwsMonthCutoff" style="padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt);font-weight:700">${this.ACT_MONTHS.map(m=>`<option value="${this.esc(m)}" ${m===this.userMonthCutoff()?'selected':''}>${this.esc(m)}</option>`).join('')}</select>
+        </label>
+        <div style="font-size:9.5px;color:var(--faint);margin-top:6px">Non-admin users can only view / enter up to this month (admins always see every month). Change it here and it syncs to everyone — no code edit needed.</div>
+      </div>
       <table class="reg"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Areas</th><th>Active</th></tr></thead><tbody>
       ${users.map(u=>{const areas=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return `<tr class="rwsUserRow" data-u="${this.esc(u.username)}" style="cursor:pointer"><td>${this.esc(u.username)}</td><td>${this.esc(u.display_name||'')}</td><td>${this.esc(u.role)}</td><td>${u.role==='admin'?'<span style=\"color:var(--faint)\">(all)</span>':this.esc(areas.map(c=>AL[c]||c).join(', ')||'—')}</td><td>${u.active?'yes':'no'}</td></tr>`;}).join('')}
       </tbody></table>
       <div style="font-size:9.5px;color:var(--faint);margin-top:6px">Tip: click a row to load that account into the form (change password or areas, then Save).</div>`;
+      const _mc=body.querySelector('#rwsMonthCutoff'); if(_mc)_mc.addEventListener('change',()=>this.setUserMonthCutoff(_mc.value));
       const collectAreas=()=>[...body.querySelectorAll('.rwsNuArea:checked')].map(x=>x.value);
       body.querySelectorAll('.rwsUserRow').forEach(tr=>tr.addEventListener('click',()=>{
         const u=users.find(x=>x.username===tr.dataset.u); if(!u)return;
