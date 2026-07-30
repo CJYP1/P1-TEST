@@ -152,7 +152,9 @@ class Component extends DCLogic {
         if(!z.cols.some(x=>((typeof x==='string')?x:x.id)===c.id)) z.cols.push({id:c.id,sz:c.sz||'',c:!!c.crit});});
     });
   }
-  colHtmlFor(lv,z){const zoneCrit=!!z.crit;const meta=x=>this.esc(x.sz||'')+((zoneCrit||x.c)?' · crit':''),cf=x=>zoneCrit||x.c;
+  colHtmlFor(lv,z){const zoneCrit=!!z.crit;
+    const _isC=x=>{const id=(typeof x==='string')?x:(x&&x.id);return zoneCrit||!!(x&&x.c)||!!(this._marineCritSet&&this._marineCritSet.has(String(id||'').trim().toUpperCase()));};   /* critical = 整区关键 / 台账标的 / marine-col-map 标的 —— 与地图红色一致 */
+    const meta=x=>this.esc(x.sz||'')+(_isC(x)?' · crit':''),cf=x=>_isC(x);
     const cols=z.cols||[];
     /* Always show the full column list (regardless of per-column target month) — every column
        is outlined/highlighted (via critFn) when its own flag is set OR when the whole zone is a
