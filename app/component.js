@@ -57,6 +57,7 @@ class Component extends DCLogic {
     try{this._elemAdd=JSON.parse(localStorage.getItem('rws_elem_add')||'{}');}catch(e){this._elemAdd={};}
     try{this._colAdd=JSON.parse(localStorage.getItem('rws_col_add')||'{}');}catch(e){this._colAdd={};}   // 管理员在地图上放置的柱子(Marine 等)
     try{this._appCfg=JSON.parse(localStorage.getItem('rws_app_cfg')||'{}');}catch(e){this._appCfg={};}   // 全局设置(云端同步): 用户可见月份截止 userMonthCutoff 等
+    try{this._underlay=JSON.parse(localStorage.getItem('rws_underlay')||'{}');}catch(e){this._underlay={};}   // 描图底图(本地, 不同步): 每层一张图 {src,x,y,w,h,rot,op}
     this.loadUpdates();
     this.loadElem();
     this.deriveProgress();
@@ -1089,10 +1090,26 @@ class Component extends DCLogic {
      _dr(_subL.ZC,'subZC','#1d4ed8',false,this.showSubZC);
      _dr(_subL.C,'subC','#b35a1f',false,this.showSubC);
      _dr(_subL.P,'subP','#7c3aed',true,this.showSubP);}
+    /* Core Wall 多边形(admin 画的) + 正在画的临时轮廓 */
+    { const cwArr=(this._appCfg&&this._appCfg.coreWalls&&this._appCfg.coreWalls[this.curLevel])||[];
+      cwArr.forEach((w,wi)=>{ if(!w.pts||w.pts.length<3)return;
+        const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
+        const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
+        s+=`<polygon class="corewall" data-cwi="${wi}" points="${pp}" fill="#d98a2a" fill-opacity="0.22" stroke="#b35a1f" stroke-width="520" style="cursor:${this._drawingCore?'pointer':'default'}"/>`;
+        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="#8a4513" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(w.id)}</text>`;});
+      if(this._drawingCore&&this._coreBuf&&this._coreBuf.length){
+        const bp=this._coreBuf.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
+        s+=`<polyline points="${bp}" fill="#c8102e" fill-opacity="0.1" stroke="#c8102e" stroke-width="420" stroke-dasharray="900,500" style="pointer-events:none"/>`;
+        this._coreBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#c8102e" style="pointer-events:none"/>`;});}
+    }
     s+=_colHtml;   /* 柱子放到最后 → 浮在 Marine 子区图层之上, 柱名可见、可点选 */
     this.svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);
-    this.svg.innerHTML=s;
+    const _u=this._curUnderlay(); let _uHtml='';
+    if(_u&&_u.src){const cx=(_u.x+_u.w/2).toFixed(1),cy=(_u.y+_u.h/2).toFixed(1);_uHtml=`<image class="underlayimg" href="${_u.src}" x="${_u.x.toFixed(1)}" y="${_u.y.toFixed(1)}" width="${_u.w.toFixed(1)}" height="${_u.h.toFixed(1)}" opacity="${_u.op||0.5}" transform="rotate(${_u.rot||0} ${cx} ${cy})" preserveAspectRatio="none" style="pointer-events:${this._underlayAdjust?'auto':'none'};cursor:${this._underlayAdjust?'move':'default'}"/>`;}
+    this.svg.innerHTML=_uHtml+s;   /* 底图垫在最底层 */
     this.colLOD();
+    if(this._underlayAdjust){const im=this.svg.querySelector('.underlayimg');if(im)im.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const u=this._curUnderlay();if(!u)return;const r=this.svg.getBoundingClientRect();const sx=this.vb.w/r.width,sy=this.vb.h/r.height;let lx=ev.clientX,ly=ev.clientY;const mv=e=>{u.x+=(e.clientX-lx)*sx;u.y+=(e.clientY-ly)*sy;lx=e.clientX;ly=e.clientY;const cx=(u.x+u.w/2).toFixed(1),cy=(u.y+u.h/2).toFixed(1);im.setAttribute('x',u.x.toFixed(1));im.setAttribute('y',u.y.toFixed(1));im.setAttribute('transform',`rotate(${u.rot||0} ${cx} ${cy})`);};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);this._saveUnderlay();};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
+    this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{if(!this._drawingCore)return;ev.stopPropagation();this._delCoreWall(this.curLevel,+el.dataset.cwi);}));   // 画模式下点已画的墙 = 删除
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
@@ -1198,12 +1215,25 @@ class Component extends DCLogic {
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
     const _nHid=((this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[this.curLevel])||[]).length;
-    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}`:'';
+    const _adminTools=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulsc-">缩−</span><span class="szchip" data-k="__ulsc+">缩+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
     p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.k;
       if(k==='__place'){this.togglePlaceCol();return;}
       if(k==='__hidecol'){this.toggleHideColMode();return;}
+      if(k==='__drawcore'){this.toggleDrawCore();return;}
+      if(k==='__corefin'){this._coreFinish();return;}
+      if(k==='__coreundo'){this._coreUndo();return;}
+      if(k==='__corecancel'){this._coreCancel();return;}
+      if(k==='__ulload'){this.underlayPick();return;}
+      if(k==='__uladj'){this.toggleUnderlayAdjust();return;}
+      if(k==='__ulrm'){this.underlayRemove();return;}
+      if(k==='__ulop-'){this._ulAdjust('op-');return;}
+      if(k==='__ulop+'){this._ulAdjust('op+');return;}
+      if(k==='__ulsc-'){this._ulAdjust('sc-');return;}
+      if(k==='__ulsc+'){this._ulAdjust('sc+');return;}
+      if(k==='__ulrot-'){this._ulAdjust('rot-');return;}
+      if(k==='__ulrot+'){this._ulAdjust('rot+');return;}
       if(k==='__expcol'){this.exportPlacedCols();return;}
       if(k==='ZC')this.showSubZC=!this.showSubZC;else if(k==='C')this.showSubC=!this.showSubC;else if(k==='P')this.showSubP=!this.showSubP;
       this.buildMetrics();this.render();}));
@@ -1343,7 +1373,38 @@ class Component extends DCLogic {
   /* ---------- 点击放置柱子(管理员, 无需坐标; 点地图取精确位置) ---------- */
   placedCols(lv){return (this._colAdd&&this._colAdd[lv])||[];}
   savePlacedCols(){try{localStorage.setItem('rws_col_add',JSON.stringify(this._colAdd||{}));}catch(e){}}
-  togglePlaceCol(){if(!this.rwsIsAdmin())return;this._placingCol=!this._placingCol;if(this.svg)this.svg.style.cursor=this._placingCol?'crosshair':'';this.refreshSubzPanel();}
+  togglePlaceCol(){if(!this.rwsIsAdmin())return;this._placingCol=!this._placingCol;if(this._placingCol){this._drawingCore=false;this._hidingCol=false;}if(this.svg)this.svg.style.cursor=this._placingCol?'crosshair':'';this.refreshSubzPanel();}
+  /* ---- 在图上画 Core Wall(多点围一块多边形, admin) —— 存 settings, 云端同步 ---- */
+  toggleDrawCore(){if(!this.rwsIsAdmin())return;this._drawingCore=!this._drawingCore;this._coreBuf=[];if(this._drawingCore){this._placingCol=false;this._hidingCol=false;}if(this.svg)this.svg.style.cursor=this._drawingCore?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _coreClickAt(clientX,clientY){if(!this._drawingCore||!this.rwsIsAdmin())return;const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;let sx,sy;
+    try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());sx=p.x;sy=p.y;}
+    catch(e){const r=this.svg.getBoundingClientRect();sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w;sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;}
+    this._coreBuf=this._coreBuf||[];this._coreBuf.push([sx,H-sy]);this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _coreUndo(){if(this._coreBuf&&this._coreBuf.length){this._coreBuf.pop();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}}
+  _coreCancel(){this._coreBuf=[];this._drawingCore=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _saveCoreWalls(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','coreWalls',this._appCfg.coreWalls||{},null,null);}
+  _coreFinish(){if(!this._coreBuf||this._coreBuf.length<3){this._toast('至少点 3 个点围成一块 / need ≥3 points');return;}
+    const lv=this.curLevel,L=this.DATA.levels[lv];const pts=this._coreBuf.slice();
+    const cx=pts.reduce((a,p)=>a+p[0],0)/pts.length, cy=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+    let zoneLabel='';const z=(L.zones||[]).find(zz=>zz.ring&&this.ptIn(zz.ring,cx,cy));if(z)zoneLabel=z.label;
+    this._appCfg=this._appCfg||{};const cw=this._appCfg.coreWalls=this._appCfg.coreWalls||{};const arr=cw[lv]=cw[lv]||[];
+    const defId=(zoneLabel?zoneLabel.replace(/\s+/g,''):lv)+'-CW'+(arr.length+1);
+    const save=(v)=>{arr.push({id:(v||'').trim()||defId,pts,zone:zoneLabel});this._saveCoreWalls();this._coreBuf=[];this._drawingCore=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};
+    if(this._inputModal)this._inputModal({title:'Core Wall 名称 / name',label:'这道 core wall 的编号('+(zoneLabel||lv)+')',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
+  _delCoreWall(lv,idx){this._confirmModal('删除这道 Core Wall?',()=>{const arr=(this._appCfg&&this._appCfg.coreWalls&&this._appCfg.coreWalls[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveCoreWalls();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
+  /* ---- 描图底图(本地图片, 垫在地图下方, 只本地不同步) ---- */
+  _curUnderlay(){return this._underlay&&this._underlay[this.curLevel];}
+  underlayPick(){if(!this.rwsIsAdmin())return;const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=()=>{const f=inp.files&&inp.files[0];if(f)this._underlayLoad(f);};inp.click();}
+  _underlayLoad(f){const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const vb=this.vb;const w=vb.w*0.6,h=w*(img.naturalHeight/img.naturalWidth||1);this._underlay=this._underlay||{};this._underlay[this.curLevel]={src:rd.result,x:vb.x+(vb.w-w)/2,y:vb.y+(vb.h-h)/2,w,h,rot:0,op:0.5};this._saveUnderlay();this._underlayAdjust=true;this.render();this.refreshSubzPanel&&this.refreshSubzPanel();};img.src=rd.result;};rd.readAsDataURL(f);}
+  _saveUnderlay(){try{localStorage.setItem('rws_underlay',JSON.stringify(this._underlay||{}));}catch(e){this._toast('图片太大, 本地存不下 / image too large to save locally');}}
+  underlayRemove(){if(this._underlay)delete this._underlay[this.curLevel];this._saveUnderlay();this._underlayAdjust=false;this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  toggleUnderlayAdjust(){this._underlayAdjust=!this._underlayAdjust;this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _ulAdjust(kind){const u=this._curUnderlay();if(!u)return;const cx=u.x+u.w/2,cy=u.y+u.h/2;
+    if(kind==='op-')u.op=Math.max(0.1,Math.round(((u.op||0.5)-0.1)*10)/10);else if(kind==='op+')u.op=Math.min(1,Math.round(((u.op||0.5)+0.1)*10)/10);
+    else if(kind==='sc-'){const nw=u.w*0.9,nh=u.h*0.9;u.x=cx-nw/2;u.y=cy-nh/2;u.w=nw;u.h=nh;}
+    else if(kind==='sc+'){const nw=u.w*1.1,nh=u.h*1.1;u.x=cx-nw/2;u.y=cy-nh/2;u.w=nw;u.h=nh;}
+    else if(kind==='rot-')u.rot=(u.rot||0)-5;else if(kind==='rot+')u.rot=(u.rot||0)+5;
+    this._saveUnderlay();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _placeColAt(clientX,clientY){
     if(!this._placingCol||!this.rwsIsAdmin())return;
     const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;
@@ -1994,7 +2055,7 @@ class Component extends DCLogic {
       svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);this.colLOD();},{passive:false});
     let dragging=false,last=null,downXY=null;
     svg.addEventListener('mousedown',ev=>{dragging=true;last=[ev.clientX,ev.clientY];downXY=[ev.clientX,ev.clientY];svg.classList.add('drag');});
-    svg.addEventListener('click',ev=>{if(!this._placingCol)return;if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;this._placeColAt(ev.clientX,ev.clientY);});
+    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}});
     window.addEventListener('mouseup',()=>{dragging=false;svg.classList.remove('drag');});
     window.addEventListener('mousemove',ev=>{if(!dragging)return;const r=svg.getBoundingClientRect();
       this.vb.x-=(ev.clientX-last[0])/r.width*this.vb.w;this.vb.y-=(ev.clientY-last[1])/r.height*this.vb.h;last=[ev.clientX,ev.clientY];
