@@ -190,19 +190,38 @@ embeds = (
     + "})();\n")
 (ROOT/'generated'/'embeds.bundle.js').write_text(embeds, encoding='utf-8')
 
-# ---------- 缓存击破: 每次构建按 bundle 内容哈希给 index.html 的引用换版本号 ----------
+# ---------- 缓存击破: 每次构建按各文件内容哈希给 index.html 的引用换版本号 ----------
+# bundle 用两个 bundle 的合并哈希; 数据/样式文件各用自己内容的哈希 ——
+# 这样改了 zone-data / cw-groups / styles 等也会破缓存, 用户不用强刷。
 import hashlib, re as _re
-_ver = hashlib.md5(
-    (ROOT/'generated'/'app.bundle.js').read_bytes() + (ROOT/'generated'/'embeds.bundle.js').read_bytes()
-).hexdigest()[:10]
+def _fhash(*paths):
+    h = hashlib.md5()
+    for p in paths:
+        fp = ROOT/p
+        if fp.exists(): h.update(fp.read_bytes())
+    return h.hexdigest()[:10]
+_bundle_ver = _fhash('generated/app.bundle.js', 'generated/embeds.bundle.js')
+# (index 引用路径正则, 用于算哈希的文件)
+_assets = [
+    (r'generated/app\.bundle\.js',   None),   # 用 _bundle_ver
+    (r'generated/embeds\.bundle\.js', None),   # 用 _bundle_ver
+    (r'zone-data\.global\.js',       ['zone-data.global.js']),
+    (r'zp-data\.global\.js',         ['zp-data.global.js']),
+    (r'cw-groups\.global\.js',       ['cw-groups.global.js']),
+    (r'floor-templates\.global\.js', ['floor-templates.global.js']),
+    (r'app/cloud-sync\.js',          ['app/cloud-sync.js']),
+    (r'presentation/styles\.css',    ['presentation/styles.css']),
+]
 _idxp = ROOT/'index.html'
 if _idxp.exists():
     _idx = _idxp.read_text(encoding='utf-8')
-    _new = _re.sub(r'(generated/app\.bundle\.js)(\?v=[^"\']*)?',   r'\1?v=' + _ver, _idx)
-    _new = _re.sub(r'(generated/embeds\.bundle\.js)(\?v=[^"\']*)?', r'\1?v=' + _ver, _new)
+    _new = _idx
+    for _pat, _files in _assets:
+        _v = _bundle_ver if _files is None else _fhash(*_files)
+        _new = _re.sub(r'(' + _pat + r')(\?v=[^"\']*)?', r'\1?v=' + _v, _new)
     if _new != _idx:
         _idxp.write_text(_new, encoding='utf-8')
-        print(f"  cache-bust: index.html bundle 版本 → {_ver}")
+        print(f"  cache-bust: index.html 资源版本已更新 (bundle → {_bundle_ver})")
 
 print(f"OK: generated/app.bundle.js ({(ROOT/'generated'/'app.bundle.js').stat().st_size:,} B), "
       f"embeds.bundle.js ({(ROOT/'generated'/'embeds.bundle.js').stat().st_size:,} B), "
