@@ -1096,9 +1096,9 @@ class Component extends DCLogic {
     if(this.showCoreWalls!==false){ this._shapesForLevel('core').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
         const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
-        const _cc=this._shapeLinkColor(w,'#d98a2a','#b35a1f',swlv); const _foreign=(swlv!==this.curLevel); const _lk=this._shapeLinks(w,swlv).length;
+        const _cc=this._shapeLinkColor(w,'#d98a2a','#b35a1f',swlv); const _foreign=(swlv!==this.curLevel);
         s+=`<polygon class="corewall" data-cwi="${wi}" data-cwlv="${swlv}" points="${pp}" fill="${_cc[0]}" fill-opacity="${_foreign?0.14:0.22}" stroke="${_cc[1]}" stroke-width="520"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
-        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}${_lk?' 🔗':''}</text>`;});
+        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
       }
       if(this._drawingCore&&this._coreBuf&&this._coreBuf.length){
         const bp=this._coreBuf.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
@@ -1108,9 +1108,9 @@ class Component extends DCLogic {
       if(this.showLifts!==false){ this._shapesForLevel('lift').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
         const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
-        const _lc=this._shapeLinkColor(w,'#2a6bd6','#1d4ed8',swlv); const _foreign=(swlv!==this.curLevel); const _lk=this._shapeLinks(w,swlv).length;
+        const _lc=this._shapeLinkColor(w,'#2a6bd6','#1d4ed8',swlv); const _foreign=(swlv!==this.curLevel);
         s+=`<polygon class="liftwall" data-lwi="${wi}" data-lwlv="${swlv}" points="${pp}" fill="${_lc[0]}" fill-opacity="${_foreign?0.13:0.2}" stroke="${_lc[1]}" stroke-width="500"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
-        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_lc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}${_lk?' 🔗':''}</text>`;});
+        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_lc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
       }
       { const lfArr=[];
       if(this._drawingLift&&this._liftBuf&&this._liftBuf.length){
