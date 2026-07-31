@@ -78,6 +78,7 @@ header .sub{font-size:11px;color:var(--dim)}
 .subz{cursor:pointer;transition:fill-opacity .1s;pointer-events:all}
 .subz:hover{fill-opacity:.3 !important}
 .subzlbl{pointer-events:none;font-weight:800;text-anchor:middle;paint-order:stroke;stroke:var(--stage);stroke-width:500px}
+.corewalllbl,.liftlbl{paint-order:stroke;stroke:#fff;stroke-width:820px;stroke-linejoin:round}
 .collink{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}
 .cmtpanel{margin:2px 0 8px;padding:7px 9px;background:color-mix(in srgb,var(--accent) 6%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:8px}
 .cmtrow{font-size:11.5px;padding:3px 0;border-bottom:1px dashed color-mix(in srgb,var(--dim) 25%,transparent)}
