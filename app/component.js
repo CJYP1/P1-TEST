@@ -1098,7 +1098,7 @@ class Component extends DCLogic {
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
         const _cc=this._shapeLinkColor(w,'#22c55e','#15803d',swlv); const _foreign=(swlv!==this.curLevel);   /* 未开始=亮绿底色; 做完=深绿, 在做=黄(按成员状态) */
         s+=`<polygon class="corewall" data-cwi="${wi}" data-cwlv="${swlv}" points="${pp}" fill="${_cc[0]}" fill-opacity="${_foreign?0.14:0.22}" stroke="${_cc[1]}" stroke-width="520"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
-        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
+        s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="1950" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
       }
       if(this._drawingCore&&this._coreBuf&&this._coreBuf.length){
         const bp=this._coreBuf.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
@@ -1110,7 +1110,7 @@ class Component extends DCLogic {
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
         const _lc=this._shapeLinkColor(w,'#2a6bd6','#1d4ed8',swlv); const _foreign=(swlv!==this.curLevel);
         s+=`<polygon class="liftwall" data-lwi="${wi}" data-lwlv="${swlv}" points="${pp}" fill="${_lc[0]}" fill-opacity="${_foreign?0.13:0.2}" stroke="${_lc[1]}" stroke-width="500"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
-        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_lc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
+        s+=`<text class="liftlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="1950" fill="${_lc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
       }
       { const lfArr=[];
       if(this._drawingLift&&this._liftBuf&&this._liftBuf.length){
@@ -1478,6 +1478,8 @@ class Component extends DCLogic {
     const norm=s=>String(s||'').replace(/\s+/g,'').toUpperCase();
     const zn=(L.zones||[]).find(z=>norm(z.label)===norm(name));
     if(zn){const zmk=zn.mk||zn.lid;[['lift',zn.lifts],['stair',zn.stairs]].forEach(([type,arr])=>{(arr||[]).forEach(x=>{const id=idOf(x);const k=zmk+'|'+type+'|'+id;if(!seen.has(k)){seen.add(k);out.push({lv,zmk,type,id});}});});}
+    /* 兜底: 名字啥也没对上(比如没编号的核心筒你随便命名) → 挂上"形状所在那个区"的全部 core/lift/stair */
+    if(!out.length){const zmk=this._shapeZmk(w,lv);const z=(L.zones||[]).find(x=>(x.mk||x.lid)===zmk);if(z){[['lift',z.lifts],['stair',z.stairs],['core',z.cores]].forEach(([type,arr])=>{(arr||[]).forEach(x=>{const id=idOf(x);const k=zmk+'|'+type+'|'+id;if(!seen.has(k)){seen.add(k);out.push({lv,zmk,type,id});}});});}}
     return out;}
   _shapeLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];return this._autoLinks(w,lv);}
   _shapeLinkColor(w,baseFill,baseStroke,lv){const ls=this._shapeLinks(w,lv);if(!ls.length)return[baseFill,baseStroke];const sts=ls.map(l=>this.elemStatus(l.lv+'||'+l.zmk+'||'+l.type+'||'+l.id));if(sts.every(s=>s==='done'))return['#35c08e','#218a5c'];if(sts.some(s=>s==='done'||s==='wip'))return['#e2b45c','#b8801f'];return[baseFill,baseStroke];}

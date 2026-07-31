@@ -28,3 +28,5 @@ window.CW_GROUPS = {
 };
 /* 别名: 你习惯都写 "CW", 但数据里 lift-wall 是 "LW" —— CW6/7/9/10 当作 LW6/7/9/10 */
 ["6","7","9","10"].forEach(function(n){ window.CW_GROUPS["CW"+n]=window.CW_GROUPS["LW"+n]; });
+/* LW8 就是 CW8(楼梯 P1-ST-03/3B 标注了 (LW8), 但核心筒本体是 CW8) */
+window.CW_GROUPS["LW8"]=window.CW_GROUPS["CW8"];
