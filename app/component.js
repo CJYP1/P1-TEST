@@ -1096,7 +1096,7 @@ class Component extends DCLogic {
     if(this.showCoreWalls!==false){ this._shapesForLevel('core').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
         const pp=w.pts.map(q=>{const r=this.proj(q,H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' ');
         const cx=w.pts.reduce((a,p)=>a+p[0],0)/w.pts.length, cy=w.pts.reduce((a,p)=>a+p[1],0)/w.pts.length; const lq=this.proj([cx,cy],H);
-        const _cc=this._shapeLinkColor(w,'#d98a2a','#b35a1f',swlv); const _foreign=(swlv!==this.curLevel);
+        const _cc=this._shapeLinkColor(w,'#14b8a6','#0f766e',swlv); const _foreign=(swlv!==this.curLevel);
         s+=`<polygon class="corewall" data-cwi="${wi}" data-cwlv="${swlv}" points="${pp}" fill="${_cc[0]}" fill-opacity="${_foreign?0.14:0.22}" stroke="${_cc[1]}" stroke-width="520"${_foreign?' stroke-dasharray="1400,700"':''} style="cursor:pointer"/>`;
         s+=`<text class="corewalllbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="2600" fill="${_cc[1]}" text-anchor="middle" style="font-weight:800;pointer-events:none">${this.esc(this._shapeLabel(w))}</text>`;});
       }
@@ -1461,7 +1461,7 @@ class Component extends DCLogic {
   _shapeLabel(w){return w.id||((w.link&&w.link.id)||'');}
   /* 元素 id → 它所属的 Core Wall 编号(反查 CW_GROUPS, 含拼写变体) */
   _cwOf(id){if(!id)return '';if(!this.__cwRev){this.__cwRev={};const G=(typeof window!=='undefined'&&window.CW_GROUPS)||{};for(const cw in G){const g=G[cw]||{};[...(g.lifts||[]),...(g.stairs||[]),...(g.cores||[])].forEach(x=>{this.__cwRev[x]=cw;});}}return this.__cwRev[id]||'';}
-  _cwTag(id){const cw=this._cwOf(id);return cw?`<span class="cwtag" title="属于核心筒 ${this.esc(cw)}" style="display:inline-block;background:rgba(217,138,42,.16);color:#b35a1f;border:1px solid rgba(217,138,42,.55);border-radius:5px;padding:0 5px;font-size:9px;font-weight:800;margin-left:6px;vertical-align:middle">${this.esc(cw)}</span>`:'';}
+  _cwTag(id){const cw=this._cwOf(id);return cw?`<span class="cwtag" title="属于核心筒 ${this.esc(cw)}" style="display:inline-block;background:rgba(20,184,166,.16);color:#0f766e;border:1px solid rgba(20,184,166,.55);border-radius:5px;padding:0 5px;font-size:9px;font-weight:800;margin-left:6px;vertical-align:middle">${this.esc(cw)}</span>`:'';}
   /* 按名字自动匹配数据: CW 编号→整组 lift/stair(查 window.CW_GROUPS), 或名字直接对上某个元素 id. 在形状所在层/区里解析. */
   _autoLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];
     const name=(w&&w.id||'').trim();if(!name)return[];lv=lv||this.curLevel;
@@ -2178,7 +2178,7 @@ class Component extends DCLogic {
       mkToggle(this.showColumns,`<span style="width:9px;height:9px;border-radius:50%;background:#8a93a3;display:inline-block"></span>Columns`,()=>{this.showColumns=!this.showColumns;this.buildMetrics();this.render();});
     { const _hasCW=this._appCfg&&this._appCfg.coreWalls&&Object.values(this._appCfg.coreWalls).some(a=>a&&a.length);
       const _hasLF=this._appCfg&&this._appCfg.lifts&&Object.values(this._appCfg.lifts).some(a=>a&&a.length);
-      if(_hasCW) mkToggle(this.showCoreWalls!==false,`<span style="width:10px;height:10px;background:#d98a2a;display:inline-block;border-radius:2px"></span>Core walls`,()=>{this.showCoreWalls=(this.showCoreWalls===false);this.buildMetrics();this.render();});
+      if(_hasCW) mkToggle(this.showCoreWalls!==false,`<span style="width:10px;height:10px;background:#14b8a6;display:inline-block;border-radius:2px"></span>Core walls`,()=>{this.showCoreWalls=(this.showCoreWalls===false);this.buildMetrics();this.render();});
       if(_hasLF) mkToggle(this.showLifts!==false,`<span style="width:10px;height:10px;background:#2a6bd6;display:inline-block;border-radius:2px"></span>Staircase`,()=>{this.showLifts=(this.showLifts===false);this.buildMetrics();this.render();});
     }
     this.refreshSubzPanel();
