@@ -1460,21 +1460,24 @@ class Component extends DCLogic {
   }
   _shapeLabel(w){return w.id||((w.link&&w.link.id)||'');}
   /* 元素 id → 它所属的 Core Wall 编号(反查 CW_GROUPS, 含拼写变体) */
-  _cwOf(id){if(!id)return '';if(!this.__cwRev){this.__cwRev={};const G=(typeof window!=='undefined'&&window.CW_GROUPS)||{};for(const cw in G){const g=G[cw]||{};[...(g.lifts||[]),...(g.stairs||[]),...(g.cores||[])].forEach(x=>{this.__cwRev[x]=cw;});}}return this.__cwRev[id]||'';}
+  _cwOf(id){if(!id)return '';if(!this.__cwRev){this.__cwRev={};const G=(typeof window!=='undefined'&&window.CW_GROUPS)||{};for(const cw in G){const g=G[cw]||{};[...(g.lifts||[]),...(g.stairs||[]),...(g.cores||[])].forEach(x=>{if(!this.__cwRev[x])this.__cwRev[x]=cw;});}}return this.__cwRev[id]||'';}
   _cwTag(id){const cw=this._cwOf(id);return cw?`<span class="cwtag" title="属于核心筒 ${this.esc(cw)}" style="display:inline-block;background:rgba(34,197,94,.16);color:#15803d;border:1px solid rgba(34,197,94,.55);border-radius:5px;padding:0 5px;font-size:9px;font-weight:800;margin-left:6px;vertical-align:middle">${this.esc(cw)}</span>`:'';}
-  /* 按名字自动匹配数据: CW 编号→整组 lift/stair(查 window.CW_GROUPS), 或名字直接对上某个元素 id. 在形状所在层/区里解析. */
+  /* 按名字自动匹配数据: 扫【整层所有区】找这个 CW 组的成员(查 window.CW_GROUPS)或名字直接对上的元素 id。
+     不再只看形状重心落在哪个区 —— 画偏一点也能对上。 */
   _autoLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];
     const name=(w&&w.id||'').trim();if(!name)return[];lv=lv||this.curLevel;
-    const zmk=this._shapeZmk(w,lv);if(!zmk)return[];
-    const z=((this.DATA.levels[lv]&&this.DATA.levels[lv].zones)||[]).find(x=>(x.mk||x.lid)===zmk);if(!z)return[];
-    const out=[],seen=new Set();
-    const add=(type,id)=>{const k=type+'|'+id;if(seen.has(k))return;const arr=type==='lift'?z.lifts:type==='stair'?z.stairs:type==='core'?z.cores:null;if(!arr)return;const hit=arr.find(x=>((typeof x==='string')?x:x.id)===id);if(hit){seen.add(k);out.push({lv,zmk,type,id});}};
+    const L=this.DATA.levels[lv];if(!L)return[];
+    const out=[],seen=new Set();const idOf=x=>(typeof x==='string')?x:x.id;
+    const scan=(match)=>{(L.zones||[]).forEach(z=>{const zmk=z.mk||z.lid;[['lift',z.lifts],['stair',z.stairs],['core',z.cores]].forEach(([type,arr])=>{(arr||[]).forEach(x=>{const id=idOf(x);if(match(type,id)){const k=zmk+'|'+type+'|'+id;if(!seen.has(k)){seen.add(k);out.push({lv,zmk,type,id});}}});});});};
     const g=(typeof window!=='undefined'&&window.CW_GROUPS)?window.CW_GROUPS[name]:null;
-    if(g){(g.lifts||[]).forEach(id=>add('lift',id));(g.stairs||[]).forEach(id=>add('stair',id));(g.cores||[]).forEach(id=>add('core',id));}
-    ['core','lift','stair'].forEach(type=>{const arr=type==='core'?z.cores:type==='lift'?z.lifts:z.stairs;(arr||[]).forEach(x=>{const id=(typeof x==='string')?x:x.id;if(id===name)add(type,id);});});
+    if(g){const lset=new Set(g.lifts||[]),sset=new Set(g.stairs||[]),cset=new Set(g.cores||[]);
+      scan((type,id)=>(type==='lift'&&lset.has(id))||(type==='stair'&&sset.has(id))||(type==='core'&&cset.has(id)));}
+    /* 名字直接对上某个元素 id(如画的楼梯命名成楼梯编号) */
+    scan((type,id)=>id===name);
     /* 没有 CW 编号的核心筒: 形状取分区名 → 挂上这个分区全部 lift + stair */
     const norm=s=>String(s||'').replace(/\s+/g,'').toUpperCase();
-    if(norm(name)===norm(z.label)){(z.lifts||[]).forEach(x=>add('lift',(typeof x==='string')?x:x.id));(z.stairs||[]).forEach(x=>add('stair',(typeof x==='string')?x:x.id));}
+    const zn=(L.zones||[]).find(z=>norm(z.label)===norm(name));
+    if(zn){const zmk=zn.mk||zn.lid;[['lift',zn.lifts],['stair',zn.stairs]].forEach(([type,arr])=>{(arr||[]).forEach(x=>{const id=idOf(x);const k=zmk+'|'+type+'|'+id;if(!seen.has(k)){seen.add(k);out.push({lv,zmk,type,id});}});});}
     return out;}
   _shapeLinks(w,lv){if(w&&w.links&&w.links.length)return w.links;if(w&&w.link)return[w.link];return this._autoLinks(w,lv);}
   _shapeLinkColor(w,baseFill,baseStroke,lv){const ls=this._shapeLinks(w,lv);if(!ls.length)return[baseFill,baseStroke];const sts=ls.map(l=>this.elemStatus(l.lv+'||'+l.zmk+'||'+l.type+'||'+l.id));if(sts.every(s=>s==='done'))return['#35c08e','#218a5c'];if(sts.some(s=>s==='done'||s==='wip'))return['#e2b45c','#b8801f'];return[baseFill,baseStroke];}
