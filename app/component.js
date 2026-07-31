@@ -1472,8 +1472,10 @@ class Component extends DCLogic {
     const g=(typeof window!=='undefined'&&window.CW_GROUPS)?window.CW_GROUPS[name]:null;
     if(g){const lset=new Set(g.lifts||[]),sset=new Set(g.stairs||[]),cset=new Set(g.cores||[]);
       scan((type,id)=>(type==='lift'&&lset.has(id))||(type==='stair'&&sset.has(id))||(type==='core'&&cset.has(id)));}
-    /* 名字直接对上某个元素 id(如画的楼梯命名成楼梯编号) */
-    scan((type,id)=>id===name);
+    /* 名字直接对上某个元素 id(如画的楼梯命名成楼梯编号); 忽略括号后缀(TBC)/(TRF)/(LW8) 再比 */
+    const strip=s=>String(s||'').replace(/\([^)]*\)/g,'').replace(/\s+/g,'').toUpperCase();
+    const nStrip=strip(name);
+    scan((type,id)=>id===name||strip(id)===nStrip);
     /* 没有 CW 编号的核心筒: 形状取分区名 → 挂上这个分区全部 lift + stair */
     const norm=s=>String(s||'').replace(/\s+/g,'').toUpperCase();
     const zn=(L.zones||[]).find(z=>norm(z.label)===norm(name));
