@@ -1,0 +1,6 @@
+# 构建产物的版本号(?v=)每次构建都会变, 本地和 Action 各改一版 → pull 时老在这几行冲突。
+# 规则: 合并时这些文件一律保留"本地那份"(反正 push 后 Action 会重新构建刷新), 不再弹冲突。
+# 需要在本地跑一次(只跑一次): git config merge.ours.driver true
+index.html                 merge=ours
+generated/app.bundle.js    merge=ours
+generated/embeds.bundle.js merge=ours
