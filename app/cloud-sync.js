@@ -137,7 +137,7 @@ async function rwsSyncPlanQty(planKey, level, zoneMk, value){
 }
 /* ---- 进度快照(存/列/取/删) ---- */
 function rwsSnapBlocked(){ return !!(window.__rwsApp && window.__rwsApp._snapView); }   // 正在看历史快照时禁止一切写入
-async function rwsSnapshotSave(label, data){ const s=rwsGetSession(); if(!s) return {ok:false}; const r=await rwsCall('rws_snapshot_save',{p_token:s.token,p_label:label||null,p_data:data}); rwsNotifyFail(r); return r; }
+async function rwsSnapshotSave(label, data){ const s=rwsGetSession(); if(!s) return {ok:false}; const r=await rwsCall('rws_snapshot_save',{p_token:s.token,p_label:label||null,p_data:data}); /* 失败不弹"未同步"红字, 由调用方(rwsSaveSnapshot)决定是否提示, 避免误以为进度没存 */ return r; }
 async function rwsSnapshotList(){ const s=rwsGetSession(); if(!s) return {ok:false}; return await rwsCall('rws_snapshot_list',{p_token:s.token}); }
 async function rwsSnapshotGet(id){ const s=rwsGetSession(); if(!s) return {ok:false}; return await rwsCall('rws_snapshot_get',{p_token:s.token,p_id:id}); }
 async function rwsSnapshotDelete(id){ const s=rwsGetSession(); if(!s) return {ok:false}; const r=await rwsCall('rws_snapshot_delete',{p_token:s.token,p_id:id}); rwsNotifyFail(r); return r; }
