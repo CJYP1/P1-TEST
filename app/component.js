@@ -224,6 +224,9 @@ class Component extends DCLogic {
   userMonthCutoff(){return (this._appCfg&&this._appCfg.userMonthCutoff)||"Aug'26";}   /* 用户可见到哪个月(admin 可在后台改, 云端同步; 默认 Aug'26) */
   visMonths(){const M=this.ACT_MONTHS;if(this.rwsIsAdmin())return M;const i=M.indexOf(this.userMonthCutoff());return i>=0?M.slice(0,i+1):M;}
   setUserMonthCutoff(m){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can change this.');return;}if(this.ACT_MONTHS.indexOf(m)<0)return;this._appCfg=this._appCfg||{};this._appCfg.userMonthCutoff=m;try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','userMonthCutoff',m,null,null);this.render();}
+  userLevelCutoff(){return (this._appCfg&&this._appCfg.userLevelCutoff)||'L2';}   /* 非 admin 用户可见到哪一层为止(admin 后台可改, 云端同步; 默认 L2 —— L3/L4 先不给用户看) */
+  visLevels(){const O=this.DATA.order;if(this.rwsIsAdmin())return O;const i=O.indexOf(this.userLevelCutoff());return i>=0?O.slice(0,i+1):O;}
+  setUserLevelCutoff(lv){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can change this.');return;}if(this.DATA.order.indexOf(lv)<0)return;this._appCfg=this._appCfg||{};this._appCfg.userLevelCutoff=lv;try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','userLevelCutoff',lv,null,null);this.buildRail();this.render();}
   /* 按楼层隐藏柱子(admin 地图点选, 云端同步) —— 该层不显示这些柱(地图点 + 清单都不显示) */
   _colHidden(lv,id){const h=(this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[lv])||[];return h.indexOf(id)>=0;}
   toggleHideCol(id){if(!this.rwsIsAdmin()){this.rwsDeny('Only admin can hide columns.');return;}this._appCfg=this._appCfg||{};const hc=this._appCfg.hideCols=this._appCfg.hideCols||{};const lv=this.curLevel;const arr=hc[lv]=hc[lv]||[];const i=arr.indexOf(id);if(i>=0)arr.splice(i,1);else arr.push(id);if(!arr.length)delete hc[lv];try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','hideCols',this._appCfg.hideCols||{},null,null);this.render();}
@@ -562,6 +565,7 @@ class Component extends DCLogic {
   rwsIsAdmin(){return !!this._rwsUser && this._rwsUser.role==='admin';}
   rwsHasScope(code){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return a.indexOf(code)>=0;}
   /* 评论权限: 必须有 CMT。范围跟随被授权的区域 —— 勾了区域就只能评论那些区; 只勾 CMT(没勾任何区)= 全区可评 */
+  rwsCanSnapshot(){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return a.indexOf('HIST')>=0;}   /* 谁能看历史快照: admin 或有 HIST 权限 */
   rwsCanComment(lv,zmk){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];if(a.indexOf('CMT')<0)return false;const AREAS=['EB','NB','MA','M28_OTHER'];const hasArea=AREAS.some(c=>a.indexOf(c)>=0);if(!hasArea)return true;return a.indexOf(this.zoneCat(lv,zmk))>=0;}
   rwsDeny(msg){this._toast(msg||'You are not allowed to change that.');}
   rwsOnQueueChange(){
@@ -571,10 +575,11 @@ class Component extends DCLogic {
     else {b.textContent='✓ Saved';b.style.color='var(--done)';}
   }
   rwsRenderUserBar(){
-    const info=this.root.querySelector('#rwsUserInfo'), lo=this.root.querySelector('#rwsLogoutBtn'), ab=this.root.querySelector('#rwsAdminBtn'), jb=this.root.querySelector('#exportJson');
+    const info=this.root.querySelector('#rwsUserInfo'), lo=this.root.querySelector('#rwsLogoutBtn'), ab=this.root.querySelector('#rwsAdminBtn'), jb=this.root.querySelector('#exportJson'), hb=this.root.querySelector('#rwsHistoryBtn');
     const adminOnly=['#openSched','#saveLock','#loadLock','#exportXls','#openTable','#exportJson','#rwsChangesBtn'].map(s=>this.root.querySelector(s)).filter(Boolean);
     const u=this._rwsUser;
     try{if(this.DATA&&this.root.querySelector('#rail'))this.buildRail();}catch(_e){}
+    if(hb)hb.style.display=(u&&this.rwsCanSnapshot())?'':'none';   /* 历史快照: admin 或有 HIST 权限才看得到 */
     if(!u){info.textContent='';lo.style.display='none';ab.style.display='none';adminOnly.forEach(b=>b.style.display='none');return;}
     info.textContent='👤 '+(u.display_name||u.username);   /* 只显示用户名(权限区域不再列在这里) */
     lo.style.display='';
@@ -674,6 +679,7 @@ class Component extends DCLogic {
     }catch(e){ console.warn('[rws] cloud state pull skipped (offline?)',e); }
     rwsQueueFlush();
     this.rwsMaybeDailyExport();
+    this.rwsMaybeWeeklySnapshot();
     this.rwsStartLivePoll();
   }
   /* 实际层近实时同步: 每 ~15s 从云端拉一次"现场实际"数据 —— 实际完成量(act_done_m)、构件完成状态(elements)、
@@ -750,7 +756,7 @@ class Component extends DCLogic {
   async rwsRenderAdmin(){
     const body=this.root.querySelector('#rwsAdminBody');
     body.innerHTML='<div class="empty">Loading…</div>';
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST',HIST:'History (snapshots)'};
     if(this._rwsAdminTab==='log'){
       try{
         const rows=await rwsAdminActivityLog(500);
@@ -765,7 +771,7 @@ class Component extends DCLogic {
     }
     try{
       const users=await rwsAdminListUsers();
-      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map + M28)'],['M28_OTHER','M28 · L2/L3/L4 · Ramp · TST · Hoarding']];
+      const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map + M28)'],['M28_OTHER','M28 · L2/L3/L4 · Ramp · TST · Hoarding'],['HIST','🕓 History / 历史快照 (view snapshots)']];
       body.innerHTML=`<div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
         <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Add / update account</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -788,11 +794,19 @@ class Component extends DCLogic {
         </label>
         <div style="font-size:9.5px;color:var(--faint);margin-top:6px">Non-admin users can only view / enter up to this month (admins always see every month). Change it here and it syncs to everyone — no code edit needed.</div>
       </div>
+      <div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
+        <div style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">User visibility · levels</div>
+        <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--txt)">Users can see levels up to
+          <select id="rwsLevelCutoff" style="padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--txt);font-weight:700">${this.DATA.order.map(lv=>`<option value="${this.esc(lv)}" ${lv===this.userLevelCutoff()?'selected':''}>${this.esc(lv)}</option>`).join('')}</select>
+        </label>
+        <div style="font-size:9.5px;color:var(--faint);margin-top:6px">Non-admin users only see levels from B2 up to this one (admins always see every level). Handy for hiding upper floors (L3/L4) until they're ready.</div>
+      </div>
       <table class="reg"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Areas</th><th>Active</th></tr></thead><tbody>
       ${users.map(u=>{const areas=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return `<tr class="rwsUserRow" data-u="${this.esc(u.username)}" style="cursor:pointer"><td>${this.esc(u.username)}</td><td>${this.esc(u.display_name||'')}</td><td>${this.esc(u.role)}</td><td>${u.role==='admin'?'<span style=\"color:var(--faint)\">(all)</span>':this.esc(areas.map(c=>AL[c]||c).join(', ')||'—')}</td><td>${u.active?'yes':'no'}</td></tr>`;}).join('')}
       </tbody></table>
       <div style="font-size:9.5px;color:var(--faint);margin-top:6px">Tip: click a row to load that account into the form (change password or areas, then Save).</div>`;
       const _mc=body.querySelector('#rwsMonthCutoff'); if(_mc)_mc.addEventListener('change',()=>this.setUserMonthCutoff(_mc.value));
+      const _lc=body.querySelector('#rwsLevelCutoff'); if(_lc)_lc.addEventListener('change',()=>this.setUserLevelCutoff(_lc.value));
       const collectAreas=()=>[...body.querySelectorAll('.rwsNuArea:checked')].map(x=>x.value);
       body.querySelectorAll('.rwsUserRow').forEach(tr=>tr.addEventListener('click',()=>{
         const u=users.find(x=>x.username===tr.dataset.u); if(!u)return;
@@ -829,7 +843,7 @@ class Component extends DCLogic {
     return r.action||'';
   }
   rwsLogParts(r){
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST',HIST:'History (snapshots)'};
     if(!this._zoneLabel){ this._zoneLabel={}; this.DATA.order.forEach(lv=>this.DATA.levels[lv].zones.forEach(z=>{this._zoneLabel[lv+'||'+this.zid(z)]=z.label;})); }
     const k=r.target_key||''; const p=k.split('||');
     const zlabel=(lv,zmk)=>lv+' · '+((this._zoneLabel[lv+'||'+zmk]||this._zoneLabel[lv+'||_'+zmk])||zmk);
@@ -2154,8 +2168,9 @@ class Component extends DCLogic {
 
   buildRail(){
     const rail=this.root.querySelector('#rail');rail.innerHTML='';
+    const VIS=this.visLevels(); if(!this.rwsIsAdmin()&&VIS.indexOf(this.curLevel)<0)this.curLevel=VIS[VIS.length-1]||this.curLevel;
     if(this.rwsIsAdmin()){const _mkrp=(lv,sub)=>{const rp=document.createElement('div');rp.className='rbtn rp'+(this._rpActive===lv?' on':'');rp.dataset.lv=lv;rp.innerHTML='<div class="code">RP</div><div class="nm" style="font-size:7.5px;line-height:1;letter-spacing:.2px;color:var(--dim);font-weight:700">'+sub+'</div>';rp.addEventListener('click',()=>this.setLevel(lv));rail.appendChild(rp);};_mkrp('__RP','Hardcoded');_mkrp('__RPL','Linked');}
-    this.DATA.order.forEach(lv=>{const b=document.createElement('div');b.className='rbtn'+(lv===this.curLevel?' on':'');b.dataset.lv=lv;
+    VIS.forEach(lv=>{const b=document.createElement('div');b.className='rbtn'+(lv===this.curLevel?' on':'');b.dataset.lv=lv;
       const lp=this.levelProg[lv];const empty=!this.DATA.levels[lv].zones.length;
       if(empty){b.className+=' tpl';b.innerHTML=`<div class="code">${this._lvName(lv)}</div><div class="nm">Awaiting</div><div class="tag">TEMPLATE</div>`;}
       else b.innerHTML=`<div class="code">${lv}</div><div class="nm">${this.esc(this.DATA.levels[lv].title.replace(/\(.*/,'').trim())}</div><div class="rpb"><i style="width:${lp.avg}%"></i></div><div class="rpct">${lp.avg}%</div>`;
@@ -2229,6 +2244,7 @@ class Component extends DCLogic {
     this.root.querySelector('#mExport').addEventListener('click',()=>this.exportExcel());
     this.root.querySelector('#mClose').addEventListener('click',()=>this.root.querySelector('#modal').classList.remove('open'));
     this.root.querySelector('#openSched').addEventListener('click',()=>this.openSched());
+    {const _hb=this.root.querySelector('#rwsHistoryBtn');if(_hb)_hb.addEventListener('click',()=>this.rwsOpenHistory());}
     this.root.querySelector('#schedClose').addEventListener('click',()=>this.root.querySelector('#schedpage').classList.remove('open'));
     this.root.querySelector('#modal').addEventListener('click',e=>{if(e.target.id==='modal')e.target.classList.remove('open');});
     this.refreshUpdBadge();
@@ -2358,7 +2374,7 @@ class Component extends DCLogic {
 
   /* ---------- lock file: persist all markers to a portable file & reload ---------- */
   async buildFullExport(){
-    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST'};
+    const AL={EB:'Existing Basement',NB:'New Basement',MA:'Marine',CMT:'Comment (main + M28)',M28_OTHER:'M28 · L2/L3/L4/Ramp/TST',HIST:'History (snapshots)'};
     const zones=[];
     this.DATA.order.forEach(lv=>{const seen={};this.DATA.levels[lv].zones.forEach(z=>{const zid=this.zid(z);if(seen[zid])return;seen[zid]=1;const c=z.counts||{};const p=z._p||{};
       zones.push({level:lv,zone_mk:zid,label:z.label,area_code:z.cat||'NB',area:AL[z.cat||'NB'],critical:!!z.crit,
@@ -2373,6 +2389,46 @@ class Component extends DCLogic {
   _downloadJson(obj,name){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},400);}
   async exportFullJson(){if(!this.rwsIsAdmin()){this.rwsDeny&&this.rwsDeny('Only admin can export the full JSON.');return;}const btn=this.root.querySelector('#exportJson');if(btn)btn.textContent='⏳ Building…';try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_full_'+new Date().toISOString().slice(0,10)+'.json');}catch(e){this._toast('Export failed: '+e.message);}finally{if(btn)btn.textContent='⬇ Full JSON';}}
   async rwsMaybeDailyExport(){if(!this.rwsIsAdmin())return;const today=new Date().toISOString().slice(0,10);let last='';try{last=localStorage.getItem('rws_last_daily_export')||'';}catch(e){}if(last===today)return;try{const d=await this.buildFullExport();this._downloadJson(d,'RWS_P1_CJ_daily_'+today+'.json');localStorage.setItem('rws_last_daily_export',today);}catch(e){console.warn('[rws] daily export failed',e);}}
+  /* ---------- 进度快照(云端存 / 历史回看) ---------- */
+  async rwsSaveSnapshot(label,silent){
+    const s=(typeof rwsGetSession==='function')&&rwsGetSession(); if(!s){this._toast&&this._toast('请先登录');return false;}
+    if(this._snapView){this._toast&&this._toast('正在看历史, 先返回实时再存');return false;}
+    try{const state=await rwsGetState(s.token);const lbl=label||('存档 '+new Date().toISOString().slice(0,10));const r=await rwsSnapshotSave(lbl,state);
+      if(r&&r.ok){if(!silent)this._toast&&this._toast('✓ 已存快照');return true;}
+      if(!silent)this._toast&&this._toast('存快照失败'+((r&&r.error&&r.error.message)?(': '+r.error.message):''));}
+    catch(e){if(!silent)this._toast&&this._toast('存快照失败');}
+    return false;}
+  async rwsMaybeWeeklySnapshot(){if(!this.rwsIsAdmin())return;try{const r=await rwsSnapshotList();const list=(r&&r.ok&&Array.isArray(r.data))?r.data:[];const latest=list.length?new Date(list[0].taken_at).getTime():0;if(Date.now()-latest>=7*24*3600*1000)await this.rwsSaveSnapshot('每周自动',true);}catch(e){}}
+  _applyStateForView(st){st=st||{};
+    this._actDoneM={...(st.act_done_m||{})};this._actCmt={...(st.act_cmt||{})};this.elem={...(st.elements||{})};this._elemDate={...(st.elem_date||{})};
+    this._critOv={...(st.crit||{})};this._critPlanSet=null;this.applyCritOv&&this.applyCritOv();
+    this._zpOv={...(st.slab_qty||{})};this.zpApplyOv&&this.zpApplyOv();
+    if(st.act_plan)this._actPlan={...(this._actPlan||{}),...st.act_plan};if(st.act_total)this._actTotal={...(this._actTotal||{}),...st.act_total};
+    this.updates={};(st.zone_updates||[]).forEach(row=>{const mk=row.zone_mk;if(!mk)return;const arr=this.updates[mk]=this.updates[mk]||[];const ts=row.created_at?new Date(row.created_at).getTime():Date.now();arr.push({pct:row.pct,status:row.status,date:row.update_date,note:row.note,crew:row.crew,level:row.level,zone:row.zone_label,ts});});
+    Object.keys(this.updates).forEach(mk=>this.updates[mk].sort((a,b)=>(a.ts||0)-(b.ts||0)));this.applyUpdates&&this.applyUpdates();}
+  async rwsViewSnapshot(id){const r=await rwsSnapshotGet(id);if(!r||!r.ok||!r.data){this._toast&&this._toast('读取快照失败');return;}const snap=r.data;
+    this._snapView={id:snap.id,taken_at:snap.taken_at,label:snap.label};
+    if(this._livePollId){clearInterval(this._livePollId);this._livePollId=null;}
+    this._applyStateForView(snap.data||{});this._snapBanner(true);
+    this.buildRail&&this.buildRail();this.buildTimeline&&this.buildTimeline();this.render&&this.render();
+    if(this.selKey){const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===this.selKey);if(z)this.selectZone(z);}
+    const m=document.getElementById('__snapHist');if(m)m.remove();}
+  rwsExitSnapshot(){this._snapView=null;this._snapBanner(false);try{location.reload();}catch(e){this.rwsAfterLogin&&this.rwsAfterLogin();}}
+  _snapBanner(show){let b=document.getElementById('__snapBanner');if(!show){if(b)b.remove();document.body.classList.remove('snapview');return;}const sv=this._snapView||{};const when=sv.taken_at?this._fmtD(String(sv.taken_at).slice(0,10)):'';
+    if(!b){b=document.createElement('div');b.id='__snapBanner';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2147483000;background:#7c3aed;color:#fff;font-size:12.5px;font-weight:700;padding:7px 14px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 2px 10px rgba(0,0,0,.25)';document.body.appendChild(b);}
+    b.innerHTML=`🕓 正在查看历史快照:<b>${this.esc(when)}${sv.label?' · '+this.esc(sv.label):''}</b>(只读, 改动不会保存)<button id="__snapExit" style="background:#fff;color:#7c3aed;border:0;border-radius:7px;padding:4px 12px;font-weight:800;cursor:pointer">返回实时 ▸</button>`;
+    document.body.classList.add('snapview');const ex=b.querySelector('#__snapExit');if(ex)ex.addEventListener('click',()=>this.rwsExitSnapshot());}
+  async rwsOpenHistory(){if(!this.rwsCanSnapshot()){this._toast&&this._toast('没有查看历史快照的权限');return;}const old=document.getElementById('__snapHist');if(old)old.remove();const ov=document.createElement('div');ov.id='__snapHist';ov.style.cssText='position:fixed;inset:0;background:rgba(15,20,30,.5);z-index:2147483200;display:flex;align-items:center;justify-content:center;padding:24px';
+    ov.innerHTML=`<div style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;width:min(560px,96vw);max-height:86vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.4)"><div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)"><div style="font-size:14px;font-weight:800">🕓 进度快照 / History</div><div style="display:flex;gap:8px">${this.rwsIsAdmin()?'<button class="hbtn primary" id="__snapNew" style="padding:6px 12px">📸 存当前</button>':''}<button class="hbtn" id="__snapClose" style="padding:6px 12px">关闭</button></div></div><div id="__snapBody" style="overflow:auto;padding:12px 16px"><div class="empty">加载中…</div></div></div>`;
+    document.body.appendChild(ov);ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});ov.querySelector('#__snapClose').addEventListener('click',()=>ov.remove());
+    const nb=ov.querySelector('#__snapNew');if(nb)nb.addEventListener('click',async()=>{nb.disabled=true;nb.textContent='存中…';const ok=await this.rwsSaveSnapshot();nb.disabled=false;nb.textContent='📸 存当前';if(ok)this.rwsOpenHistory();});
+    const body=ov.querySelector('#__snapBody');
+    try{const r=await rwsSnapshotList();const list=(r&&r.ok&&Array.isArray(r.data))?r.data:[];
+      if(!list.length){body.innerHTML='<div class="empty">还没有快照。'+(this.rwsIsAdmin()?'点右上"📸 存当前"存第一个。':'')+'</div>';return;}
+      body.innerHTML=list.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px"><div><b style="font-size:12.5px">${this.esc(this._fmtD(String(s.taken_at).slice(0,10)))}</b> <span style="color:var(--faint);font-size:10.5px">${this.esc(String(s.taken_at).slice(11,16))}</span>${s.label?' <span style="font-size:10.5px;color:var(--dim)">· '+this.esc(s.label)+'</span>':''}</div><div style="display:flex;gap:6px"><button class="hbtn __snapView" data-id="${s.id}" style="padding:5px 12px">查看</button>${this.rwsIsAdmin()?'<button class="hbtn __snapDel" data-id="'+s.id+'" style="padding:5px 10px;color:var(--crit)">删</button>':''}</div></div>`).join('');
+      body.querySelectorAll('.__snapView').forEach(el=>el.addEventListener('click',()=>this.rwsViewSnapshot(+el.dataset.id)));
+      body.querySelectorAll('.__snapDel').forEach(el=>el.addEventListener('click',()=>{this._confirmModal&&this._confirmModal('删除这个快照?',async()=>{await rwsSnapshotDelete(+el.dataset.id);this.rwsOpenHistory();});}));
+    }catch(e){body.innerHTML='<div class="empty">加载失败</div>';}}
   snapshot(){return {v:2,project:'RWS P1 CJ',savedAt:new Date().toISOString(),elem:this.elem,elemDate:this._elemDate,updates:this.updates,zpOv:this._zpOv,crit:this._critOv,actTotal:this._actTotal,actPlan:this._actPlan,actDoneM:this._actDoneM,actHidden:this._actHidden,actDefs:this._actDefs,catAdd:this._catAdd,elemAdd:this._elemAdd,editedKeys:this._editedKeys,actDate:this._actDate,colMonth:this._colMonth,actCmt:this._actCmt};}
   saveLock(){
     if(this._locking)return; this._locking=true; setTimeout(()=>{this._locking=false;},900);

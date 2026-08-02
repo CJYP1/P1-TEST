@@ -75,6 +75,7 @@ function rwsNotifyFail(r){
   }
 }
 async function rwsSyncKV(store, key, value, level, zoneMk){
+  if (rwsSnapBlocked()) return { ok:false, readonly:true };
   const s = rwsGetSession(); if (!s) return { ok:false };
   const args = { p_token:s.token, p_store:store, p_k:key, p_value:(value==null?null:value), p_level:level||null, p_zone_mk:zoneMk||null };
   const r = await rwsCall('rws_set_kv', args);
@@ -92,6 +93,7 @@ async function rwsGetState(token){
   return r.data;
 }
 async function rwsSyncElementStatus(elementKey, status){
+  if (rwsSnapBlocked()) return { ok:false, readonly:true };
   const s = rwsGetSession(); if (!s) return { ok:false };
   const args = { p_token:s.token, p_element_key:elementKey, p_status:status };
   const r = await rwsCall('rws_update_element', args);
@@ -100,6 +102,7 @@ async function rwsSyncElementStatus(elementKey, status){
   return r;
 }
 async function rwsSyncSlabQty(qtyKey, level, zoneMk, qty){
+  if (rwsSnapBlocked()) return { ok:false, readonly:true };
   const s = rwsGetSession(); if (!s) return { ok:false };
   const args = { p_token:s.token, p_qty_key:qtyKey, p_level:level, p_zone_mk:zoneMk, p_qty:qty };
   const r = await rwsCall('rws_update_slab_qty', args);
@@ -108,6 +111,7 @@ async function rwsSyncSlabQty(qtyKey, level, zoneMk, qty){
   return r;
 }
 async function rwsAddZoneUpdate(a){
+  if (rwsSnapBlocked()) return { ok:false, readonly:true };
   const s = rwsGetSession(); if (!s) return { ok:false };
   const args = { p_token:s.token, p_zone_mk:a.zoneMk, p_level:a.level, p_zone_label:a.zoneLabel, p_pct:a.pct, p_status:a.status, p_date:a.date, p_note:a.note, p_crew:a.crew };
   const r = await rwsCall('rws_add_zone_update', args);
@@ -131,6 +135,12 @@ async function rwsSyncPlanQty(planKey, level, zoneMk, value){
   rwsNotifyFail(r); if (window.__rwsApp) window.__rwsApp.rwsOnQueueChange();
   return r;
 }
+/* ---- 进度快照(存/列/取/删) ---- */
+function rwsSnapBlocked(){ return !!(window.__rwsApp && window.__rwsApp._snapView); }   // 正在看历史快照时禁止一切写入
+async function rwsSnapshotSave(label, data){ const s=rwsGetSession(); if(!s) return {ok:false}; const r=await rwsCall('rws_snapshot_save',{p_token:s.token,p_label:label||null,p_data:data}); rwsNotifyFail(r); return r; }
+async function rwsSnapshotList(){ const s=rwsGetSession(); if(!s) return {ok:false}; return await rwsCall('rws_snapshot_list',{p_token:s.token}); }
+async function rwsSnapshotGet(id){ const s=rwsGetSession(); if(!s) return {ok:false}; return await rwsCall('rws_snapshot_get',{p_token:s.token,p_id:id}); }
+async function rwsSnapshotDelete(id){ const s=rwsGetSession(); if(!s) return {ok:false}; const r=await rwsCall('rws_snapshot_delete',{p_token:s.token,p_id:id}); rwsNotifyFail(r); return r; }
 async function rwsAdminActivityLog(limit){ const s=rwsGetSession(); if(!s) throw new Error('not logged in'); const r=await rwsCall('rws_admin_activity_log',{p_token:s.token,p_limit:limit||300}); if(!r.ok) throw new Error(r.error&&r.error.message||'failed'); return r.data; }
 async function rwsAdminListUsers(){ const s=rwsGetSession(); if(!s) throw new Error('not logged in'); const r=await rwsCall('rws_admin_list_users',{p_token:s.token}); if(!r.ok) throw new Error(r.error&&r.error.message||'failed'); return r.data; }
 async function rwsAdminUpsertUser(u){ const s=rwsGetSession(); if(!s) throw new Error('not logged in'); const r=await rwsCall('rws_admin_upsert_user',{p_token:s.token,p_username:u.username,p_password:u.password||null,p_display_name:u.displayName||'',p_role:u.role,p_allowed_scopes:u.allowedScopes||[],p_active:u.active!==false}); if(!r.ok) throw new Error(r.error&&r.error.message||'failed'); return r.data; }
