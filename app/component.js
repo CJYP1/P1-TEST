@@ -1239,12 +1239,20 @@ class Component extends DCLogic {
     const d=this.svg.querySelector(`.colmk[data-ci="${ci}"]`);
     if(d){d.classList.add('focusmk');setTimeout(()=>d.classList.remove('focusmk'),1100);}
   }
-  /* C 细分区的进度% —— 按【C 自己】录入的数据算(在 C 上录, 不看 ZC). 无数据返回 null → 不填色 */
+  /* C 细分区的进度% —— 直接按【C 自己】所有活动的 完成÷总量 求平均(含 RC/Precast 等无 phase 的活动,
+     不走只认 phase 的 zoneActPct). 完成量按到当前月累计. 一点没做/无总量 → null → 不填色. */
   _subZoneProg(label){
-    const lv=this.curLevel;
+    const lv=this.curLevel, zmk=lv+'|'+label;
     try{
-      const z={mk:lv+'|'+label,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
-      const r=this.zoneActPct(lv,z); return (r&&r.pct!=null)?r.pct:null;
+      const z={mk:zmk,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
+      const acts=(this._actList?this._actList(lv,z):[]).filter(a=>a.custom||this._actApplies(a.id,lv,z));
+      const M=this.ACT_MONTHS||[];
+      const ratios=[];
+      acts.forEach(a=>{const tot=a.total; if(tot==null||tot<=0)return; let done=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m); if(v!=null)done+=(+v||0);}); ratios.push(Math.max(0,Math.min(1,done/tot)));});
+      if(!ratios.length)return null;
+      const avg=ratios.reduce((a,b)=>a+b,0)/ratios.length;
+      if(avg<=0)return null;   /* 有活动但一点没做 → 未开始, 不填色 */
+      return Math.round(avg*100);
     }catch(e){ return null; }
   }
   selectSubzone(kind,i){
@@ -1290,7 +1298,7 @@ class Component extends DCLogic {
     const _editToolsStr=this.rwsIsAdmin()?`<span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${this._drawingLift?`<span class="szchip on" style="border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.12)">画 Staircase: 点3下(一条边+宽度)</span><span class="szchip" data-k="__liftcancel">取消</span>`:`<span class="szchip" data-k="__drawlift">▭ 画 Staircase(可斜)</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
     const _editBtn=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${_adminOpen?'on':''}" data-k="__edittoggle" style="${_adminOpen?'border-color:#5b6bd6;color:#5b6bd6;background:rgba(91,107,214,.12)':''}">✎ Edit${_adminOpen?' ✕':''}</span>`:'';
     const _adminTools=_editBtn+(_adminOpen?_editToolsStr:'');
-    p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">ZC · sub-div</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">C · sub-div</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">P · sub-div</span>${_adminTools}`;
+    p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">Bottom slab</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">Top slab</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">Podium</span>${_adminTools}`;
     p.querySelectorAll('.szchip').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.k;
       if(k==='__edittoggle'){this._editToolsOpen=!this._editToolsOpen;this.refreshSubzPanel();return;}
