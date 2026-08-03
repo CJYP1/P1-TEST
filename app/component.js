@@ -1132,7 +1132,7 @@ class Component extends DCLogic {
       const pts=e.pts.map(pp=>{const q=this.proj(pp,H);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');
       const lq=this.proj(e.lp,H);
       let fill=col, fo=0;   /* 默认: 透明填充, 只描边 */
-      if(useProg){const pct=this._subZoneProg(e.label); if(pct!=null){ if(pct>=100){fill='#35c08e';fo=0.42;} else {fill=this.cssvar('--wip')||'#e2b45c';fo=0.35;} }}
+      if(useProg){const pct=this._subZoneProg(e.label); if(pct!=null){ if(pct>=100){fill='#22a06b';fo=0.62;} else { const t=Math.max(0,Math.min(1,pct/100)); const _r=Math.round(0xE0+(0x35-0xE0)*t),_g=Math.round(0xA8+(0xC0-0xA8)*t),_b=Math.round(0x3C+(0x8E-0x3C)*t); fill='rgb('+_r+','+_g+','+_b+')'; fo=0.42+0.2*t; } }}
       s+=`<polygon class="subz ${cls}" data-sk="${cls}|${i}" points="${pts}" fill="${fill}" fill-opacity="${fo}" stroke="${col}" stroke-width="650"${dash?' stroke-dasharray="2200,1300"':''}/>`;
       s+=`<text class="subzlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="3400" fill="${col}">${this.esc(e.label)}</text>`;});};
      _dr(_subL.ZC,'subZC','#1d4ed8',false,this.showSubZC);
