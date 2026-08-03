@@ -770,6 +770,25 @@ class Component extends DCLogic {
       }catch(e){ body.innerHTML='<div class="empty">Could not load activity log: '+this.esc(e.message)+'</div>'; }
       return;
     }
+    if(this._rwsAdminTab==='logins'){
+      try{
+        const rows=await rwsAdminActivityLog(5000);
+        const logins=rows.filter(r=>r.action==='login');
+        const g={};
+        logins.forEach(r=>{const dt=new Date(r.created_at);const day=dt.toISOString().slice(0,10);const key=day+'||'+(r.username||'');const o=g[key]||(g[key]={day,user:r.username||'',cnt:0,last:0,ips:new Set()});o.cnt++;const t=dt.getTime();if(t>o.last)o.last=t;if(r.target_key)o.ips.add(String(r.target_key));});
+        const list=Object.values(g).sort((a,b)=>(a.day<b.day?1:a.day>b.day?-1:0)||(a.user<b.user?-1:a.user>b.user?1:0));   /* 日期倒序, 同日按账号 */
+        if(!list.length){body.innerHTML='<div class="empty">暂无登录记录(还没有人用账号登录过, 或活动日志已清)</div>';return;}
+        const multi=list.filter(o=>o.ips.size>1).length;
+        body.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:11px;color:var(--dim)">谁哪天登录过 · 每人每天一行 · 共 ${list.length} 条${multi?` · <b style="color:var(--crit)">${multi} 条同账号当天出现多个 IP(已标红)</b>`:''}</div><button class="hbtn" id="rwsLoginCsv">⬇ 导出 CSV</button></div>
+        <div style="font-size:9.5px;color:var(--faint);margin-bottom:6px">IP = 客户端公网 IP(x-forwarded-for)。同一办公室/WiFi 会是同一个 IP;同账号同一天出现<b>不同 IP</b> = 换了网络或多人共用,标红提示。只有跑过登录IP SQL 之后的登录才有 IP。</div>
+        <table class="reg"><thead><tr><th>日期 Date</th><th>账号 Account</th><th>次数</th><th>IP(s)</th><th>最后登录</th></tr></thead><tbody>`+
+          list.map(o=>{const ips=[...o.ips];const flag=ips.length>1;return `<tr${flag?' style="background:color-mix(in srgb,var(--crit) 12%,transparent)"':''}><td>${this.esc(this._fmtD(o.day))}</td><td><b>${this.esc(o.user)}</b></td><td>${o.cnt}</td><td style="font-size:10.5px${flag?';color:var(--crit);font-weight:700':''}">${flag?'⚠ ':''}${this.esc(ips.join(', ')||'—')}</td><td>${this.esc(new Date(o.last).toLocaleTimeString())}</td></tr>`;}).join('')+
+          '</tbody></table>';
+        const cb=body.querySelector('#rwsLoginCsv');
+        if(cb)cb.addEventListener('click',()=>{const csv='date,account,times,ips,last_login\n'+list.map(o=>`${o.day},${(o.user||'').replace(/,/g,' ')},${o.cnt},${[...o.ips].join(' ')},${new Date(o.last).toISOString()}`).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='login_log.csv';a.click();});
+      }catch(e){ body.innerHTML='<div class="empty">无法加载登录记录: '+this.esc(e.message)+'</div>'; }
+      return;
+    }
     try{
       const users=await rwsAdminListUsers();
       const AREAS=[['EB','Existing Basement'],['NB','New Basement'],['MA','Marine'],['CMT','Comment (main map + M28)'],['M28_OTHER','M28 · L2/L3/L4 · Ramp · TST · Hoarding'],['HIST','🕓 History / 历史快照 (view snapshots)']];
