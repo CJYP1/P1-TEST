@@ -1,234 +1,234 @@
 ﻿楼层,分区,活动,活动名称(参考),月份,计划量,完成量,活动开始,活动结束
-L4,L4|2.1,ls,Core/Lift/Stair Wall,Sep'26,,,29/9/2026,9/11/2026
-L4,L4|2.1,ls,Core/Lift/Stair Wall,Oct'26,,,29/9/2026,9/11/2026
-L4,L4|2.1,ls,Core/Lift/Stair Wall,Nov'26,,,29/9/2026,9/11/2026
-L4,L4|2.1,mbeam,Steel Main Beam,Oct'26,1,,26/10/2026,28/10/2026
-L4,L4|2.1,cbeam,Cast Steel Main Beam,Oct'26,1,,29/10/2026,6/11/2026
-L4,L4|2.1,cbeam,Cast Steel Main Beam,Nov'26,0,,29/10/2026,6/11/2026
-L4,L4|2.1,slab,Slab,Nov'26,266,,9/11/2026,7/12/2026
-L4,L4|2.1,slab,Slab,Dec'26,85,,9/11/2026,7/12/2026
-L4,L4|2.1,col,Column,Dec'26,1,,28/12/2026,5/1/2027
-L4,L4|2.1,col,Column,Jan'27,0,,28/12/2026,5/1/2027
-L4,L4|2.1,act_colcorbel,Column Cobel,Jan'27,1,,6/1/2027,8/1/2027
-L4,L4|2.1CIS,mbeam,Steel Main Beam,Dec'26,5,,14/12/2026,8/1/2027
-L4,L4|2.1CIS,mbeam,Steel Main Beam,Jan'27,2,,14/12/2026,8/1/2027
-L4,L4|2.1CIS,cbeam,Cast Steel Main Beam,Jan'27,7,,11/1/2027,19/1/2027
-L4,L4|2.1CIS,slab,Slab,Jan'27,224,,20/1/2027,18/2/2027
-L4,L4|2.1CIS,slab,Slab,Feb'27,335,,20/1/2027,18/2/2027
-L4,L4|2.1CIS,col,Column,Feb'27,5,,19/2/2027,1/3/2027
-L4,L4|2.1CIS,col,Column,Mar'27,1,,19/2/2027,1/3/2027
-L4,L4|2.1CIS,ls,Core/Lift/Stair Wall,Feb'27,1,,19/2/2027,1/4/2027
-L4,L4|2.1CIS,ls,Core/Lift/Stair Wall,Mar'27,1,,19/2/2027,1/4/2027
-L4,L4|2.1CIS,ls,Core/Lift/Stair Wall,Apr'27,0,,19/2/2027,1/4/2027
-L4,L4|2.1CIS,act_colcorbel,Column Cobel,Mar'27,6,,2/3/2027,4/3/2027
-L4,L4|2.1CIST,mbeam,Steel Main Beam,Nov'26,,,30/11/2026,30/11/2026
-L4,L4|2.1CIST,cbeam,Cast Steel Main Beam,Dec'26,,,1/12/2026,9/12/2026
-L4,L4|2.1CIST,slab,Slab,Dec'26,83,,10/12/2026,20/1/2027
-L4,L4|2.1CIST,slab,Slab,Jan'27,76,,10/12/2026,20/1/2027
-L4,L4|2.1CIST,col,Column,Jan'27,2,,21/1/2027,29/1/2027
-L4,L4|2.1CIST,act_colcorbel,Column Cobel,Feb'27,2,,1/2/2027,3/2/2027
-L4,L4|2.1T,mbeam,Steel Main Beam,Oct'26,,,12/10/2026,28/10/2026
-L4,L4|2.1T,cbeam,Cast Steel Main Beam,Oct'26,,,29/10/2026,6/11/2026
-L4,L4|2.1T,cbeam,Cast Steel Main Beam,Nov'26,,,29/10/2026,6/11/2026
-L4,L4|2.1T,ls,Core/Lift/Stair Wall,Oct'26,1,,29/10/2026,9/12/2026
-L4,L4|2.1T,ls,Core/Lift/Stair Wall,Nov'26,0,,29/10/2026,9/12/2026
-L4,L4|2.1T,ls,Core/Lift/Stair Wall,Dec'26,0,,29/10/2026,9/12/2026
-L4,L4|2.1T,slab,Slab,Nov'26,382,,9/11/2026,7/12/2026
-L4,L4|2.1T,slab,Slab,Dec'26,121,,9/11/2026,7/12/2026
-L4,L4|2.1T,col,Column,Dec'26,3,,14/12/2026,22/12/2026
-L4,L4|2.1T,act_colcorbel,Column Cobel,Dec'26,3,,23/12/2026,25/12/2026
-L4,L4|2.2,mbeam,Steel Main Beam,Jan'27,5,,19/1/2027,21/1/2027
-L4,L4|2.2,cbeam,Cast Steel Main Beam,Jan'27,5,,22/1/2027,1/2/2027
-L4,L4|2.2,cbeam,Cast Steel Main Beam,Feb'27,0,,22/1/2027,1/2/2027
-L4,L4|2.2,col,Column,Feb'27,4,,16/2/2027,24/2/2027
-L4,L4|2.2,act_colcorbel,Column Cobel,Feb'27,3,,25/2/2027,1/3/2027
-L4,L4|2.2,act_colcorbel,Column Cobel,Mar'27,1,,25/2/2027,1/3/2027
-L4,L4|2.2T,mbeam,Steel Main Beam,Jan'27,10,,5/1/2027,12/1/2027
-L4,L4|2.2T,cbeam,Cast Steel Main Beam,Jan'27,10,,13/1/2027,21/1/2027
-L4,L4|2.2T,slab,Slab,Jan'27,285,,22/1/2027,19/2/2027
-L4,L4|2.2T,slab,Slab,Feb'27,541,,22/1/2027,19/2/2027
-L4,L4|2.2T,col,Column,Jan'27,5,,22/1/2027,10/2/2027
-L4,L4|2.2T,col,Column,Feb'27,4,,22/1/2027,10/2/2027
-L4,L4|2.2T,ls,Core/Lift/Stair Wall,Jan'27,1,,22/1/2027,4/3/2027
-L4,L4|2.2T,ls,Core/Lift/Stair Wall,Feb'27,0,,22/1/2027,4/3/2027
-L4,L4|2.2T,ls,Core/Lift/Stair Wall,Mar'27,0,,22/1/2027,4/3/2027
-L4,L4|2.2T,act_colcorbel,Column Cobel,Feb'27,9,,11/2/2027,15/2/2027
-L4,L4|2.3CIST,mbeam,Steel Main Beam,Nov'26,2,,17/11/2026,14/12/2026
-L4,L4|2.3CIST,mbeam,Steel Main Beam,Dec'26,2,,17/11/2026,14/12/2026
-L4,L4|2.3CIST,cbeam,Cast Steel Main Beam,Dec'26,4,,15/12/2026,23/12/2026
-L4,L4|2.3CIST,slab,Slab,Dec'26,115,,24/12/2026,27/1/2027
-L4,L4|2.3CIST,slab,Slab,Jan'27,386,,24/12/2026,27/1/2027
-L4,L4|2.3CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,28/1/2027,10/3/2027
-L4,L4|2.3CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,28/1/2027,10/3/2027
-L4,L4|2.3CIST,ls,Core/Lift/Stair Wall,Mar'27,0,,28/1/2027,10/3/2027
-L4,L4|2.3CIST,col,Column,Jan'27,1,,28/1/2027,5/2/2027
-L4,L4|2.3CIST,col,Column,Feb'27,2,,28/1/2027,5/2/2027
-L4,L4|2.3CIST,act_colcorbel,Column Cobel,Feb'27,3,,8/2/2027,10/2/2027
-L4,L4|2.3T,mbeam,Steel Main Beam,Sep'26,7,,18/9/2026,28/9/2026
-L4,L4|2.3T,cbeam,Cast Steel Main Beam,Sep'26,2,,29/9/2026,7/10/2026
-L4,L4|2.3T,cbeam,Cast Steel Main Beam,Oct'26,5,,29/9/2026,7/10/2026
-L4,L4|2.3T,slab,Slab,Oct'26,938,,8/10/2026,6/11/2026
-L4,L4|2.3T,slab,Slab,Nov'26,235,,8/10/2026,6/11/2026
-L4,L4|2.3T,col,Column,Nov'26,5,,17/11/2026,25/11/2026
-L4,L4|2.3T,act_colcorbel,Column Cobel,Nov'26,5,,26/11/2026,30/11/2026
-L4,L4|2.4,slab,Slab,Oct'26,27,,29/10/2026,26/11/2026
-L4,L4|2.4,slab,Slab,Nov'26,233,,29/10/2026,26/11/2026
-L4,L4|2.4,cbeam,Cast Steel Main Beam,Oct'26,,,20/10/2026,28/10/2026
-L4,L4|2.4T,mbeam,Steel Main Beam,Nov'26,6,,20/11/2026,30/11/2026
-L4,L4|2.4T,cbeam,Cast Steel Main Beam,Dec'26,6,,1/12/2026,9/12/2026
-L4,L4|2.4T,slab,Slab,Dec'26,531,,10/12/2026,7/1/2027
-L4,L4|2.4T,slab,Slab,Jan'27,169,,10/12/2026,7/1/2027
-L4,L4|2.4T,col,Column,Jan'27,6,,8/1/2027,18/1/2027
-L4,L4|2.4T,act_colcorbel,Column Cobel,Jan'27,6,,19/1/2027,21/1/2027
-L4,L4|2.4T,ls,Core/Lift/Stair Wall,Feb'27,1,,9/2/2027,10/3/2027
-L4,L4|2.4T,ls,Core/Lift/Stair Wall,Mar'27,0,,9/2/2027,10/3/2027
-L4,L4|2.6CIS,mbeam,Steel Main Beam,Jan'27,1,,15/1/2027,25/1/2027
-L4,L4|2.6CIS,cbeam,Cast Steel Main Beam,Jan'27,1,,26/1/2027,3/2/2027
-L4,L4|2.6CIS,cbeam,Cast Steel Main Beam,Feb'27,0,,26/1/2027,3/2/2027
-L4,L4|2.6CIS,slab,Slab,Feb'27,405,,12/2/2027,3/3/2027
-L4,L4|2.6CIS,slab,Slab,Mar'27,71,,12/2/2027,3/3/2027
-L4,L4|2.6CIS,col,Column,Mar'27,2,,4/3/2027,12/3/2027
-L4,L4|2.6CIS,ls,Core/Lift/Stair Wall,Mar'27,2,,4/3/2027,14/4/2027
-L4,L4|2.6CIS,ls,Core/Lift/Stair Wall,Apr'27,1,,4/3/2027,14/4/2027
-L4,L4|2.6CIS,act_colcorbel,Column Cobel,Mar'27,2,,15/3/2027,17/3/2027
-L4,L4|2.6CIST,mbeam,Steel Main Beam,Dec'26,3,,1/12/2026,9/12/2026
-L4,L4|2.6CIST,cbeam,Cast Steel Main Beam,Dec'26,3,,10/12/2026,18/12/2026
-L4,L4|2.6CIST,slab,Slab,Dec'26,485,,21/12/2026,7/1/2027
-L4,L4|2.6CIST,slab,Slab,Jan'27,309,,21/12/2026,7/1/2027
-L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,8/1/2027,18/2/2027
-L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,8/1/2027,18/2/2027
-L4,L4|2.6CIST,col,Column,Jan'27,2,,8/1/2027,27/1/2027
-L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,8/1/2027,18/2/2027
-L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,8/1/2027,18/2/2027
-L4,L4|2.6CIST,act_colcorbel,Column Cobel,Jan'27,2,,28/1/2027,1/2/2027
-L4,L4|2.6CIST,act_colcorbel,Column Cobel,Feb'27,0,,28/1/2027,1/2/2027
-L4,L4|4.1,mbeam,Steel Main Beam,Nov'26,1,,9/11/2026,11/11/2026
-L4,L4|4.1,cbeam,Cast Steel Main Beam,Nov'26,1,,12/11/2026,20/11/2026
-L4,L4|4.1,slab,Slab,Nov'26,162,,23/11/2026,21/12/2026
-L4,L4|4.1,slab,Slab,Dec'26,427,,23/11/2026,21/12/2026
-L4,L4|4.1,col,Column,Dec'26,3,,22/12/2026,30/12/2026
-L4,L4|4.1,act_colcorbel,Column Cobel,Dec'26,1,,31/12/2026,4/1/2027
-L4,L4|4.1,act_colcorbel,Column Cobel,Jan'27,2,,31/12/2026,4/1/2027
-L4,L4|4.1CIST,mbeam,Steel Main Beam,Jan'27,6,,7/1/2027,13/1/2027
-L4,L4|4.1CIST,cbeam,Cast Steel Main Beam,Jan'27,6,,14/1/2027,22/1/2027
-L4,L4|4.1CIST,slab,Slab,Jan'27,818,,23/1/2027,5/2/2027
-L4,L4|4.1CIST,slab,Slab,Feb'27,454,,23/1/2027,5/2/2027
-L4,L4|4.1CIST,col,Column,Feb'27,7,,8/2/2027,25/2/2027
-L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Feb'27,1,,22/2/2027,2/4/2027
-L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Mar'27,0,,22/2/2027,2/4/2027
-L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Apr'27,0,,22/2/2027,2/4/2027
-L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Feb'27,1,,22/2/2027,2/4/2027
-L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Mar'27,4,,22/2/2027,2/4/2027
-L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Apr'27,0,,22/2/2027,2/4/2027
-L4,L4|4.1CIST,act_colcorbel,Column Cobel,Feb'27,4,,26/2/2027,2/3/2027
-L4,L4|4.1CIST,act_colcorbel,Column Cobel,Mar'27,3,,26/2/2027,2/3/2027
-L4,L4|4.2,mbeam,Steel Main Beam,Nov'26,3,,10/11/2026,12/11/2026
-L4,L4|4.2,cbeam,Cast Steel Main Beam,Nov'26,3,,12/11/2026,20/11/2026
-L4,L4|4.2,slab,Slab,Dec'26,549,,2/12/2026,30/12/2026
-L4,L4|4.2,col,Column,Jan'27,3,,1/1/2027,11/1/2027
-L4,L4|4.2,act_colcorbel,Column Cobel,Jan'27,3,,12/1/2027,14/1/2027
-L4,L4|4.2T,mbeam,Steel Main Beam,Oct'26,3,,26/10/2026,28/10/2026
-L4,L4|4.2T,cbeam,Cast Steel Main Beam,Oct'26,1,,29/10/2026,6/11/2026
-L4,L4|4.2T,cbeam,Cast Steel Main Beam,Nov'26,2,,29/10/2026,6/11/2026
-L4,L4|4.2T,col,Column,Nov'26,3,,9/11/2026,17/11/2026
-L4,L4|4.2T,act_colcorbel,Column Cobel,Nov'26,3,,18/11/2026,20/11/2026
-L4,L4|4.3CIST,mbeam,Steel Main Beam,Jan'27,3,,13/1/2027,19/1/2027
-L4,L4|4.3CIST,cbeam,Cast Steel Main Beam,Jan'27,3,,20/1/2027,28/1/2027
-L4,L4|4.3CIST,slab,Slab,Jan'27,56,,29/1/2027,17/2/2027
-L4,L4|4.3CIST,slab,Slab,Feb'27,318,,29/1/2027,17/2/2027
-L4,L4|4.3CIST,col,Column,Feb'27,3,,18/2/2027,26/2/2027
-L4,L4|4.3CIST,act_colcorbel,Column Cobel,Mar'27,3,,1/3/2027,3/3/2027
-L4,L4|4.3CIST,ls,Core/Lift/Stair Wall,Mar'27,2,,4/3/2027,14/4/2027
-L4,L4|4.3CIST,ls,Core/Lift/Stair Wall,Apr'27,1,,4/3/2027,14/4/2027
-L4,L4|4.3T,slab,Slab,Dec'26,65,,30/12/2026,27/1/2027
-L4,L4|4.3T,slab,Slab,Jan'27,878,,30/12/2026,27/1/2027
-L4,L4|4.3T,mbeam,Steel Main Beam,Jan'27,3,,22/1/2027,28/1/2027
-L4,L4|4.3T,cbeam,Cast Steel Main Beam,Jan'27,1,,29/1/2027,8/2/2027
-L4,L4|4.3T,cbeam,Cast Steel Main Beam,Feb'27,2,,29/1/2027,8/2/2027
-L4,L4|4.3T,col,Column,Feb'27,7,,9/2/2027,26/2/2027
-L4,L4|4.3T,act_colcorbel,Column Cobel,Mar'27,7,,1/3/2027,3/3/2027
-L4,L4|4.4,mbeam,Steel Main Beam,Feb'27,5,,17/2/2027,23/2/2027
-L4,L4|4.4,cbeam,Cast Steel Main Beam,Feb'27,3,,24/2/2027,4/3/2027
-L4,L4|4.4,cbeam,Cast Steel Main Beam,Mar'27,2,,24/2/2027,4/3/2027
-L4,L4|4.4,slab,Slab,Mar'27,750,,5/3/2027,24/3/2027
-L4,L4|4.4,col,Column,Mar'27,3,,22/3/2027,8/4/2027
-L4,L4|4.4,col,Column,Apr'27,2,,22/3/2027,8/4/2027
-L4,L4|4.4,act_colcorbel,Column Cobel,Apr'27,5,,9/4/2027,13/4/2027
-L4,L4|3.1T,mbeam,Steel Main Beam,Jan'27,4,,18/1/2027,22/1/2027
-L4,L4|3.1T,cbeam,Cast Steel Main Beam,Jan'27,4,,25/1/2027,1/2/2027
-L4,L4|3.1T,cbeam,Cast Steel Main Beam,Feb'27,0,,25/1/2027,1/2/2027
-L4,L4|3.1T,slab,Slab,Feb'27,1096,,2/2/2027,19/2/2027
-L4,L4|3.1T,col,Column,Feb'27,2,,22/2/2027,11/3/2027
-L4,L4|3.1T,col,Column,Mar'27,4,,22/2/2027,11/3/2027
-L4,L4|3.1T,act_colcorbel,Column Cobel,Mar'27,6,,12/3/2027,16/3/2027
-L4,L4|1.1,mbeam,Steel Main Beam,Feb'27,6,,15/2/2027,23/2/2027
-L4,L4|1.1,cbeam,Cast Steel Main Beam,Feb'27,3,,24/2/2027,4/3/2027
-L4,L4|1.1,cbeam,Cast Steel Main Beam,Mar'27,3,,24/2/2027,4/3/2027
-L4,L4|1.1,slab,Slab,Mar'27,540,,5/3/2027,24/3/2027
-L4,L4|1.2,mbeam,Steel Main Beam,Nov'26,7,,10/11/2026,18/11/2026
-L4,L4|1.2,cbeam,Cast Steel Main Beam,Nov'26,7,,19/11/2026,27/11/2026
-L4,L4|1.2,ls,Core/Lift/Stair Wall,Dec'26,1,,8/12/2026,18/1/2027
-L4,L4|1.2,ls,Core/Lift/Stair Wall,Jan'27,0,,8/12/2026,18/1/2027
-L4,L4|1.2,slab,Slab,Jan'27,1240,,6/1/2027,25/1/2027
-L4,L4|1.2,col,Column,Jan'27,3,,26/1/2027,12/2/2027
-L4,L4|1.2,col,Column,Feb'27,7,,26/1/2027,12/2/2027
-L4,L4|1.2,act_colcorbel,Column Cobel,Feb'27,10,,15/2/2027,23/2/2027
-L4,L4|P1.2T,mbeam,Steel Main Beam,Dec'26,9,,3/12/2026,16/12/2026
-L4,L4|P1.2T,cbeam,Cast Steel Main Beam,Dec'26,7,,17/12/2026,5/1/2027
-L4,L4|P1.2T,cbeam,Cast Steel Main Beam,Jan'27,2,,17/12/2026,5/1/2027
-L4,L4|P1.2T,col,Column,Jan'27,8,,6/1/2027,3/2/2027
-L4,L4|P1.2T,col,Column,Feb'27,1,,6/1/2027,3/2/2027
-L4,L4|P1.2T,act_colcorbel,Column Cobel,Jan'27,5,,22/1/2027,10/2/2027
-L4,L4|P1.2T,act_colcorbel,Column Cobel,Feb'27,4,,22/1/2027,10/2/2027
-L4,L4|3.1CIST,mbeam,Steel Main Beam,Jan'27,3,,11/1/2027,19/1/2027
-L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,15/1/2027,12/2/2027
-L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,15/1/2027,12/2/2027
-L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Jan'27,2,,15/1/2027,12/2/2027
-L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Feb'27,1,,15/1/2027,12/2/2027
-L4,L4|3.1CIST,cbeam,Cast Steel Main Beam,Jan'27,3,,20/1/2027,28/1/2027
-L4,L4|3.1CIST,slab,Slab,Jan'27,132,,29/1/2027,17/2/2027
-L4,L4|3.1CIST,slab,Slab,Feb'27,751,,29/1/2027,17/2/2027
-L4,L4|3.1CIST,col,Column,Feb'27,7,,11/2/2027,24/2/2027
-L4,L4|3.1CIST,act_colcorbel,Column Cobel,Feb'27,6,,25/2/2027,1/3/2027
-L4,L4|3.1CIST,act_colcorbel,Column Cobel,Mar'27,1,,25/2/2027,1/3/2027
-L4,L4|3.2,mbeam,Steel Main Beam,Jan'27,5,,19/1/2027,27/1/2027
-L4,L4|3.2,cbeam,Cast Steel Main Beam,Jan'27,2,,28/1/2027,5/2/2027
-L4,L4|3.2,cbeam,Cast Steel Main Beam,Feb'27,3,,28/1/2027,5/2/2027
-L4,L4|3.2,slab,Slab,Feb'27,953,,8/2/2027,25/2/2027
-L4,L4|3.2,col,Column,Feb'27,1,,26/2/2027,17/3/2027
-L4,L4|3.2,col,Column,Mar'27,4,,26/2/2027,17/3/2027
-L4,L4|3.2,act_colcorbel,Column Cobel,Mar'27,5,,18/3/2027,22/3/2027
-L4,L4|3.2,ls,Core/Lift/Stair Wall,Mar'27,1,,23/3/2027,3/5/2027
-L4,L4|3.2,ls,Core/Lift/Stair Wall,Apr'27,0,,23/3/2027,3/5/2027
-L4,L4|3.2,ls,Core/Lift/Stair Wall,May'27,0,,23/3/2027,3/5/2027
-L4,L4|3.2T,mbeam,Steel Main Beam,Jan'27,1,,20/1/2027,28/1/2027
-L4,L4|3.2T,cbeam,Cast Steel Main Beam,Jan'27,1,,29/1/2027,8/2/2027
-L4,L4|3.2T,cbeam,Cast Steel Main Beam,Feb'27,0,,29/1/2027,8/2/2027
-L4,L4|3.2T,col,Column,Feb'27,1,,9/2/2027,17/2/2027
-L4,L4|3.2T,act_colcorbel,Column Cobel,Feb'27,1,,18/2/2027,22/2/2027
-L4,L4|3.3CIST,ls,Core/Lift/Stair Wall,Dec'26,2,,21/12/2026,18/1/2027
-L4,L4|3.3CIST,ls,Core/Lift/Stair Wall,Jan'27,2,,21/12/2026,18/1/2027
-L4,L4|3.3CIST,mbeam,Steel Main Beam,Jan'27,3,,22/1/2027,1/2/2027
-L4,L4|3.3CIST,mbeam,Steel Main Beam,Feb'27,0,,22/1/2027,1/2/2027
-L4,L4|3.3CIST,cbeam,Cast Steel Main Beam,Feb'27,3,,2/2/2027,10/2/2027
-L4,L4|3.3CIST,slab,Slab,Feb'27,730,,11/2/2027,24/2/2027
-L4,L4|3.3CIST,col,Column,Feb'27,1,,25/2/2027,17/3/2027
-L4,L4|3.3CIST,col,Column,Mar'27,5,,25/2/2027,17/3/2027
-L4,L4|3.3CIST,act_colcorbel,Column Cobel,Mar'27,6,,18/3/2027,22/3/2027
-L4,L4|3.3T,mbeam,Steel Main Beam,Dec'26,2,,23/12/2026,25/12/2026
-L4,L4|3.3T,cbeam,Cast Steel Main Beam,Dec'26,1,,28/12/2026,5/1/2027
-L4,L4|3.3T,cbeam,Cast Steel Main Beam,Jan'27,1,,28/12/2026,5/1/2027
-L4,L4|3.3T,slab,Slab,Jan'27,415,,6/1/2027,25/1/2027
-L4,L4|3.3T,col,Column,Jan'27,1,,26/1/2027,3/2/2027
-L4,L4|3.3T,col,Column,Feb'27,0,,26/1/2027,3/2/2027
-L4,L4|3.3T,act_colcorbel,Column Cobel,Feb'27,1,,4/2/2027,8/2/2027
-L4,L4|3.4,mbeam,Steel Main Beam,Jan'27,1,,19/1/2027,27/1/2027
-L4,L4|3.4,cbeam,Cast Steel Main Beam,Jan'27,1,,28/1/2027,5/2/2027
-L4,L4|3.4,cbeam,Cast Steel Main Beam,Feb'27,0,,28/1/2027,5/2/2027
-L4,L4|3.4,slab,Slab,Feb'27,659,,8/2/2027,25/2/2027
-L4,L4|3.4,col,Column,Feb'27,1,,26/2/2027,8/3/2027
-L4,L4|3.4,col,Column,Mar'27,4,,26/2/2027,8/3/2027
-L4,L4|3.4,act_colcorbel,Column Cobel,Mar'27,5,,9/3/2027,11/3/2027
+L4,L4|2.1,ls,Core/Lift/Stair Wall,Sep'26,,,2026-09-29,2026-11-09
+L4,L4|2.1,ls,Core/Lift/Stair Wall,Oct'26,,,2026-09-29,2026-11-09
+L4,L4|2.1,ls,Core/Lift/Stair Wall,Nov'26,,,2026-09-29,2026-11-09
+L4,L4|2.1,mbeam,Steel Main Beam,Oct'26,1,,2026-10-26,2026-10-28
+L4,L4|2.1,cbeam,Cast Steel Main Beam,Oct'26,1,,2026-10-29,2026-11-06
+L4,L4|2.1,cbeam,Cast Steel Main Beam,Nov'26,0,,2026-10-29,2026-11-06
+L4,L4|2.1,slab,Slab,Nov'26,266,,2026-11-09,2026-12-07
+L4,L4|2.1,slab,Slab,Dec'26,85,,2026-11-09,2026-12-07
+L4,L4|2.1,col,Column,Dec'26,1,,2026-12-28,2027-01-05
+L4,L4|2.1,col,Column,Jan'27,0,,2026-12-28,2027-01-05
+L4,L4|2.1,act_colcorbel,Column Cobel,Jan'27,1,,2027-01-06,2027-01-08
+L4,L4|2.1CIS,mbeam,Steel Main Beam,Dec'26,5,,2026-12-14,2027-01-08
+L4,L4|2.1CIS,mbeam,Steel Main Beam,Jan'27,2,,2026-12-14,2027-01-08
+L4,L4|2.1CIS,cbeam,Cast Steel Main Beam,Jan'27,7,,2027-01-11,2027-01-19
+L4,L4|2.1CIS,slab,Slab,Jan'27,224,,2027-01-20,2027-02-18
+L4,L4|2.1CIS,slab,Slab,Feb'27,335,,2027-01-20,2027-02-18
+L4,L4|2.1CIS,col,Column,Feb'27,5,,2027-02-19,2027-03-01
+L4,L4|2.1CIS,col,Column,Mar'27,1,,2027-02-19,2027-03-01
+L4,L4|2.1CIS,ls,Core/Lift/Stair Wall,Feb'27,1,,2027-02-19,2027-04-01
+L4,L4|2.1CIS,ls,Core/Lift/Stair Wall,Mar'27,1,,2027-02-19,2027-04-01
+L4,L4|2.1CIS,ls,Core/Lift/Stair Wall,Apr'27,0,,2027-02-19,2027-04-01
+L4,L4|2.1CIS,act_colcorbel,Column Cobel,Mar'27,6,,2027-03-02,2027-03-04
+L4,L4|2.1CIST,mbeam,Steel Main Beam,Nov'26,,,2026-11-30,2026-11-30
+L4,L4|2.1CIST,cbeam,Cast Steel Main Beam,Dec'26,,,2026-12-01,2026-12-09
+L4,L4|2.1CIST,slab,Slab,Dec'26,83,,2026-12-10,2027-01-20
+L4,L4|2.1CIST,slab,Slab,Jan'27,76,,2026-12-10,2027-01-20
+L4,L4|2.1CIST,col,Column,Jan'27,2,,2027-01-21,2027-01-29
+L4,L4|2.1CIST,act_colcorbel,Column Cobel,Feb'27,2,,2027-02-01,2027-02-03
+L4,L4|2.1T,mbeam,Steel Main Beam,Oct'26,,,2026-10-12,2026-10-28
+L4,L4|2.1T,cbeam,Cast Steel Main Beam,Oct'26,,,2026-10-29,2026-11-06
+L4,L4|2.1T,cbeam,Cast Steel Main Beam,Nov'26,,,2026-10-29,2026-11-06
+L4,L4|2.1T,ls,Core/Lift/Stair Wall,Oct'26,1,,2026-10-29,2026-12-09
+L4,L4|2.1T,ls,Core/Lift/Stair Wall,Nov'26,0,,2026-10-29,2026-12-09
+L4,L4|2.1T,ls,Core/Lift/Stair Wall,Dec'26,0,,2026-10-29,2026-12-09
+L4,L4|2.1T,slab,Slab,Nov'26,382,,2026-11-09,2026-12-07
+L4,L4|2.1T,slab,Slab,Dec'26,121,,2026-11-09,2026-12-07
+L4,L4|2.1T,col,Column,Dec'26,3,,2026-12-14,2026-12-22
+L4,L4|2.1T,act_colcorbel,Column Cobel,Dec'26,3,,2026-12-23,2026-12-25
+L4,L4|2.2,mbeam,Steel Main Beam,Jan'27,5,,2027-01-19,2027-01-21
+L4,L4|2.2,cbeam,Cast Steel Main Beam,Jan'27,5,,2027-01-22,2027-02-01
+L4,L4|2.2,cbeam,Cast Steel Main Beam,Feb'27,0,,2027-01-22,2027-02-01
+L4,L4|2.2,col,Column,Feb'27,4,,2027-02-16,2027-02-24
+L4,L4|2.2,act_colcorbel,Column Cobel,Feb'27,3,,2027-02-25,2027-03-01
+L4,L4|2.2,act_colcorbel,Column Cobel,Mar'27,1,,2027-02-25,2027-03-01
+L4,L4|2.2T,mbeam,Steel Main Beam,Jan'27,10,,2027-01-05,2027-01-12
+L4,L4|2.2T,cbeam,Cast Steel Main Beam,Jan'27,10,,2027-01-13,2027-01-21
+L4,L4|2.2T,slab,Slab,Jan'27,285,,2027-01-22,2027-02-19
+L4,L4|2.2T,slab,Slab,Feb'27,541,,2027-01-22,2027-02-19
+L4,L4|2.2T,col,Column,Jan'27,5,,2027-01-22,2027-02-10
+L4,L4|2.2T,col,Column,Feb'27,4,,2027-01-22,2027-02-10
+L4,L4|2.2T,ls,Core/Lift/Stair Wall,Jan'27,1,,2027-01-22,2027-03-04
+L4,L4|2.2T,ls,Core/Lift/Stair Wall,Feb'27,0,,2027-01-22,2027-03-04
+L4,L4|2.2T,ls,Core/Lift/Stair Wall,Mar'27,0,,2027-01-22,2027-03-04
+L4,L4|2.2T,act_colcorbel,Column Cobel,Feb'27,9,,2027-02-11,2027-02-15
+L4,L4|2.3CIST,mbeam,Steel Main Beam,Nov'26,2,,2026-11-17,2026-12-14
+L4,L4|2.3CIST,mbeam,Steel Main Beam,Dec'26,2,,2026-11-17,2026-12-14
+L4,L4|2.3CIST,cbeam,Cast Steel Main Beam,Dec'26,4,,2026-12-15,2026-12-23
+L4,L4|2.3CIST,slab,Slab,Dec'26,115,,2026-12-24,2027-01-27
+L4,L4|2.3CIST,slab,Slab,Jan'27,386,,2026-12-24,2027-01-27
+L4,L4|2.3CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,2027-01-28,2027-03-10
+L4,L4|2.3CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,2027-01-28,2027-03-10
+L4,L4|2.3CIST,ls,Core/Lift/Stair Wall,Mar'27,0,,2027-01-28,2027-03-10
+L4,L4|2.3CIST,col,Column,Jan'27,1,,2027-01-28,2027-02-05
+L4,L4|2.3CIST,col,Column,Feb'27,2,,2027-01-28,2027-02-05
+L4,L4|2.3CIST,act_colcorbel,Column Cobel,Feb'27,3,,2027-02-08,2027-02-10
+L4,L4|2.3T,mbeam,Steel Main Beam,Sep'26,7,,2026-09-18,2026-09-28
+L4,L4|2.3T,cbeam,Cast Steel Main Beam,Sep'26,2,,2026-09-29,2026-10-07
+L4,L4|2.3T,cbeam,Cast Steel Main Beam,Oct'26,5,,2026-09-29,2026-10-07
+L4,L4|2.3T,slab,Slab,Oct'26,938,,2026-10-08,2026-11-06
+L4,L4|2.3T,slab,Slab,Nov'26,235,,2026-10-08,2026-11-06
+L4,L4|2.3T,col,Column,Nov'26,5,,2026-11-17,2026-11-25
+L4,L4|2.3T,act_colcorbel,Column Cobel,Nov'26,5,,2026-11-26,2026-11-30
+L4,L4|2.4,slab,Slab,Oct'26,27,,2026-10-29,2026-11-26
+L4,L4|2.4,slab,Slab,Nov'26,233,,2026-10-29,2026-11-26
+L4,L4|2.4,cbeam,Cast Steel Main Beam,Oct'26,,,2026-10-20,2026-10-28
+L4,L4|2.4T,mbeam,Steel Main Beam,Nov'26,6,,2026-11-20,2026-11-30
+L4,L4|2.4T,cbeam,Cast Steel Main Beam,Dec'26,6,,2026-12-01,2026-12-09
+L4,L4|2.4T,slab,Slab,Dec'26,531,,2026-12-10,2027-01-07
+L4,L4|2.4T,slab,Slab,Jan'27,169,,2026-12-10,2027-01-07
+L4,L4|2.4T,col,Column,Jan'27,6,,2027-01-08,2027-01-18
+L4,L4|2.4T,act_colcorbel,Column Cobel,Jan'27,6,,2027-01-19,2027-01-21
+L4,L4|2.4T,ls,Core/Lift/Stair Wall,Feb'27,1,,2027-02-09,2027-03-10
+L4,L4|2.4T,ls,Core/Lift/Stair Wall,Mar'27,0,,2027-02-09,2027-03-10
+L4,L4|2.6CIS,mbeam,Steel Main Beam,Jan'27,1,,2027-01-15,2027-01-25
+L4,L4|2.6CIS,cbeam,Cast Steel Main Beam,Jan'27,1,,2027-01-26,2027-02-03
+L4,L4|2.6CIS,cbeam,Cast Steel Main Beam,Feb'27,0,,2027-01-26,2027-02-03
+L4,L4|2.6CIS,slab,Slab,Feb'27,405,,2027-02-12,2027-03-03
+L4,L4|2.6CIS,slab,Slab,Mar'27,71,,2027-02-12,2027-03-03
+L4,L4|2.6CIS,col,Column,Mar'27,2,,2027-03-04,2027-03-12
+L4,L4|2.6CIS,ls,Core/Lift/Stair Wall,Mar'27,2,,2027-03-04,2027-04-14
+L4,L4|2.6CIS,ls,Core/Lift/Stair Wall,Apr'27,1,,2027-03-04,2027-04-14
+L4,L4|2.6CIS,act_colcorbel,Column Cobel,Mar'27,2,,2027-03-15,2027-03-17
+L4,L4|2.6CIST,mbeam,Steel Main Beam,Dec'26,3,,2026-12-01,2026-12-09
+L4,L4|2.6CIST,cbeam,Cast Steel Main Beam,Dec'26,3,,2026-12-10,2026-12-18
+L4,L4|2.6CIST,slab,Slab,Dec'26,485,,2026-12-21,2027-01-07
+L4,L4|2.6CIST,slab,Slab,Jan'27,309,,2026-12-21,2027-01-07
+L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,2027-01-08,2027-02-18
+L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,2027-01-08,2027-02-18
+L4,L4|2.6CIST,col,Column,Jan'27,2,,2027-01-08,2027-01-27
+L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,2027-01-08,2027-02-18
+L4,L4|2.6CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,2027-01-08,2027-02-18
+L4,L4|2.6CIST,act_colcorbel,Column Cobel,Jan'27,2,,2027-01-28,2027-02-01
+L4,L4|2.6CIST,act_colcorbel,Column Cobel,Feb'27,0,,2027-01-28,2027-02-01
+L4,L4|4.1,mbeam,Steel Main Beam,Nov'26,1,,2026-11-09,2026-11-11
+L4,L4|4.1,cbeam,Cast Steel Main Beam,Nov'26,1,,2026-11-12,2026-11-20
+L4,L4|4.1,slab,Slab,Nov'26,162,,2026-11-23,2026-12-21
+L4,L4|4.1,slab,Slab,Dec'26,427,,2026-11-23,2026-12-21
+L4,L4|4.1,col,Column,Dec'26,3,,2026-12-22,2026-12-30
+L4,L4|4.1,act_colcorbel,Column Cobel,Dec'26,1,,2026-12-31,2027-01-04
+L4,L4|4.1,act_colcorbel,Column Cobel,Jan'27,2,,2026-12-31,2027-01-04
+L4,L4|4.1CIST,mbeam,Steel Main Beam,Jan'27,6,,2027-01-07,2027-01-13
+L4,L4|4.1CIST,cbeam,Cast Steel Main Beam,Jan'27,6,,2027-01-14,2027-01-22
+L4,L4|4.1CIST,slab,Slab,Jan'27,818,,2027-01-23,2027-02-05
+L4,L4|4.1CIST,slab,Slab,Feb'27,454,,2027-01-23,2027-02-05
+L4,L4|4.1CIST,col,Column,Feb'27,7,,2027-02-08,2027-02-25
+L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Feb'27,1,,2027-02-22,2027-04-02
+L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Mar'27,0,,2027-02-22,2027-04-02
+L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Apr'27,0,,2027-02-22,2027-04-02
+L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Feb'27,1,,2027-02-22,2027-04-02
+L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Mar'27,4,,2027-02-22,2027-04-02
+L4,L4|4.1CIST,ls,Core/Lift/Stair Wall,Apr'27,0,,2027-02-22,2027-04-02
+L4,L4|4.1CIST,act_colcorbel,Column Cobel,Feb'27,4,,2027-02-26,2027-03-02
+L4,L4|4.1CIST,act_colcorbel,Column Cobel,Mar'27,3,,2027-02-26,2027-03-02
+L4,L4|4.2,mbeam,Steel Main Beam,Nov'26,3,,2026-11-10,2026-11-12
+L4,L4|4.2,cbeam,Cast Steel Main Beam,Nov'26,3,,2026-11-12,2026-11-20
+L4,L4|4.2,slab,Slab,Dec'26,549,,2026-12-02,2026-12-30
+L4,L4|4.2,col,Column,Jan'27,3,,2027-01-01,2027-01-11
+L4,L4|4.2,act_colcorbel,Column Cobel,Jan'27,3,,2027-01-12,2027-01-14
+L4,L4|4.2T,mbeam,Steel Main Beam,Oct'26,3,,2026-10-26,2026-10-28
+L4,L4|4.2T,cbeam,Cast Steel Main Beam,Oct'26,1,,2026-10-29,2026-11-06
+L4,L4|4.2T,cbeam,Cast Steel Main Beam,Nov'26,2,,2026-10-29,2026-11-06
+L4,L4|4.2T,col,Column,Nov'26,3,,2026-11-09,2026-11-17
+L4,L4|4.2T,act_colcorbel,Column Cobel,Nov'26,3,,2026-11-18,2026-11-20
+L4,L4|4.3CIST,mbeam,Steel Main Beam,Jan'27,3,,2027-01-13,2027-01-19
+L4,L4|4.3CIST,cbeam,Cast Steel Main Beam,Jan'27,3,,2027-01-20,2027-01-28
+L4,L4|4.3CIST,slab,Slab,Jan'27,56,,2027-01-29,2027-02-17
+L4,L4|4.3CIST,slab,Slab,Feb'27,318,,2027-01-29,2027-02-17
+L4,L4|4.3CIST,col,Column,Feb'27,3,,2027-02-18,2027-02-26
+L4,L4|4.3CIST,act_colcorbel,Column Cobel,Mar'27,3,,2027-03-01,2027-03-03
+L4,L4|4.3CIST,ls,Core/Lift/Stair Wall,Mar'27,2,,2027-03-04,2027-04-14
+L4,L4|4.3CIST,ls,Core/Lift/Stair Wall,Apr'27,1,,2027-03-04,2027-04-14
+L4,L4|4.3T,slab,Slab,Dec'26,65,,2026-12-30,2027-01-27
+L4,L4|4.3T,slab,Slab,Jan'27,878,,2026-12-30,2027-01-27
+L4,L4|4.3T,mbeam,Steel Main Beam,Jan'27,3,,2027-01-22,2027-01-28
+L4,L4|4.3T,cbeam,Cast Steel Main Beam,Jan'27,1,,2027-01-29,2027-02-08
+L4,L4|4.3T,cbeam,Cast Steel Main Beam,Feb'27,2,,2027-01-29,2027-02-08
+L4,L4|4.3T,col,Column,Feb'27,7,,2027-02-09,2027-02-26
+L4,L4|4.3T,act_colcorbel,Column Cobel,Mar'27,7,,2027-03-01,2027-03-03
+L4,L4|4.4,mbeam,Steel Main Beam,Feb'27,5,,2027-02-17,2027-02-23
+L4,L4|4.4,cbeam,Cast Steel Main Beam,Feb'27,3,,2027-02-24,2027-03-04
+L4,L4|4.4,cbeam,Cast Steel Main Beam,Mar'27,2,,2027-02-24,2027-03-04
+L4,L4|4.4,slab,Slab,Mar'27,750,,2027-03-05,2027-03-24
+L4,L4|4.4,col,Column,Mar'27,3,,2027-03-22,2027-04-08
+L4,L4|4.4,col,Column,Apr'27,2,,2027-03-22,2027-04-08
+L4,L4|4.4,act_colcorbel,Column Cobel,Apr'27,5,,2027-04-09,2027-04-13
+L4,L4|3.1T,mbeam,Steel Main Beam,Jan'27,4,,2027-01-18,2027-01-22
+L4,L4|3.1T,cbeam,Cast Steel Main Beam,Jan'27,4,,2027-01-25,2027-02-01
+L4,L4|3.1T,cbeam,Cast Steel Main Beam,Feb'27,0,,2027-01-25,2027-02-01
+L4,L4|3.1T,slab,Slab,Feb'27,1096,,2027-02-02,2027-02-19
+L4,L4|3.1T,col,Column,Feb'27,2,,2027-02-22,2027-03-11
+L4,L4|3.1T,col,Column,Mar'27,4,,2027-02-22,2027-03-11
+L4,L4|3.1T,act_colcorbel,Column Cobel,Mar'27,6,,2027-03-12,2027-03-16
+L4,L4|1.1,mbeam,Steel Main Beam,Feb'27,6,,2027-02-15,2027-02-23
+L4,L4|1.1,cbeam,Cast Steel Main Beam,Feb'27,3,,2027-02-24,2027-03-04
+L4,L4|1.1,cbeam,Cast Steel Main Beam,Mar'27,3,,2027-02-24,2027-03-04
+L4,L4|1.1,slab,Slab,Mar'27,540,,2027-03-05,2027-03-24
+L4,L4|1.2,mbeam,Steel Main Beam,Nov'26,7,,2026-11-10,2026-11-18
+L4,L4|1.2,cbeam,Cast Steel Main Beam,Nov'26,7,,2026-11-19,2026-11-27
+L4,L4|1.2,ls,Core/Lift/Stair Wall,Dec'26,1,,2026-12-08,2027-01-18
+L4,L4|1.2,ls,Core/Lift/Stair Wall,Jan'27,0,,2026-12-08,2027-01-18
+L4,L4|1.2,slab,Slab,Jan'27,1240,,2027-01-06,2027-01-25
+L4,L4|1.2,col,Column,Jan'27,3,,2027-01-26,2027-02-12
+L4,L4|1.2,col,Column,Feb'27,7,,2027-01-26,2027-02-12
+L4,L4|1.2,act_colcorbel,Column Cobel,Feb'27,10,,2027-02-15,2027-02-23
+L4,L4|P1.2T,mbeam,Steel Main Beam,Dec'26,9,,2026-12-03,2026-12-16
+L4,L4|P1.2T,cbeam,Cast Steel Main Beam,Dec'26,7,,2026-12-17,2027-01-05
+L4,L4|P1.2T,cbeam,Cast Steel Main Beam,Jan'27,2,,2026-12-17,2027-01-05
+L4,L4|P1.2T,col,Column,Jan'27,8,,2027-01-06,2027-02-03
+L4,L4|P1.2T,col,Column,Feb'27,1,,2027-01-06,2027-02-03
+L4,L4|P1.2T,act_colcorbel,Column Cobel,Jan'27,5,,2027-01-22,2027-02-10
+L4,L4|P1.2T,act_colcorbel,Column Cobel,Feb'27,4,,2027-01-22,2027-02-10
+L4,L4|3.1CIST,mbeam,Steel Main Beam,Jan'27,3,,2027-01-11,2027-01-19
+L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Jan'27,1,,2027-01-15,2027-02-12
+L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Feb'27,0,,2027-01-15,2027-02-12
+L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Jan'27,2,,2027-01-15,2027-02-12
+L4,L4|3.1CIST,ls,Core/Lift/Stair Wall,Feb'27,1,,2027-01-15,2027-02-12
+L4,L4|3.1CIST,cbeam,Cast Steel Main Beam,Jan'27,3,,2027-01-20,2027-01-28
+L4,L4|3.1CIST,slab,Slab,Jan'27,132,,2027-01-29,2027-02-17
+L4,L4|3.1CIST,slab,Slab,Feb'27,751,,2027-01-29,2027-02-17
+L4,L4|3.1CIST,col,Column,Feb'27,7,,2027-02-11,2027-02-24
+L4,L4|3.1CIST,act_colcorbel,Column Cobel,Feb'27,6,,2027-02-25,2027-03-01
+L4,L4|3.1CIST,act_colcorbel,Column Cobel,Mar'27,1,,2027-02-25,2027-03-01
+L4,L4|3.2,mbeam,Steel Main Beam,Jan'27,5,,2027-01-19,2027-01-27
+L4,L4|3.2,cbeam,Cast Steel Main Beam,Jan'27,2,,2027-01-28,2027-02-05
+L4,L4|3.2,cbeam,Cast Steel Main Beam,Feb'27,3,,2027-01-28,2027-02-05
+L4,L4|3.2,slab,Slab,Feb'27,953,,2027-02-08,2027-02-25
+L4,L4|3.2,col,Column,Feb'27,1,,2027-02-26,2027-03-17
+L4,L4|3.2,col,Column,Mar'27,4,,2027-02-26,2027-03-17
+L4,L4|3.2,act_colcorbel,Column Cobel,Mar'27,5,,2027-03-18,2027-03-22
+L4,L4|3.2,ls,Core/Lift/Stair Wall,Mar'27,1,,2027-03-23,2027-05-03
+L4,L4|3.2,ls,Core/Lift/Stair Wall,Apr'27,0,,2027-03-23,2027-05-03
+L4,L4|3.2,ls,Core/Lift/Stair Wall,May'27,0,,2027-03-23,2027-05-03
+L4,L4|3.2T,mbeam,Steel Main Beam,Jan'27,1,,2027-01-20,2027-01-28
+L4,L4|3.2T,cbeam,Cast Steel Main Beam,Jan'27,1,,2027-01-29,2027-02-08
+L4,L4|3.2T,cbeam,Cast Steel Main Beam,Feb'27,0,,2027-01-29,2027-02-08
+L4,L4|3.2T,col,Column,Feb'27,1,,2027-02-09,2027-02-17
+L4,L4|3.2T,act_colcorbel,Column Cobel,Feb'27,1,,2027-02-18,2027-02-22
+L4,L4|3.3CIST,ls,Core/Lift/Stair Wall,Dec'26,2,,2026-12-21,2027-01-18
+L4,L4|3.3CIST,ls,Core/Lift/Stair Wall,Jan'27,2,,2026-12-21,2027-01-18
+L4,L4|3.3CIST,mbeam,Steel Main Beam,Jan'27,3,,2027-01-22,2027-02-01
+L4,L4|3.3CIST,mbeam,Steel Main Beam,Feb'27,0,,2027-01-22,2027-02-01
+L4,L4|3.3CIST,cbeam,Cast Steel Main Beam,Feb'27,3,,2027-02-02,2027-02-10
+L4,L4|3.3CIST,slab,Slab,Feb'27,730,,2027-02-11,2027-02-24
+L4,L4|3.3CIST,col,Column,Feb'27,1,,2027-02-25,2027-03-17
+L4,L4|3.3CIST,col,Column,Mar'27,5,,2027-02-25,2027-03-17
+L4,L4|3.3CIST,act_colcorbel,Column Cobel,Mar'27,6,,2027-03-18,2027-03-22
+L4,L4|3.3T,mbeam,Steel Main Beam,Dec'26,2,,2026-12-23,2026-12-25
+L4,L4|3.3T,cbeam,Cast Steel Main Beam,Dec'26,1,,2026-12-28,2027-01-05
+L4,L4|3.3T,cbeam,Cast Steel Main Beam,Jan'27,1,,2026-12-28,2027-01-05
+L4,L4|3.3T,slab,Slab,Jan'27,415,,2027-01-06,2027-01-25
+L4,L4|3.3T,col,Column,Jan'27,1,,2027-01-26,2027-02-03
+L4,L4|3.3T,col,Column,Feb'27,0,,2027-01-26,2027-02-03
+L4,L4|3.3T,act_colcorbel,Column Cobel,Feb'27,1,,2027-02-04,2027-02-08
+L4,L4|3.4,mbeam,Steel Main Beam,Jan'27,1,,2027-01-19,2027-01-27
+L4,L4|3.4,cbeam,Cast Steel Main Beam,Jan'27,1,,2027-01-28,2027-02-05
+L4,L4|3.4,cbeam,Cast Steel Main Beam,Feb'27,0,,2027-01-28,2027-02-05
+L4,L4|3.4,slab,Slab,Feb'27,659,,2027-02-08,2027-02-25
+L4,L4|3.4,col,Column,Feb'27,1,,2027-02-26,2027-03-08
+L4,L4|3.4,col,Column,Mar'27,4,,2027-02-26,2027-03-08
+L4,L4|3.4,act_colcorbel,Column Cobel,Mar'27,5,,2027-03-09,2027-03-11
 L4,L4|3.4T,mbeam,Steel Main Beam,Jan'27,4,,46406,46414
 L4,L4|3.4T,cbeam,Cast Steel Main Beam,Jan'27,2,,46415,46423
 L4,L4|3.4T,cbeam,Cast Steel Main Beam,Feb'27,2,,46415,46423
