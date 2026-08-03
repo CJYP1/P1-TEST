@@ -1239,22 +1239,20 @@ class Component extends DCLogic {
     const d=this.svg.querySelector(`.colmk[data-ci="${ci}"]`);
     if(d){d.classList.add('focusmk');setTimeout(()=>d.classList.remove('focusmk'),1100);}
   }
-  /* C 细分区的进度% —— 直接按【C 自己】所有活动的 完成÷总量 求平均(含 RC/Precast 等无 phase 的活动,
-     不走只认 phase 的 zoneActPct). 完成量按到当前月累计. 一点没做/无总量 → null → 不填色. */
-  _subZoneProg(label){
+  /* C 细分区的活动完成度: 直接按【C 自己】所有活动的 完成÷总量 求平均(含 RC/Precast 等无 phase 的活动,
+     不走只认 phase 的 zoneActPct). 完成量按到当前月累计. 返回 {pct, started, hasPlan}. */
+  _subActPct(label){
     const lv=this.curLevel, zmk=lv+'|'+label;
     try{
       const z={mk:zmk,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
       const acts=(this._actList?this._actList(lv,z):[]).filter(a=>a.custom||this._actApplies(a.id,lv,z));
-      const M=this.ACT_MONTHS||[];
-      const ratios=[];
-      acts.forEach(a=>{const tot=a.total; if(tot==null||tot<=0)return; let done=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m); if(v!=null)done+=(+v||0);}); ratios.push(Math.max(0,Math.min(1,done/tot)));});
-      if(!ratios.length)return null;
-      const avg=ratios.reduce((a,b)=>a+b,0)/ratios.length;
-      if(avg<=0)return null;   /* 有活动但一点没做 → 未开始, 不填色 */
-      return Math.round(avg*100);
-    }catch(e){ return null; }
+      const M=this.ACT_MONTHS||[]; const ratios=[]; let anyDone=false;
+      acts.forEach(a=>{const tot=a.total; if(tot==null||tot<=0)return; let done=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m); if(v!=null)done+=(+v||0);}); if(done>0)anyDone=true; ratios.push(Math.max(0,Math.min(1,done/tot)));});
+      if(!ratios.length)return {pct:null,started:false,hasPlan:false};
+      return {pct:Math.round(ratios.reduce((a,b)=>a+b,0)/ratios.length*100), started:anyDone, hasPlan:true};
+    }catch(e){ return {pct:null,started:false,hasPlan:false}; }
   }
+  _subZoneProg(label){const r=this._subActPct(label); return r.started?r.pct:null;}   /* 地图填色: 有做才上色 */
   selectSubzone(kind,i){
     const e=this.SUBZONES[this.curLevel][kind][i]; const L=this.SUBLINKS||{}; const rows=[];
     if(kind==='C'){ const par=(L.c2zc||{})[e.label]; if(par)rows.push(['Parent zone',par]);
@@ -1275,6 +1273,9 @@ class Component extends DCLogic {
         grp:(kind==='P'?e.label:''),fam:(kind==='P'?('Pour group '+e.label):'Marine sub-division'),
         cols:_mcols,piles:[],beams:[],lifts:[],stairs:[],sub:[],
         counts:{columns:_mcols.length,pilecap:0,mainbeam:0,steelbeam:0},crit:false};
+      /* 顶部 SITE PROGRESS 用这个细分自己活动的完成度(和地图填色同一来源) */
+      const _sp=this._subActPct(e.label);
+      sz._p={pct:(_sp.pct==null?0:_sp.pct), status:(_sp.pct!=null&&_sp.pct>=100)?'done':(_sp.started?'wip':'todo'), source:_sp.hasPlan?(_sp.started?'act':'plan'):'none'};
       this.selKey=null;
       this.selectZone(sz,{kind,i});
       return;
