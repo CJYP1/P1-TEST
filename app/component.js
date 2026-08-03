@@ -1124,7 +1124,7 @@ class Component extends DCLogic {
     }
     // ZC 叠加层: 从真实 Marine 父区几何一次性生成(与 C/P 一样可切换显示)
     if(this.curLevel==='L1'&&this.SUBZONES&&this.SUBZONES.L1&&!this.SUBZONES.L1.ZC){
-      this.SUBZONES.L1.ZC=(this.DATA.levels.L1.zones||[]).filter(z=>z.cat==='MA').map(z=>({label:z.label,pts:z.ring,a:z.area,
+      this.SUBZONES.L1.ZC=(this.DATA.levels.L1.zones||[]).filter(z=>z.cat==='MA' && !/^P\d/i.test(z.label||'')).map(z=>({label:z.label,pts:z.ring,a:z.area,
         lp:(z.lx!=null&&z.ly!=null)?[z.lx,z.ly]:[z.ring.reduce((a,p)=>a+p[0],0)/z.ring.length,z.ring.reduce((a,p)=>a+p[1],0)/z.ring.length]}));
     }
     const _subL=this.SUBZONES&&this.SUBZONES[this.curLevel];
