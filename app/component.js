@@ -58,6 +58,7 @@ class Component extends DCLogic {
     try{this._elemAdd=JSON.parse(localStorage.getItem('rws_elem_add')||'{}');}catch(e){this._elemAdd={};}
     try{this._colAdd=JSON.parse(localStorage.getItem('rws_col_add')||'{}');}catch(e){this._colAdd={};}   // 管理员在地图上放置的柱子(Marine 等)
     try{this._appCfg=JSON.parse(localStorage.getItem('rws_app_cfg')||'{}');}catch(e){this._appCfg={};}   // 全局设置(云端同步): 用户可见月份截止 userMonthCutoff 等
+    try{this._manpower=JSON.parse(localStorage.getItem('rws_manpower')||'{}');}catch(e){this._manpower={};}   // 每区人数(云端同步), 键 lv||zmk
     try{this._underlay=JSON.parse(localStorage.getItem('rws_underlay')||'{}');}catch(e){this._underlay={};}   // 描图底图(本地, 不同步): 每层一张图 {src,x,y,w,h,rot,op}
     this.loadUpdates();
     this.loadElem();
@@ -536,7 +537,13 @@ class Component extends DCLogic {
   /* per-zone phase completions {phase:ratio 0-1}; each phase = average of its activities' ratios (avoids mixing units) */
   _zonePhases(lv,z){const zmk=z.mk||z.lid,sm=this._actMonth||(this.actDefaultMonth?this.actDefaultMonth():this.ACT_MONTHS[0]),ph={};
     const ids=[...new Set(['col','pile','mbeam','cbeam','sbeam','exc','demo','slab'].filter(a=>this._actApplies(a,lv,z)).concat(['act_wall','act_corewall']).concat((this._actDefs||[]).filter(d=>d.phase).map(d=>d.id)))];
-    ids.forEach(aid=>{const p=this._actPhase(aid,lv);if(!p)return;const plan=this.actPlan(lv,zmk,aid,sm);if(plan==null||plan<=0)return;const done=this.actDoneMonth(lv,zmk,aid,sm)||0;(ph[p]=ph[p]||[]).push(this.clamp(done/plan,0,1));});
+    const _M=this.ACT_MONTHS||[]; let _mi=_M.indexOf(sm); if(_mi<0)_mi=_M.length-1;
+    ids.forEach(aid=>{const p=this._actPhase(aid,lv);if(!p)return;
+      /* 累计: 到当前月为止的累计计划 vs 累计完成 —— 这样上月没做完(欠账)且后面没新计划的, 依然算进度; 做完的也一直保持 */
+      let cumPlan=0,cumDone=0;
+      for(let _j=0;_j<=_mi;_j++){const _pl=this.actPlan(lv,zmk,aid,_M[_j]); if(_pl!=null&&_pl>0)cumPlan+=_pl; const _dn=this.actDoneMonth(lv,zmk,aid,_M[_j]); if(_dn!=null)cumDone+=_dn;}
+      if(cumPlan<=0)return;
+      (ph[p]=ph[p]||[]).push(this.clamp(cumDone/cumPlan,0,1));});
     const out={};Object.keys(ph).forEach(k=>{out[k]=ph[k].reduce((a,b)=>a+b,0)/ph[k].length;});return out;}
   /* zone overall % = weighted average of present phases (renormalized). Piling+D-wall (22%) counts 0% on basement zones. */
   zoneActPct(lv,z){const ph=this._zonePhases(lv,z);const W=this._pw();
@@ -659,6 +666,7 @@ class Component extends DCLogic {
       if(state.col_month){ const s=state.col_month;this._colMonth=this._colMonth||{};Object.keys(s).forEach(k=>{if(this.isEdited('col_month',k))this._colMonth[k]=s[k];}); try{localStorage.setItem('rws_col_month',JSON.stringify(this._colMonth));}catch(e){} }
       if(state.act_cmt){ this._actCmt={...(this._actCmt||{}),...state.act_cmt}; this.saveActCmt(); }
       if(state.settings){ this._appCfg={...(this._appCfg||{}),...state.settings}; try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){} }   // 全局设置(用户可见月份等)
+      if(state.manpower){ this._manpower={...(this._manpower||{}),...state.manpower}; try{localStorage.setItem('rws_manpower',JSON.stringify(this._manpower));}catch(e){} }   // 每区人数
       if(Array.isArray(state.custom_cats)){const seen={};this._catAdd=[];state.custom_cats.forEach(c=>{if(c&&c.code&&!seen[c.code]){seen[c.code]=1;this._catAdd.push({code:c.code,label:c.label});}});}
       if(Array.isArray(state.custom_items)){this._elemAdd={};state.custom_items.forEach(it=>{if(!it)return;const k=it.level+'||'+it.zone_mk+'||'+it.type;(this._elemAdd[k]=this._elemAdd[k]||[]).push(it.elem_id);});}
       if(state.custom_cats||state.custom_items)this.saveCustom();
@@ -702,6 +710,8 @@ class Component extends DCLogic {
         if(st.elements){const merged={...(this.elem||{}),...st.elements};if(cmp(this.elem,merged)){this.elem=merged;changed=true;}}  // 构件状态: 合并
         if(st.crit && cmp(this._critOv,st.crit)){this._critOv={...st.crit};try{localStorage.setItem('rws_crit_ov',JSON.stringify(this._critOv));}catch(e){}this.applyCritOv&&this.applyCritOv();this._critPlanSet=null;changed=true;}  // critical: 整份以云端为准(含取消)
         if(st.settings && cmp(this._appCfg,st.settings)){this._appCfg={...st.settings};try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}changed=true;}  // 全局设置(用户可见月份): 实时同步
+        if(st.manpower && cmp(this._manpower,st.manpower)){this._manpower={...st.manpower};try{localStorage.setItem('rws_manpower',JSON.stringify(this._manpower));}catch(e){}changed=true;}  // 每区人数: 实时同步
+        if(st.edited && cmp(this._editedKeys,{...this._editedKeys,...st.edited})){this._editedKeys={...(this._editedKeys||{}),...st.edited};this.saveEdited&&this.saveEdited();changed=true;}  // 锁定标记: 合并同步
         if(st.slab_qty && cmp(this._zpOv,st.slab_qty)){this._zpOv={...st.slab_qty};try{localStorage.setItem('rws_zp_ov',JSON.stringify(this._zpOv));}catch(e){}this.zpApplyOv&&this.zpApplyOv();changed=true;}  // slab 实际量: 整份以云端为准
         if(st.elem_date){const merged={...(this._elemDate||{}),...st.elem_date};if(cmp(this._elemDate,merged)){this._elemDate=merged;this.saveElemDate&&this.saveElemDate();changed=true;}}  // 构件完成日期: 合并
         if(st.zone_updates && st.zone_updates.length){   // 进度更新记录(Save update): 追加日志, 合并去重(按 ts+pct)
@@ -1857,11 +1867,13 @@ class Component extends DCLogic {
         ${(this.customCats()||[]).map(ct=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,ct.code);if(!this.rwsIsAdmin()&&hidden)return '';const ids=this.customItemsFor(lv,zmk,ct.code);if(!ids.length&&!this.rwsIsAdmin())return '';const nd=ids.filter(id=>this.elemStatus(lv+'||'+zmk+'||'+ct.code+'||'+id)==='done').length;return `<div class="stat statcust" data-jumpsec="${this.esc(ct.code)}" title="Custom category — click to open"><div class="n">${nd}/${ids.length}</div><div class="l">${this.esc(ct.label)}</div></div>`;}).join('')}
       </div>
       ${this.rwsIsAdmin()?'<div style="font-size:9.5px;color:var(--faint);margin:-6px 0 9px">Dashed boxes above are editable (admin) — press Enter or click away to save. Lift/Stair count isn\'t editable here.</div>':''}
+      ${(()=>{const k=lv+'||'+(z.mk||z.lid);const v=(this._manpower||{})[k];const e=this.rwsIsAdmin()||this.rwsScopeOk(lv,z.mk||z.lid);return `<div style="display:flex;align-items:center;gap:9px;margin:0 0 11px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)"><span style="font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.4px">👷 Manpower</span>${e?`<input class="mp-in" type="number" min="0" value="${v==null?'':v}" placeholder="—" style="width:100px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:15px;font-weight:700;color:var(--txt)"><span style="font-size:10px;color:var(--faint)">人 · 自动保存</span>`:`<b style="font-size:16px">${v==null?'—':this.fmt(v)}</b><span style="font-size:10px;color:var(--faint)">人</span>`}</div>`;})()}
       ${this.zpSection(z)}
       ${this._custSecHtml(lv,z,this.rwsIsAdmin())}
       </div>`;
     this.setSummaryVis();
     this.root.querySelector('#back').addEventListener('click',()=>{this._subOpen=null;this.selKey=null;this.paintSel();this.paintTimelineSel();this.buildList();});
+    {const mp=this.root.querySelector('.mp-in');if(mp)mp.addEventListener('change',()=>{const k=lv+'||'+(z.mk||z.lid);const raw=mp.value.trim();const v=raw===''?null:Math.max(0,Math.round(+raw||0));this._manpower=this._manpower||{};if(v==null)delete this._manpower[k];else this._manpower[k]=v;try{localStorage.setItem('rws_manpower',JSON.stringify(this._manpower));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('manpower',k,v,lv,z.mk||z.lid);});}
     const ck=this.root.querySelector('#critChk');if(ck)ck.addEventListener('change',()=>{const _vb={...this.vb};this.setCrit(this.curLevel,z,ck.checked);this.render();this.vb=_vb;this._vbLevel=this.curLevel;if(this.svg)this.svg.setAttribute('viewBox',`${_vb.x} ${_vb.y} ${_vb.w} ${_vb.h}`);if(this.colLOD)this.colLOD();this.selectZone(z);this.paintSel();});
     const sv=this.root.querySelector('#in_save');
     if(sv)sv.addEventListener('click',()=>{
