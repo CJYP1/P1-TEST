@@ -1118,13 +1118,15 @@ class Component extends DCLogic {
         lp:(z.lx!=null&&z.ly!=null)?[z.lx,z.ly]:[z.ring.reduce((a,p)=>a+p[0],0)/z.ring.length,z.ring.reduce((a,p)=>a+p[1],0)/z.ring.length]}));
     }
     const _subL=this.SUBZONES&&this.SUBZONES[this.curLevel];
-    if(_subL){const _dr=(arr,cls,col,dash,show)=>{if(!show||!arr)return;arr.forEach((e,i)=>{
+    if(_subL){const _dr=(arr,cls,col,dash,show,useProg)=>{if(!show||!arr)return;arr.forEach((e,i)=>{
       const pts=e.pts.map(pp=>{const q=this.proj(pp,H);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');
       const lq=this.proj(e.lp,H);
-      s+=`<polygon class="subz ${cls}" data-sk="${cls}|${i}" points="${pts}" fill="${col}" fill-opacity="0" stroke="${col}" stroke-width="650"${dash?' stroke-dasharray="2200,1300"':''}/>`;
+      let fill=col, fo=0;   /* 默认: 透明填充, 只描边 */
+      if(useProg){const pct=this._subZoneProg(e.label); if(pct!=null){ if(pct>=100){fill='#35c08e';fo=0.42;} else {fill=this.cssvar('--wip')||'#e2b45c';fo=0.35;} }}
+      s+=`<polygon class="subz ${cls}" data-sk="${cls}|${i}" points="${pts}" fill="${fill}" fill-opacity="${fo}" stroke="${col}" stroke-width="650"${dash?' stroke-dasharray="2200,1300"':''}/>`;
       s+=`<text class="subzlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="3400" fill="${col}">${this.esc(e.label)}</text>`;});};
      _dr(_subL.ZC,'subZC','#1d4ed8',false,this.showSubZC);
-     _dr(_subL.C,'subC','#b35a1f',false,this.showSubC);
+     _dr(_subL.C,'subC','#b35a1f',false,this.showSubC,true);   /* C 按各区进度填色: 绿=完成, 黄=在做, 空=未开始 */
      _dr(_subL.P,'subP','#7c3aed',true,this.showSubP);}
     /* Core Wall 多边形(admin 画的) + 正在画的临时轮廓 */
     if(this.showCoreWalls!==false){ this._shapesForLevel('core').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
@@ -1226,6 +1228,12 @@ class Component extends DCLogic {
     if(this.colLOD)this.colLOD();
     const d=this.svg.querySelector(`.colmk[data-ci="${ci}"]`);
     if(d){d.classList.add('focusmk');setTimeout(()=>d.classList.remove('focusmk'),1100);}
+  }
+  /* C 细分区的整体进度%(用它自己键上的数据, 和主图 zoneActPct 一致); 无数据返回 null → 不填色 */
+  _subZoneProg(label){
+    const lv=this.curLevel;
+    const z={mk:lv+'|'+label,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
+    try{ const r=this.zoneActPct(lv,z); return (r&&r.pct!=null)?r.pct:null; }catch(e){ return null; }
   }
   selectSubzone(kind,i){
     const e=this.SUBZONES[this.curLevel][kind][i]; const L=this.SUBLINKS||{}; const rows=[];
