@@ -1239,11 +1239,13 @@ class Component extends DCLogic {
     const d=this.svg.querySelector(`.colmk[data-ci="${ci}"]`);
     if(d){d.classList.add('focusmk');setTimeout(()=>d.classList.remove('focusmk'),1100);}
   }
-  /* C 细分区的整体进度%(用它自己键上的数据, 和主图 zoneActPct 一致); 无数据返回 null → 不填色 */
+  /* C 细分区的进度% —— 按【C 自己】录入的数据算(在 C 上录, 不看 ZC). 无数据返回 null → 不填色 */
   _subZoneProg(label){
     const lv=this.curLevel;
-    const z={mk:lv+'|'+label,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
-    try{ const r=this.zoneActPct(lv,z); return (r&&r.pct!=null)?r.pct:null; }catch(e){ return null; }
+    try{
+      const z={mk:lv+'|'+label,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
+      const r=this.zoneActPct(lv,z); return (r&&r.pct!=null)?r.pct:null;
+    }catch(e){ return null; }
   }
   selectSubzone(kind,i){
     const e=this.SUBZONES[this.curLevel][kind][i]; const L=this.SUBLINKS||{}; const rows=[];
