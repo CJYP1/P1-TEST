@@ -90,7 +90,10 @@ class Component extends DCLogic {
   hash(s){s=String(s);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return ((h>>>0)%100000)/100000;}
   clamp(v,a,b){return Math.max(a,Math.min(b,v));}
   lsAll(c){return (c.liftcw||0)+(c.stair||0)+(c.liftstair||0);}
-  _actApplies(aid,lv,z){const cat=(z&&z.cat)||'NB';const base=(lv==='B2'||lv==='B1'||lv==='B1M');switch(aid){case 'pile':return lv==='B2';case 'sbeam':return !base;case 'exc':return cat==='NB'&&(lv==='B2'||lv==='B1');case 'demo':return cat==='EB'&&(lv==='B2'||lv==='B1');default:return true;}}
+  _actApplies(aid,lv,z){const cat=(z&&z.cat)||'NB';const base=(lv==='B2'||lv==='B1'||lv==='B1M');
+    /* Marine 的柱子/柱帽 → 只在 Podium 子区录入统计, bottom/top slab(ZC/C)不显示; 地图柱子点位不受影响 */
+    if(aid==='col'||aid==='act_colcorbel'){ if(z&&z._pod)return true; if(cat==='MA')return false; return true; }
+    switch(aid){case 'pile':return lv==='B2';case 'sbeam':return !base;case 'exc':return cat==='NB'&&(lv==='B2'||lv==='B1');case 'demo':return cat==='EB'&&(lv==='B2'||lv==='B1');default:return true;}}
   mval(z,k){if(k==='area')return z.area||0;if(k==='liftstairAll')return this.lsAll(z.counts);return z.counts[k]||0;}
   fmt(n){return (n||0).toLocaleString('en-US');}
   esc(s){return (s+'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
@@ -1280,7 +1283,7 @@ class Component extends DCLogic {
       const sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:e.a,
         grp:(kind==='P'?e.label:''),fam:(kind==='P'?('Pour group '+e.label):'Marine sub-division'),
         cols:_mcols,piles:[],beams:[],lifts:[],stairs:[],sub:[],
-        counts:{columns:_mcols.length,pilecap:0,mainbeam:0,steelbeam:0},crit:false};
+        counts:{columns:_mcols.length,pilecap:0,mainbeam:0,steelbeam:0},crit:false,_pod:(kind==='P'),_mslab:(kind==='C')};
       /* 顶部 SITE PROGRESS 用这个细分自己活动的完成度(和地图填色同一来源) */
       const _sp=this._subActPct(e.label);
       sz._p={pct:(_sp.pct==null?0:_sp.pct), status:(_sp.pct!=null&&_sp.pct>=100)?'done':(_sp.started?'wip':'todo'), source:_sp.hasPlan?(_sp.started?'act':'plan'):'none'};
@@ -1778,7 +1781,10 @@ class Component extends DCLogic {
       const doneMonths=M.map(mm=>({mm,v:this.actDoneMonth(lv,zmk,a.id,mm),p:this.actPlan(lv,zmk,a.id,mm)})).filter(x=>x.mm===sm&&(x.v!=null||x.p!=null));
       const plan=this.actPlan(lv,zmk,a.id,sm), dm=this.actDoneMonth(lv,zmk,a.id,sm);
       const cg=this.actCarry(lv,zmk,a.id,mi);
-      if(!admin){ if(_vis==='hide') return ''; if(_vis!=='show' && (plan==null||plan===0) && (dm==null||dm===0) && cg.balance<=0) return ''; }
+      if(!admin){ if(_vis==='hide') return '';
+        const _vm=this.visMonths?this.visMonths():this.ACT_MONTHS;   /* 只要可见月份里排过计划, 就显示这个活动 */
+        const _anyPlan=(_vm||[]).some(mm=>{const p=this.actPlan(lv,zmk,a.id,mm);return p!=null&&p>0;});
+        if(_vis!=='show' && !_anyPlan && (dm==null||dm===0) && cg.balance<=0) return ''; }
       const _balTxt=cg.balance>0?('<b style="color:var(--crit)">owe '+this.fmt(cg.balance)+'</b>'):(cg.balance<0?('<b style="color:var(--done)">ahead '+this.fmt(-cg.balance)+'</b>'):'<b style="color:var(--done)">on track</b>');
       const carryLine=cg.hasData?`<div class="actsub actcarry"><span class="am2" title="Backlog carried in from earlier months = cumulative plan − cumulative done">Backlog in</span> <b>${this.fmt(cg.carryIn)}</b><span class="asep">|</span><span class="am2" title="What to do this month = this-month plan">Target</span> <b>${this.fmt(cg.required)}</b><span class="asep">|</span><span class="am2">Balance</span> ${_balTxt}${(cg.carryIn>0&&cg.done>0)?`<span class="acum" title="Of what you did this month: cleared old backlog + this-month share">did ${this.fmt(cg.done)} = ${this.fmt(cg.cleared)} backlog + ${this.fmt(cg.current)} this-mo</span>`:''}</div>`:'';
       const pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
@@ -2187,17 +2193,21 @@ class Component extends DCLogic {
       });});
       const cum=[];let c=before;for(let k=0;k<14;k++){c+=dm[k];cum.push(Math.round(c));}
       return {planned:Math.round(planned),done:Math.round(done),doneMonth:dm.map(x=>Math.round(x)),cum,byAct};};
-    const all=agg(()=>true), crit=agg(z=>!!z.crit);
+    const critMode=this._rpCritOnly!==false;   /* 开关: 开=只算 critical, 关=全部区 */
+    const all=agg(()=>true), crit=agg(critMode?(z=>!!z.crit):(()=>true));
     const now=new Date();const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()];const yy="'"+String(now.getFullYear()).slice(2);
     let asOf=mn+" "+yy;if(!PROG.some(p=>(p[0]+" "+p[1])===asOf))asOf="Jul '26";
     const AREA=[{key:'EB',cat:'EB',label:'Existing Basement',col:'#c98a3a',finishIdx:9,finish:"Jan '27"},{key:'NB',cat:'NB',label:'New Basement',col:'#c85a86',finishIdx:13,finish:"May '27"},{key:'MA',cat:'MA',label:'Marine',col:'#3e7cc4',finishIdx:3,finish:"Jul '26"}];
-    const _byArea=AREA.map(A=>{const r=agg((z)=>z.crit&&(z.cat||'NB')===A.cat);return {key:A.key,label:A.label,col:A.col,planned:r.planned,done:r.done,pct:r.planned?Math.round(r.done/r.planned*100):0,doneMonth:r.doneMonth,cum:r.cum,finishIdx:A.finishIdx,finish:A.finish};});
+    const _byArea=AREA.map(A=>{const r=agg((z)=>(critMode?z.crit:true)&&(z.cat||'NB')===A.cat);return {key:A.key,label:A.label,col:A.col,planned:r.planned,done:r.done,pct:r.planned?Math.round(r.done/r.planned*100):0,doneMonth:r.doneMonth,cum:r.cum,finishIdx:A.finishIdx,finish:A.finish};});
     const _tp=_byArea.reduce((s2,a)=>s2+a.planned,0)||1;let _acc=0;_byArea.forEach((a,ix)=>{if(ix<_byArea.length-1){a.daysShare=Math.round(108*a.planned/_tp);_acc+=a.daysShare;}else{a.daysShare=108-_acc;}a.daysEarned=Math.round(a.daysShare*a.pct/100);});
     const mkCat=o=>Object.values(o).map(c=>({label:c.label,planned:Math.round(c.planned),done:Math.round(c.done)}));
     return {R:{totalPlanned:all.planned,totalDone:all.done,doneMonth:all.doneMonth,cum:all.cum,overallPct:all.planned?Math.round(all.done/all.planned*100):0,critPlanned:crit.planned,critDone:crit.done,critDoneMonth:crit.doneMonth,critCum:crit.cum,byCat:mkCat(all.byAct),critByCat:mkCat(crit.byAct),critPct:crit.planned?Math.round(crit.done/crit.planned*100):0,hasCrit:crit.planned>0,hasData:all.done>0,byArea:_byArea},asOf};}
-  _showRP(){this._rpView=true;this._rpActive='__RP';const c=this.root.querySelector('#center');if(c)c.style.position='relative';this.root.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x.dataset.lv==='__RP'));const lf=this.root.querySelector('#rplframe');if(lf)lf.style.display='none';let f=this.root.querySelector('#rpframe');if(!f){f=document.createElement('iframe');f.id='rpframe';f.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-modals allow-downloads');f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#16a06b;z-index:60';c.appendChild(f);}if(!f.dataset.loaded){const b=this.root.querySelector('#rpB64');f.src='data:text/html;charset=utf-8;base64,'+(b?b.textContent.trim():'');f.dataset.loaded='1';}f.style.display='block';const sd=this.root.querySelector('#side');if(sd)sd.style.display='none';}
-  _showRPL(){this._rpView=true;this._rpActive='__RPL';const c=this.root.querySelector('#center');if(c)c.style.position='relative';this.root.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x.dataset.lv==='__RPL'));const hf=this.root.querySelector('#rpframe');if(hf)hf.style.display='none';let f=this.root.querySelector('#rplframe');if(!f){f=document.createElement('iframe');f.id='rplframe';f.setAttribute('sandbox','allow-scripts allow-popups');f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef1f5;z-index:60';c.appendChild(f);}const rp=this._rpRollup();const b=this.root.querySelector('#rpLinkedTpl');let tpl=b?this._b64ToUtf8(b.textContent.trim()):'';const inj='<scr'+'ipt>window.__ROLLUP='+JSON.stringify(rp.R)+';window.__ASOF='+JSON.stringify(rp.asOf)+';</scr'+'ipt>';tpl=tpl.replace('<body>','<body>'+inj);f.srcdoc=tpl;f.style.display='block';const sd=this.root.querySelector('#side');if(sd)sd.style.display='none';}
-  _hideRP(){if(!this._rpView)return;this._rpView=false;this._rpActive=null;const f=this.root.querySelector('#rpframe');if(f)f.style.display='none';const lf=this.root.querySelector('#rplframe');if(lf)lf.style.display='none';const sd=this.root.querySelector('#side');if(sd)sd.style.display='';}
+  _showRP(){this._rpView=true;this._rpActive='__RP';const c=this.root.querySelector('#center');if(c)c.style.position='relative';this.root.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x.dataset.lv==='__RP'));const lf=this.root.querySelector('#rplframe');if(lf)lf.style.display='none';const _tgH=this.root.querySelector('#rpToggle');if(_tgH)_tgH.style.display='none';let f=this.root.querySelector('#rpframe');if(!f){f=document.createElement('iframe');f.id='rpframe';f.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-modals allow-downloads');f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#16a06b;z-index:60';c.appendChild(f);}if(!f.dataset.loaded){const b=this.root.querySelector('#rpB64');f.src='data:text/html;charset=utf-8;base64,'+(b?b.textContent.trim():'');f.dataset.loaded='1';}f.style.display='block';const sd=this.root.querySelector('#side');if(sd)sd.style.display='none';}
+  _showRPL(){this._rpView=true;this._rpActive='__RPL';const c=this.root.querySelector('#center');if(c)c.style.position='relative';this.root.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x.dataset.lv==='__RPL'));const hf=this.root.querySelector('#rpframe');if(hf)hf.style.display='none';let f=this.root.querySelector('#rplframe');if(!f){f=document.createElement('iframe');f.id='rplframe';f.setAttribute('sandbox','allow-scripts allow-popups');f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef1f5;z-index:60';c.appendChild(f);}const rp=this._rpRollup();const b=this.root.querySelector('#rpLinkedTpl');let tpl=b?this._b64ToUtf8(b.textContent.trim()):'';const inj='<scr'+'ipt>window.__ROLLUP='+JSON.stringify(rp.R)+';window.__ASOF='+JSON.stringify(rp.asOf)+';</scr'+'ipt>';tpl=tpl.replace('<body>','<body>'+inj);f.srcdoc=tpl;f.style.display='block';
+    let tg=this.root.querySelector('#rpToggle');if(!tg){tg=document.createElement('button');tg.id='rpToggle';tg.style.cssText='position:absolute;top:14px;right:18px;z-index:61;border:1px solid #cfd6e0;border-radius:20px;padding:7px 14px;font:600 11.5px Poppins,-apple-system,sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.14)';tg.onclick=()=>{this._rpCritOnly=(this._rpCritOnly===false);this._showRPL();};c.appendChild(tg);}
+    const _co=this._rpCritOnly!==false;tg.innerHTML=_co?'🎯 Critical path only · <b>click = all zones</b>':'🌐 All zones · <b>click = critical only</b>';tg.style.background=_co?'#eefaf3':'#eef3fb';tg.style.color=_co?'#0f7a52':'#2b5fa5';tg.style.display='block';
+    const sd=this.root.querySelector('#side');if(sd)sd.style.display='none';}
+  _hideRP(){if(!this._rpView)return;this._rpView=false;this._rpActive=null;const f=this.root.querySelector('#rpframe');if(f)f.style.display='none';const lf=this.root.querySelector('#rplframe');if(lf)lf.style.display='none';const tg=this.root.querySelector('#rpToggle');if(tg)tg.style.display='none';const sd=this.root.querySelector('#side');if(sd)sd.style.display='';}
   _zxData(){ if(this._zx)return this._zx; try{const el=document.getElementById('zxrefData'); this._zx=el?JSON.parse(el.textContent):[]; }catch(e){this._zx=[];} return this._zx; }
   _zxIndex(){ if(this._zxIdx)return this._zxIdx; const rows=this._zxData(); const out=[]; const KS=['B2','B1','B1M','L1','L2'];
     rows.forEach(r=>{ KS.forEach(k=>{ const cell=r[k]; if(!cell||!cell.a||!cell.a.length)return;
