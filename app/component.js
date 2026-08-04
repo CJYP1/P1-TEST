@@ -545,8 +545,11 @@ class Component extends DCLogic {
       /* 累计: 到当前月为止的累计计划 vs 累计完成 —— 这样上月没做完(欠账)且后面没新计划的, 依然算进度; 做完的也一直保持 */
       let cumPlan=0,cumDone=0;
       for(let _j=0;_j<=_mi;_j++){const _pl=this.actPlan(lv,zmk,aid,_M[_j]); if(_pl!=null&&_pl>0)cumPlan+=_pl; const _dn=this.actDoneMonth(lv,zmk,aid,_M[_j]); if(_dn!=null)cumDone+=_dn;}
-      if(cumPlan<=0)return;
-      (ph[p]=ph[p]||[]).push(this.clamp(cumDone/cumPlan,0,1));});
+      /* 分母优先用总量(全 scope): "做在计划前面"(done 已录, plan 还排在后面月份)也照样算进度; 没总量再退回累计计划, 再退回已完成量 */
+      const _tot=this.actTotal(lv,zmk,aid,this.actAutoTotal(lv,zmk,aid));
+      const denom=(_tot!=null&&_tot>0)?_tot:(cumPlan>0?cumPlan:cumDone);
+      if(denom<=0)return;
+      (ph[p]=ph[p]||[]).push(this.clamp(cumDone/denom,0,1));});
     const out={};Object.keys(ph).forEach(k=>{out[k]=ph[k].reduce((a,b)=>a+b,0)/ph[k].length;});return out;}
   /* zone overall % = weighted average of present phases (renormalized). Piling+D-wall (22%) counts 0% on basement zones. */
   zoneActPct(lv,z){const ph=this._zonePhases(lv,z);const W=this._pw();
