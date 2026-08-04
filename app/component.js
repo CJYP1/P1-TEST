@@ -963,6 +963,8 @@ class Component extends DCLogic {
   zonePlanItems(lv,z,m){const zmk=z.mk||z.lid;const out=[];this._actMeta().forEach(a=>{if(this.actHidden(lv,zmk,a.id))return;const p=this.actPlan(lv,zmk,a.id,m);if(p!=null&&p>0)out.push({label:a.label,qty:p,unit:a.unit});});return out;}
   zoneHasPlan(lv,z,m){return this.zonePlanItems(lv,z,m).length>0;}
   zonePlanStarted(lv,z,m){const zmk=z.mk||z.lid;return this._actMeta().some(a=>{const d=this.actDoneMonth(lv,zmk,a.id,m);return d!=null&&d>0;});}
+  /* delay 判断: 到本月为止, 该区任一活动"累计计划 > 累计完成"(actCarry.balance>0)= 本该做完的还欠着 = 延误 */
+  zoneDelayed(lv,z,m){const zmk=z.mk||z.lid;const mi=this.ACT_MONTHS.indexOf(m);if(mi<0)return false;return this._actMeta().some(a=>{const cg=this.actCarry(lv,zmk,a.id,mi);return cg.hasData&&cg.balance>0;});}
   /* 月度地图状态 — 计划线(CSV 各月计划量)和实际线(各月实际完成量)分开算, 实际优先于计划。
      返回 state: fin_earlier(更早已完成,灰绿保留) / act_finish(本月实际完成) / act_prog(实际进行中)
                 / plan_finish(本月计划完成) / plan_this(本月计划开始或在做) / none(本月无工作) */
@@ -1081,6 +1083,7 @@ class Component extends DCLogic {
       const isCrit=z.crit&&this.showCrit;
       s+=`<text class="zname${isCrit?' crit':''}" style="font-size:${fs.toFixed(0)}px" x="${cx.toFixed(0)}" y="${(cy-fs*0.25).toFixed(0)}">${this.esc(z.label)}</text>`;
       if(this.colorMode==='plan'&&this.zoneHasPlan(this.curLevel,z,this.planMonth())&&this.zonePlanStarted(this.curLevel,z,this.planMonth())){const _r=Math.max(fs*0.7,220),_bx=cx,_by=cy+fs*0.65+_r*1.35;s+=`<circle class="planprog" cx="${_bx.toFixed(0)}" cy="${_by.toFixed(0)}" r="${(_r*1.15).toFixed(0)}" fill="#f5a623" fill-opacity="0.25"/><circle class="planprog" cx="${_bx.toFixed(0)}" cy="${_by.toFixed(0)}" r="${_r.toFixed(0)}" fill="#f5a623" stroke="#fff" stroke-width="${(_r*0.3).toFixed(0)}"/><circle class="planprog" cx="${_bx.toFixed(0)}" cy="${_by.toFixed(0)}" r="${(_r*0.34).toFixed(0)}" fill="#fff"/>`;}
+      if(this.colorMode==='plan'&&this.zoneHasPlan(this.curLevel,z,this.planMonth())&&this.zoneDelayed(this.curLevel,z,this.planMonth())){const _r=Math.max(fs*0.7,220),_started=this.zonePlanStarted(this.curLevel,z,this.planMonth()),_dx=cx+(_started?_r*2.6:0),_dy=cy+fs*0.65+_r*1.35;s+=`<circle class="planprog" cx="${_dx.toFixed(0)}" cy="${_dy.toFixed(0)}" r="${(_r*1.15).toFixed(0)}" fill="#e11d2a" fill-opacity="0.25"/><circle class="planprog" cx="${_dx.toFixed(0)}" cy="${_dy.toFixed(0)}" r="${_r.toFixed(0)}" fill="#e11d2a" stroke="#fff" stroke-width="${(_r*0.3).toFixed(0)}"/><circle class="planprog" cx="${_dx.toFixed(0)}" cy="${_dy.toFixed(0)}" r="${(_r*0.34).toFixed(0)}" fill="#fff"/>`;}   /* delay marker(红): 到本月累计计划>累计完成 = 延误 */
       const sub=fs*0.62;
       if(this.colorMode==='progress' && z._p){
         const d=this.zoneDisplayPct(z);const col=this.progColor(d.pct);
@@ -1391,6 +1394,7 @@ class Component extends DCLogic {
       s+=`<div class="lr"><span class="sw" style="background:#a7a2e8"></span>Planned this month (not started)</div>`;
       s+=`<div class="lr"><span class="sw" style="background:#fff;border:1px solid var(--line);box-sizing:border-box"></span>No work this month</div>`;
       s+=`<div class="lr"><span style="width:13px;height:13px;border-radius:50%;background:#f5a623;box-shadow:inset 0 0 0 2px #fff;flex:0 0 auto;margin-right:5px"></span>Started marker (planned + real work begun)</div>`;
+      s+=`<div class="lr"><span style="width:13px;height:13px;border-radius:50%;background:#e11d2a;box-shadow:inset 0 0 0 2px #fff;flex:0 0 auto;margin-right:5px"></span>Behind schedule (planned cumulative &gt; done)</div>`;
     } else {
       const mx=this.levelMax();const m=this.METRICS.find(x=>x.k===this.curMetric);
       s+=`<div style="font-weight:700;color:var(--txt);margin-bottom:4px">Quantity heat ${m.label}</div>`;
