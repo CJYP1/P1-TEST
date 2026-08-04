@@ -224,7 +224,11 @@ class Component extends DCLogic {
     }));
   }
   /* ---------- zone activities: per-month plan / actual (Total + Planned/Done by month) ---------- */
-  actCurLabel(){const AB={January:'Jan',February:'Feb',March:'Mar',April:'Apr',May:'May',June:'Jun',July:'Jul',August:'Aug',September:'Sep',October:'Oct',November:'Nov',December:'Dec'};const p=((this.ZP&&this.ZP.current)||'July 2026').split(' ');return (AB[p[0]]||p[0])+"'"+String(p[1]||'2026').slice(2);}
+  actCurLabel(){const MB=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    /* "now" = 真实当前月(在计划月份范围内就用它); 超出范围再退回数据里的 ZP.current */
+    const n=new Date();const real=MB[n.getMonth()]+"'"+String(n.getFullYear()).slice(2);
+    if(this.ACT_MONTHS&&this.ACT_MONTHS.indexOf(real)>=0)return real;
+    const AB={January:'Jan',February:'Feb',March:'Mar',April:'Apr',May:'May',June:'Jun',July:'Jul',August:'Aug',September:'Sep',October:'Oct',November:'Nov',December:'Dec'};const p=((this.ZP&&this.ZP.current)||'July 2026').split(' ');return (AB[p[0]]||p[0])+"'"+String(p[1]||'2026').slice(2);}
   actDefaultMonth(){const c=this.actCurLabel();return this.ACT_MONTHS.indexOf(c)>=0?c:this.ACT_MONTHS[this.ACT_MONTHS.length-1];}
   userMonthCutoff(){return (this._appCfg&&this._appCfg.userMonthCutoff)||"Aug'26";}   /* 用户可见到哪个月(admin 可在后台改, 云端同步; 默认 Aug'26) */
   visMonths(){const M=this.ACT_MONTHS;if(this.rwsIsAdmin())return M;const i=M.indexOf(this.userMonthCutoff());return i>=0?M.slice(0,i+1):M;}
