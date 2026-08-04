@@ -2171,31 +2171,30 @@ class Component extends DCLogic {
   setLevel(lv){if(lv==='__RP'){this._showRP();return;}if(lv==='__RPL'){this._showRPL();return;}this._hideRP();this.curLevel=lv;this._applyOvlForLevel(lv);this.selKey=null;this.syncRail();this.buildMetrics();this.render();this.paintTimelineSel();}
   _b64ToUtf8(b){try{return decodeURIComponent(escape(atob(b)));}catch(e){try{return atob(b);}catch(_){return '';}}}
   _rpRollup(){const PROG=[["Apr","'26"],["May","'26"],["Jun","'26"],["Jul","'26"],["Aug","'26"],["Sep","'26"],["Oct","'26"],["Nov","'26"],["Dec","'26"],["Jan","'27"],["Feb","'27"],["Mar","'27"],["Apr","'27"],["May","'27"]];
-    const AM=this.ACT_MONTHS;const ET=[['cols','col','Columns'],['piles','pile','Pile caps'],['beams','beam','Steel main beams'],['lifts','lift','Lifts'],['stairs','stair','Stairs'],['cores','core','Cores']];
-    let totalPlanned=0,totalDone=0,critPlanned=0,critDone=0;const doneB={},critB={},byCat={},critCat={};
-    ET.forEach(([,tp,lb])=>{byCat[tp]={label:lb,planned:0,done:0};critCat[tp]={label:lb,planned:0,done:0};});
-    (this.DATA.order||[]).forEach(lv=>{const L=this.DATA.levels[lv];if(!L)return;(L.zones||[]).forEach(z=>{const isCrit=!!z.crit;
-      ET.forEach(([arr,tp])=>{(z[arr]||[]).forEach(x=>{const id=(typeof x==='string')?x:x.id;const k=this.ekey(lv,z,tp,id);
-        const dn=this.elemStatus(k)==='done';const b=dn?(this.dateToActMonth(this.elemDate(k)||this.todayISOStr())):null;
-        totalPlanned++;byCat[tp].planned++;
-        if(dn){totalDone++;byCat[tp].done++;doneB[b]=(doneB[b]||0)+1;}
-        if(isCrit){critPlanned++;critCat[tp].planned++;if(dn){critDone++;critCat[tp].done++;critB[b]=(critB[b]||0)+1;}}
+    const AM=this.ACT_MONTHS;
+    /* 按"你录入的活动进度"汇总: 每个活动的 Done 数量 / Total 数量(与地图 SITE PROGRESS 同源), 月度可累计。
+       只有排了计划或做过的活动才参与(和 _subActPct 一致): 没这项工作的区不拉低进度。 */
+    const agg=(ok)=>{let planned=0,done=0;const dm=new Array(14).fill(0);let before=0;const byAct={};
+      (this.DATA.order||[]).forEach(lv=>{const L=this.DATA.levels[lv];if(!L)return;(L.zones||[]).forEach(z=>{if(!ok(z,lv))return;const zmk=z.mk||z.lid;
+        const acts=(this._actList(lv,z)||[]).filter(a=>a.custom||this._actApplies(a.id,lv,z));
+        acts.forEach(a=>{const tot=a.total;if(tot==null||tot<=0)return;
+          let aDone=0,aPlan=0,bef=0;const dmA=new Array(14).fill(0);
+          for(let i=0;i<AM.length;i++){const dv=this.actDoneMonth(lv,zmk,a.id,AM[i]);if(dv!=null){const v=+dv||0;aDone+=v;if(i===0)bef+=v;else dmA[i-1]+=v;}const pv=this.actPlan(lv,zmk,a.id,AM[i]);if(pv!=null)aPlan+=(+pv||0);}
+          if(aPlan<=0&&aDone<=0)return;
+          planned+=tot;done+=aDone;before+=bef;
+          for(let k=0;k<14;k++)dm[k]+=dmA[k];
+          const lb=a.label||a.id;(byAct[lb]=byAct[lb]||{label:lb,planned:0,done:0});byAct[lb].planned+=tot;byAct[lb].done+=aDone;});
       });});
-    });});
-    const ser=B=>{const dm=[],cm=[];let c=B["Before Apr'26"]||0;for(let i=0;i<14;i++){const d=B[AM[i+1]]||0;dm.push(d);c+=d;cm.push(c);}return{dm,cm};};
-    const a=ser(doneB),cr=ser(critB);
+      const cum=[];let c=before;for(let k=0;k<14;k++){c+=dm[k];cum.push(Math.round(c));}
+      return {planned:Math.round(planned),done:Math.round(done),doneMonth:dm.map(x=>Math.round(x)),cum,byAct};};
+    const all=agg(()=>true), crit=agg(z=>!!z.crit);
     const now=new Date();const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()];const yy="'"+String(now.getFullYear()).slice(2);
     let asOf=mn+" "+yy;if(!PROG.some(p=>(p[0]+" "+p[1])===asOf))asOf="Jul '26";
     const AREA=[{key:'EB',cat:'EB',label:'Existing Basement',col:'#c98a3a',finishIdx:9,finish:"Jan '27"},{key:'NB',cat:'NB',label:'New Basement',col:'#c85a86',finishIdx:13,finish:"May '27"},{key:'MA',cat:'MA',label:'Marine',col:'#3e7cc4',finishIdx:3,finish:"Jul '26"}];
-    const _ET=[['cols','col'],['piles','pile'],['beams','beam'],['lifts','lift'],['stairs','stair'],['cores','core']];
-    const _byArea=AREA.map(A=>{let planned=0,done=0;const dB={};
-      (this.DATA.order||[]).forEach(lv=>{const L=this.DATA.levels[lv];if(!L)return;(L.zones||[]).forEach(z=>{if(!z.crit)return;if((z.cat||'NB')!==A.cat)return;
-        _ET.forEach(([arr,tp])=>{(z[arr]||[]).forEach(x=>{const id=(typeof x==='string')?x:x.id;const key=this.ekey(lv,z,tp,id);const dn=this.elemStatus(key)==='done';planned++;if(dn){done++;const bk=this.dateToActMonth(this.elemDate(key)||this.todayISOStr());dB[bk]=(dB[bk]||0)+1;}});});
-      });});
-      const dm=[],cm=[];let c=dB["Before Apr'26"]||0;for(let i2=0;i2<14;i2++){const dd=dB[AM[i2+1]]||0;dm.push(dd);c+=dd;cm.push(c);}
-      return {key:A.key,label:A.label,col:A.col,planned,done,pct:planned?Math.round(done/planned*100):0,doneMonth:dm,cum:cm,finishIdx:A.finishIdx,finish:A.finish};});
+    const _byArea=AREA.map(A=>{const r=agg((z)=>z.crit&&(z.cat||'NB')===A.cat);return {key:A.key,label:A.label,col:A.col,planned:r.planned,done:r.done,pct:r.planned?Math.round(r.done/r.planned*100):0,doneMonth:r.doneMonth,cum:r.cum,finishIdx:A.finishIdx,finish:A.finish};});
     const _tp=_byArea.reduce((s2,a)=>s2+a.planned,0)||1;let _acc=0;_byArea.forEach((a,ix)=>{if(ix<_byArea.length-1){a.daysShare=Math.round(108*a.planned/_tp);_acc+=a.daysShare;}else{a.daysShare=108-_acc;}a.daysEarned=Math.round(a.daysShare*a.pct/100);});
-    return {R:{totalPlanned,totalDone,doneMonth:a.dm,cum:a.cm,overallPct:totalPlanned?Math.round(totalDone/totalPlanned*100):0,critPlanned,critDone,critDoneMonth:cr.dm,critCum:cr.cm,byCat:ET.map(([,tp])=>byCat[tp]).filter(c=>c.planned>0),critByCat:ET.map(([,tp])=>critCat[tp]).filter(c=>c.planned>0),critPct:critPlanned?Math.round(critDone/critPlanned*100):0,hasCrit:critPlanned>0,hasData:totalDone>0,byArea:_byArea},asOf};}
+    const mkCat=o=>Object.values(o).map(c=>({label:c.label,planned:Math.round(c.planned),done:Math.round(c.done)}));
+    return {R:{totalPlanned:all.planned,totalDone:all.done,doneMonth:all.doneMonth,cum:all.cum,overallPct:all.planned?Math.round(all.done/all.planned*100):0,critPlanned:crit.planned,critDone:crit.done,critDoneMonth:crit.doneMonth,critCum:crit.cum,byCat:mkCat(all.byAct),critByCat:mkCat(crit.byAct),critPct:crit.planned?Math.round(crit.done/crit.planned*100):0,hasCrit:crit.planned>0,hasData:all.done>0,byArea:_byArea},asOf};}
   _showRP(){this._rpView=true;this._rpActive='__RP';const c=this.root.querySelector('#center');if(c)c.style.position='relative';this.root.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x.dataset.lv==='__RP'));const lf=this.root.querySelector('#rplframe');if(lf)lf.style.display='none';let f=this.root.querySelector('#rpframe');if(!f){f=document.createElement('iframe');f.id='rpframe';f.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-modals allow-downloads');f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#16a06b;z-index:60';c.appendChild(f);}if(!f.dataset.loaded){const b=this.root.querySelector('#rpB64');f.src='data:text/html;charset=utf-8;base64,'+(b?b.textContent.trim():'');f.dataset.loaded='1';}f.style.display='block';const sd=this.root.querySelector('#side');if(sd)sd.style.display='none';}
   _showRPL(){this._rpView=true;this._rpActive='__RPL';const c=this.root.querySelector('#center');if(c)c.style.position='relative';this.root.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x.dataset.lv==='__RPL'));const hf=this.root.querySelector('#rpframe');if(hf)hf.style.display='none';let f=this.root.querySelector('#rplframe');if(!f){f=document.createElement('iframe');f.id='rplframe';f.setAttribute('sandbox','allow-scripts allow-popups');f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef1f5;z-index:60';c.appendChild(f);}const rp=this._rpRollup();const b=this.root.querySelector('#rpLinkedTpl');let tpl=b?this._b64ToUtf8(b.textContent.trim()):'';const inj='<scr'+'ipt>window.__ROLLUP='+JSON.stringify(rp.R)+';window.__ASOF='+JSON.stringify(rp.asOf)+';</scr'+'ipt>';tpl=tpl.replace('<body>','<body>'+inj);f.srcdoc=tpl;f.style.display='block';const sd=this.root.querySelector('#side');if(sd)sd.style.display='none';}
   _hideRP(){if(!this._rpView)return;this._rpView=false;this._rpActive=null;const f=this.root.querySelector('#rpframe');if(f)f.style.display='none';const lf=this.root.querySelector('#rplframe');if(lf)lf.style.display='none';const sd=this.root.querySelector('#side');if(sd)sd.style.display='';}

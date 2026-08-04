@@ -13,20 +13,19 @@ window.CW_GROUPS = {
             stairs:["P1-ST-44B","P1-ST-49","P1-ST-44/49"], f:"B2", t:"L4" },
   "CW5":  { lifts:["P1-FL5","P1-RSL1","P1-RSL-EL1"],
             stairs:["P1-ST-05B","P1-ST-05","P1-ST-05A"], f:"B2", t:"L4" },
-  "CW8":  { lifts:["P1-CGL1","P1-CGL2","PL-CGL1","PL-CGL2"],
-            stairs:["P1-ST-03B (LW8)","P1-ST-03/3B (LW8)","P1-ST-03 (LW8)"], f:"B2", t:"L4M" },
+  "CW8":  { lifts:["P1-CGL1","P1-CGL2","PL-CGL1","PL-CGL2"], stairs:[], f:"B2", t:"L4M" },  /* lift 核心筒: 只到 L4M */
   "CW2A": { lifts:["P1-FL3","P1-HSL/EL3","PL-HSL/EL3","P1-HSL/EL4","PL-HSL/EL4","P1-HSL/E3","P1-CSL4","PL-CSL4","P1-PL11","P1-PL12","P1-FL-03"],
             stairs:[], f:"B2", t:"L17" },
   "CW2B": { lifts:["P1-CSL1","P1-CSL2","P1-CSL3","P1-PL5","P1-PL1","P1-PL3","P1-PL2","P1-PL4","P1-PL6"],
             stairs:[], f:"B2", t:"L4" },
   "CW01": { lifts:["PL-HSL/EL5","P1-FL4","P1-PL22","P1-PL21","P1-PL20","P1-PL19","P1-SK1","P1-SK2"],
-            stairs:["P1-ST-20/21","P1-ST-04","P1-ST-18/19"], f:"L1", t:"L16" },
+            stairs:["P1-ST-04","P1-ST-18/19"], f:"L1", t:"L16" },
   "LW6":  { lifts:["P1-ML1","P1-ML2","P1-ML3","P1-ML4"], stairs:[], f:"L1", t:"L4" },
   "LW7":  { lifts:["P1-CL4","P1-CL3"], stairs:[], f:"L1", t:"L3" },
   "LW9":  { lifts:["P1-CL1","P1-CL2"], stairs:[], f:"L2", t:"L3" },
-  "LW10": { lifts:["P1-FL7"], stairs:["P1-ST-07/50"], f:"L1", t:"L4" }
+  "LW10": { lifts:["P1-FL7"], stairs:["P1-ST-07/50"], f:"L1", t:"L17" }
 };
 /* 别名: 你习惯都写 "CW", 但数据里 lift-wall 是 "LW" —— CW6/7/9/10 当作 LW6/7/9/10 */
 ["6","7","9","10"].forEach(function(n){ window.CW_GROUPS["CW"+n]=window.CW_GROUPS["LW"+n]; });
-/* LW8 就是 CW8(楼梯 P1-ST-03/3B 标注了 (LW8), 但核心筒本体是 CW8) */
-window.CW_GROUPS["LW8"]=window.CW_GROUPS["CW8"];
+/* LW8 = CW8 那道核心筒的楼梯(P1-ST-03B),但楼梯到 L17 (TRF), 比 lift 核心筒(L4M)高 → 单独一组 */
+window.CW_GROUPS["LW8"]={ lifts:[], stairs:["P1-ST-03B (LW8)","P1-ST-03/3B (LW8)","P1-ST-03 (LW8)"], f:"B2", t:"L17" };
