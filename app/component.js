@@ -410,7 +410,7 @@ class Component extends DCLogic {
     const s=String(raw==null?'':raw).replace(/,/g,'').trim();
     const v=s===''?null:parseFloat(s); if(v!=null&&(isNaN(v)||v<0))return;
     const key=lv+'||'+zoneMk+'||'+field;
-    if(v==null)delete this._qtyOv[key]; else this._qtyOv[key]=v;
+    if(v==null){delete this._qtyOv[key];this.unmarkEdited('qty_ov',key);} else {this._qtyOv[key]=v;this.markEdited('qty_ov',key);}   /* 填了自动上锁(Import 不覆盖), 清空则解锁 */
     try{localStorage.setItem('rws_qty_ov',JSON.stringify(this._qtyOv));}catch(e){}
     this.applyQtyOv();
     this.buildRail();this.buildMetrics();this.buildTimeline();this.render();
@@ -1874,7 +1874,7 @@ class Component extends DCLogic {
   jumpToZone(name){ const r=this._zpRev&&this._zpRev[name]; this.root.querySelector('#schedpage').classList.remove('open'); this._schEdit=null; if(r){ if(r.lv!==this.curLevel){this.curLevel=r.lv;this._applyOvlForLevel(r.lv);this.syncRail();this.buildMetrics();} this.selKey=r.mk; this.render(); const z=this.DATA.levels[this.curLevel].zones.find(x=>this.zid(x)===r.mk); if(z){this.selectZone(z);this.paintSel();} } }
   statCell(lv,zmk,field,label,value){
     if(!this.rwsIsAdmin()){ if(value==0||value==null||value==='') return ''; return `<div class="stat"><div class="n">${value}</div><div class="l">${label}</div></div>`; }
-    return `<div class="stat"><input class="qty-ov-in" data-lv="${this.esc(lv)}" data-zmk="${this.esc(zmk)}" data-field="${field}" value="${value}" title="Edit ${label} (admin)" style="width:100%;background:transparent;border:1px dashed var(--accent);border-radius:5px;font-size:15px;font-weight:700;color:var(--accent);padding:1px 3px;font-family:inherit"><div class="l">${label}</div></div>`;
+    return `<div class="stat"><input class="qty-ov-in" data-lv="${this.esc(lv)}" data-zmk="${this.esc(zmk)}" data-field="${field}" value="${value}" title="Edit ${label} (admin)" style="width:100%;background:transparent;border:1px dashed var(--accent);border-radius:5px;font-size:15px;font-weight:700;color:var(--accent);padding:1px 3px;font-family:inherit"><div class="l">${label}${this._lockIco('qty_ov',lv+'||'+zmk+'||'+field)}</div></div>`;
   }
   flashOk(el){if(!el)return;el.classList.remove('flash-ok');void el.offsetWidth;el.classList.add('flash-ok');setTimeout(()=>{el.classList.remove('flash-ok');},900);}
   selectZone(z,sub){
@@ -2587,7 +2587,7 @@ class Component extends DCLogic {
         if(data.updates){Object.keys(data.updates).forEach(k=>{this.updates[k]=data.updates[k];});updN=Object.keys(data.updates).length;}
         if(data.elemDate){this._elemDate={...(this._elemDate||{}),...data.elemDate};}
         if(data.zpOv){this._zpOv={...(this._zpOv||{}),...data.zpOv};}
-        if(data.qtyOv){this._qtyOv={...(this._qtyOv||{}),...data.qtyOv};}
+        if(data.qtyOv){this._qtyOv=this._qtyOv||{};Object.keys(data.qtyOv).forEach(k=>{if(this.isEdited('qty_ov',k))return;this._qtyOv[k]=data.qtyOv[k];});}   /* 锁住的方框(isEdited)不被 Import 覆盖 */
         if(data.zpPlanOv){this._zpPlanOv={...(this._zpPlanOv||{}),...data.zpPlanOv};}
         if(data.crit){this._critOv={...(this._critOv||{}),...data.crit};critN=Object.keys(data.crit).length;}
         const _applyKV=(store,localObj,src)=>{if(!src)return 0;let n=0;Object.keys(src).forEach(k=>{if(this.isEdited(store,k))return;const v=src[k];if(v==null)delete localObj[k];else localObj[k]=v;n++;});return n;};
