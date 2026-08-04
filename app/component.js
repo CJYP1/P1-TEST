@@ -1177,6 +1177,13 @@ class Component extends DCLogic {
         if(this._liftBuf.length>=2){const r0=this.proj(this._liftBuf[0],H),r1=this.proj(this._liftBuf[1],H);s+=`<line x1="${r0[0].toFixed(0)}" y1="${r0[1].toFixed(0)}" x2="${r1[0].toFixed(0)}" y2="${r1[1].toFixed(0)}" stroke="#1d4ed8" stroke-width="420" stroke-dasharray="800,500" style="pointer-events:none"/>`;}
         this._liftBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#1d4ed8" style="pointer-events:none"/>`;});}
     }
+    /* Access 折线 + 箭头(admin 画的) + 正在画的预览 */
+    { const _accStore=(this._appCfg&&this._appCfg.access)||{}; const _accArr=_accStore[this.curLevel]||[];
+      _accArr.forEach((w,ai)=>{ if(!w.pts||w.pts.length<2)return; const pj=w.pts.map(q=>this.proj(q,H)); s+=this._accArrowSVG(pj,'#ea580c',false,'accessline',` data-aci="${ai}"`); });
+      if(this._drawingAcc&&this._accBuf&&this._accBuf.length){ const pj=this._accBuf.map(q=>this.proj(q,H));
+        if(pj.length>=2)s+=this._accArrowSVG(pj,'#c8102e',true);
+        pj.forEach(r=>{s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="560" fill="#c8102e" stroke="#fff" stroke-width="120" style="pointer-events:none"/>`;}); }
+    }
     s+=_colHtml;   /* 柱子放到最后 → 浮在 Marine 子区图层之上, 柱名可见、可点选 */
     this.svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);
     const _u=this._curUnderlay(); let _uHtml=''; const _ulDrag=this._underlayAdjust&&!this._ulAligning;
@@ -1187,6 +1194,7 @@ class Component extends DCLogic {
     if(_ulDrag){const im=this.svg.querySelector('.underlayimg');if(im)im.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const u=this._curUnderlay();if(!u)return;const r=this.svg.getBoundingClientRect();const sx=this.vb.w/r.width,sy=this.vb.h/r.height;let lx=ev.clientX,ly=ev.clientY;const mv=e=>{u.x+=(e.clientX-lx)*sx;u.y+=(e.clientY-ly)*sy;lx=e.clientX;ly=e.clientY;const cx=(u.x+u.w/2).toFixed(1),cy=(u.y+u.h/2).toFixed(1);im.setAttribute('x',u.x.toFixed(1));im.setAttribute('y',u.y.toFixed(1));im.setAttribute('transform',`rotate(${u.rot||0} ${cx} ${cy})`);};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);this._saveUnderlay();};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);});}
     this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.cwi;const slv=el.dataset.cwlv||this.curLevel;ev.stopPropagation();if(this._drawingCore){this._shapeMenu('core',idx,slv);return;}this._openShape(this._shapeArr('core',slv)[idx],slv);}));   // 画模式=菜单(删/改名); 平时=按名字自动匹配的数据打开
     this.svg.querySelectorAll('.liftwall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.lwi;const slv=el.dataset.lwlv||this.curLevel;ev.stopPropagation();if(this._drawingLift){this._shapeMenu('lift',idx,slv);return;}this._openShape(this._shapeArr('lift',slv)[idx],slv);}));
+    this.svg.querySelectorAll('.accessline').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();if(this._drawingAcc){this._delAccess(this.curLevel,+el.dataset.aci);}}));   // 画模式下点线=删除
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
@@ -1309,8 +1317,8 @@ class Component extends DCLogic {
     if(!(this.curLevel==='L1'&&SL)){p.style.display='none';return;}
     p.style.display='flex';
     const _nHid=((this._appCfg&&this._appCfg.hideCols&&this._appCfg.hideCols[this.curLevel])||[]).length;
-    const _adminOpen=this._editToolsOpen||this._placingCol||this._hidingCol||this._drawingCore||this._drawingLift||this._underlayAdjust;
-    const _editToolsStr=this.rwsIsAdmin()?`<span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${this._drawingLift?`<span class="szchip on" style="border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.12)">画 Staircase: 点3下(一条边+宽度)</span><span class="szchip" data-k="__liftcancel">取消</span>`:`<span class="szchip" data-k="__drawlift">▭ 画 Staircase(可斜)</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
+    const _adminOpen=this._editToolsOpen||this._placingCol||this._hidingCol||this._drawingCore||this._drawingLift||this._drawingAcc||this._underlayAdjust;
+    const _editToolsStr=this.rwsIsAdmin()?`<span class="szchip ${this._placingCol?'on':''}" data-k="__place" style="${this._placingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._placingCol?'● 放置中·点地图':'＋ 放置柱子'}</span><span class="szchip ${this._hidingCol?'on':''}" data-k="__hidecol" style="${this._hidingCol?'border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)':''}">${this._hidingCol?'● 点柱子隐藏/恢复':'⊘ 隐藏柱子'}${_nHid?' ('+_nHid+')':''}</span>${(this.placedCols(this.curLevel).length||Object.keys(this._colAdd||{}).length)?`<span class="szchip" data-k="__expcol">⬇ 导出柱子</span>`:''}${this._drawingCore?`<span class="szchip on" data-k="__corefin" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 完成 (${(this._coreBuf||[]).length})</span><span class="szchip" data-k="__coreundo">↶ 撤销</span><span class="szchip" data-k="__corecancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawcore">▱ 画 Core Wall</span>`}${this._drawingLift?`<span class="szchip on" style="border-color:#1d4ed8;color:#1d4ed8;background:rgba(29,78,216,.12)">画 Staircase: 点3下(一条边+宽度)</span><span class="szchip" data-k="__liftcancel">取消</span>`:`<span class="szchip" data-k="__drawlift">▭ 画 Staircase(可斜)</span>`}${this._drawingAcc?`<span class="szchip on" data-k="__accfin" style="border-color:#ea580c;color:#ea580c;background:rgba(234,88,12,.12)">✓ 完成 Access (${(this._accBuf||[]).length}点)</span><span class="szchip" data-k="__accundo">↶ 撤销</span><span class="szchip" data-k="__acccancel">✕ 取消</span>`:`<span class="szchip" data-k="__drawacc">➵ 画 Access(箭头线)</span>`}${(()=>{const _u=this._curUnderlay();return !_u?`<span class="szchip" data-k="__ulload">🖼 载入底图</span>`:(this._underlayAdjust?`<span class="szchip on" data-k="__uladj" style="border-color:#218a5c;color:#218a5c;background:rgba(33,138,92,.12)">✓ 底图完成</span><span style="font-size:9px;color:var(--faint);align-self:center">滚轮缩放·Shift只缩宽·Alt只缩高·拖动移动</span>${this._ulAligning?`<span class="szchip on" style="border-color:#c8102e;color:#c8102e;background:rgba(200,16,46,.12)">对齐中 (${(this._ulAlignPts||[]).length}/4)</span><span class="szchip" data-k="__ulaligncancel">取消对齐</span>`:`<span class="szchip" data-k="__ulalign" style="border-color:#5b6bd6;color:#5b6bd6">🎯 两点对齐</span>`}<span class="szchip" data-k="__ulop-">透−</span><span class="szchip" data-k="__ulop+">透+</span><span class="szchip" data-k="__ulrot-">转−</span><span class="szchip" data-k="__ulrot+">转+</span><span class="szchip" data-k="__ulrm">移除底图</span>`:`<span class="szchip" data-k="__uladj">🖼 底图·调整</span>`);})()}`:'';
     const _editBtn=this.rwsIsAdmin()?`<span style="width:1px;height:16px;background:var(--line);margin:0 4px"></span><span class="szchip ${_adminOpen?'on':''}" data-k="__edittoggle" style="${_adminOpen?'border-color:#5b6bd6;color:#5b6bd6;background:rgba(91,107,214,.12)':''}">✎ Edit${_adminOpen?' ✕':''}</span>`:'';
     const _adminTools=_editBtn+(_adminOpen?_editToolsStr:'');
     p.innerHTML=`<span class="szttl">Marine sub-zones</span><span class="szchip ${this.showSubZC?'on':''}" data-k="ZC">Top slab</span><span class="szchip ${this.showSubC?'on':''}" data-k="C">Bottom slab</span><span class="szchip ${this.showSubP?'on':''}" data-k="P">Podium</span>${_adminTools}`;
@@ -1325,6 +1333,10 @@ class Component extends DCLogic {
       if(k==='__corecancel'){this._coreCancel();return;}
       if(k==='__drawlift'){this.toggleDrawLift();return;}
       if(k==='__liftcancel'){this._liftCancel();return;}
+      if(k==='__drawacc'){this.toggleDrawAcc();return;}
+      if(k==='__accfin'){this._accFinish();return;}
+      if(k==='__accundo'){this._accUndo();return;}
+      if(k==='__acccancel'){this._accCancel();return;}
       if(k==='__ulload'){this.underlayPick();return;}
       if(k==='__uladj'){this.toggleUnderlayAdjust();return;}
       if(k==='__ulrm'){this.underlayRemove();return;}
@@ -1517,6 +1529,28 @@ class Component extends DCLogic {
     if(this._inputModal)this._inputModal({title:'Staircase 名称 / name',label:'编号(按名字自动匹配数据, 如 P1-ST-01B)',placeholder:defId,ok:'保存',onOk:save});else save(defId);}
   _liftCancel(){this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _saveLifts(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','lifts',this._appCfg.lifts||{},null,null);}
+  /* ---- 在图上画 Access(带箭头的折线, 可多点拐弯, admin) —— 存 settings, 云端同步 ---- */
+  toggleDrawAcc(){if(!this.rwsIsAdmin())return;this._drawingAcc=!this._drawingAcc;this._accBuf=[];if(this._drawingAcc){this._placingCol=false;this._hidingCol=false;this._drawingCore=false;this._drawingLift=false;this._toast&&this._toast('点地图逐点画线(可拐弯), 点完按 ✓ 完成');}if(this.svg)this.svg.style.cursor=this._drawingAcc?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _accClickAt(clientX,clientY){if(!this._drawingAcc||!this.rwsIsAdmin())return;const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;let sx,sy;
+    try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());sx=p.x;sy=p.y;}
+    catch(e){const r=this.svg.getBoundingClientRect();sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w;sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;}
+    this._accBuf=this._accBuf||[];this._accBuf.push([sx,H-sy]);this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _accUndo(){if(this._accBuf&&this._accBuf.length){this._accBuf.pop();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}}
+  _accCancel(){this._accBuf=[];this._drawingAcc=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _saveAccess(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','access',this._appCfg.access||{},null,null);}
+  _accFinish(){if(!this._accBuf||this._accBuf.length<2){this._toast&&this._toast('至少点 2 个点画一条线 / need ≥2 points');return;}
+    const lv=this.curLevel;const pts=this._accBuf.slice();
+    this._appCfg=this._appCfg||{};const ac=this._appCfg.access=this._appCfg.access||{};const arr=ac[lv]=ac[lv]||[];
+    arr.push({pts});this._saveAccess();this._accBuf=[];this._drawingAcc=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  _delAccess(lv,idx){this._confirmModal('删除这条 Access 线?',()=>{const arr=(this._appCfg&&this._appCfg.access&&this._appCfg.access[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveAccess();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
+  _accArrowSVG(projPts,color,dash,cls,dataAttr){ if(!projPts||projPts.length<2)return '';
+    let out=`<polyline${cls?' class="'+cls+'"':''}${dataAttr||''} points="${projPts.map(r=>r[0].toFixed(1)+','+r[1].toFixed(1)).join(' ')}" fill="none" stroke="${color}" stroke-width="640" stroke-linejoin="round" stroke-linecap="round"${dash?' stroke-dasharray="1600,900"':''} style="pointer-events:stroke;cursor:pointer"/>`;
+    const S=2900,W=1550,GAP=(this._accArrowGap||11000);   // 箭头大小 + 间距(整条线上每隔 GAP 一个)
+    const arw=(x,y,ux,uy)=>{const px=-uy,py=ux;const l=[x-ux*S+px*W,y-uy*S+py*W],r=[x-ux*S-px*W,y-uy*S-py*W];return `<polygon points="${x.toFixed(1)},${y.toFixed(1)} ${l[0].toFixed(1)},${l[1].toFixed(1)} ${r[0].toFixed(1)},${r[1].toFixed(1)}" fill="${color}" style="pointer-events:none"/>`;};
+    let acc=GAP*0.55;   // 第一个箭头稍微往里
+    for(let i=1;i<projPts.length;i++){const a=projPts[i-1],b=projPts[i];const dx=b[0]-a[0],dy=b[1]-a[1];const seg=Math.hypot(dx,dy)||1;const ux=dx/seg,uy=dy/seg;let d=acc;while(d<=seg){out+=arw(a[0]+ux*d,a[1]+uy*d,ux,uy);d+=GAP;}acc=d-seg;}
+    const a=projPts[projPts.length-2],b=projPts[projPts.length-1];const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;out+=arw(b[0],b[1],dx/len,dy/len);   // 末端一定有一个
+    return out;}
   _delLift(lv,idx){this._confirmModal('删除这个 Staircase?',()=>{const arr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
   /* 画完形状时: 从所在分区的现有 lift/stair/core 里选一条挂到这个形状上(链接) */
   _pickLinkModal(lv,zmk,zoneLabel,onPick,onFree){
@@ -2290,7 +2324,7 @@ class Component extends DCLogic {
       svg.setAttribute('viewBox',`${this.vb.x} ${this.vb.y} ${this.vb.w} ${this.vb.h}`);this.colLOD();},{passive:false});
     let dragging=false,last=null,downXY=null;
     svg.addEventListener('mousedown',ev=>{dragging=true;last=[ev.clientX,ev.clientY];downXY=[ev.clientX,ev.clientY];svg.classList.add('drag');});
-    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._ulAligning){this._ulAlignClick(ev.clientX,ev.clientY);}else if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}else if(this._drawingLift){this._liftClickAt(ev.clientX,ev.clientY);}});
+    svg.addEventListener('click',ev=>{if(downXY&&Math.hypot(ev.clientX-downXY[0],ev.clientY-downXY[1])>6)return;if(this._ulAligning){this._ulAlignClick(ev.clientX,ev.clientY);}else if(this._placingCol){this._placeColAt(ev.clientX,ev.clientY);}else if(this._drawingCore){this._coreClickAt(ev.clientX,ev.clientY);}else if(this._drawingLift){this._liftClickAt(ev.clientX,ev.clientY);}else if(this._drawingAcc){this._accClickAt(ev.clientX,ev.clientY);}});
     window.addEventListener('mouseup',()=>{dragging=false;svg.classList.remove('drag');});
     window.addEventListener('mousemove',ev=>{if(!dragging)return;const r=svg.getBoundingClientRect();
       this.vb.x-=(ev.clientX-last[0])/r.width*this.vb.w;this.vb.y-=(ev.clientY-last[1])/r.height*this.vb.h;last=[ev.clientX,ev.clientY];
