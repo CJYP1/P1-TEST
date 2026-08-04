@@ -1782,12 +1782,14 @@ class Component extends DCLogic {
       const plan=this.actPlan(lv,zmk,a.id,sm), dm=this.actDoneMonth(lv,zmk,a.id,sm);
       const cg=this.actCarry(lv,zmk,a.id,mi);
       if(!admin){ if(_vis==='hide') return '';
-        const _vm=this.visMonths?this.visMonths():this.ACT_MONTHS;   /* 只要可见月份里排过计划, 就显示这个活动 */
+        const _vm=this.visMonths?this.visMonths():this.ACT_MONTHS;   /* 有计划 或 做过(任意月份) 就显示这个活动 */
         const _anyPlan=(_vm||[]).some(mm=>{const p=this.actPlan(lv,zmk,a.id,mm);return p!=null&&p>0;});
-        if(_vis!=='show' && !_anyPlan && (dm==null||dm===0) && cg.balance<=0) return ''; }
+        const _anyDone=(this.ACT_MONTHS||[]).some(mm=>{const d=this.actDoneMonth(lv,zmk,a.id,mm);return d!=null&&d>0;});
+        if(_vis!=='show' && !_anyPlan && !_anyDone && cg.balance<=0) return ''; }
       const _balTxt=cg.balance>0?('<b style="color:var(--crit)">owe '+this.fmt(cg.balance)+'</b>'):(cg.balance<0?('<b style="color:var(--done)">ahead '+this.fmt(-cg.balance)+'</b>'):'<b style="color:var(--done)">on track</b>');
       const carryLine=cg.hasData?`<div class="actsub actcarry"><span class="am2" title="Backlog carried in from earlier months = cumulative plan − cumulative done">Backlog in</span> <b>${this.fmt(cg.carryIn)}</b><span class="asep">|</span><span class="am2" title="What to do this month = this-month plan">Target</span> <b>${this.fmt(cg.required)}</b><span class="asep">|</span><span class="am2">Balance</span> ${_balTxt}${(cg.carryIn>0&&cg.done>0)?`<span class="acum" title="Of what you did this month: cleared old backlog + this-month share">did ${this.fmt(cg.done)} = ${this.fmt(cg.cleared)} backlog + ${this.fmt(cg.current)} this-mo</span>`:''}</div>`:'';
-      const pct=(plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):null;
+      /* 条 = 累计完成 ÷ 总量(含"Before Apr'26"), 早做完的量会一直带到后面月份, 不会因为当月没做就变回未完成 */
+      const pct=(total!=null&&total>0)?Math.min(100,Math.round(cumThrough/total*100)):((plan!=null&&plan>0)?Math.min(100,Math.round((dm||0)/plan*100)):(cumThrough>0?100:null));
       const bc=pct==null?'var(--faint)':(pct>=100?'#35c08e':(pct>0?this.cssvar('--wip'):'var(--faint)'));
       const chk=admin?`<select class="act-vis" data-a="${a.id}" title="User visibility — Auto: based on data · Show: always · Hide: never"><option value="auto"${_vis==='auto'?' selected':''}>Auto</option><option value="show"${_vis==='show'?' selected':''}>Show</option><option value="hide"${_vis==='hide'?' selected':''}>Hide</option></select>`:'';
       const planCell=admin?`<input class="act-plan" data-a="${a.id}" value="${plan==null?'':plan}" placeholder="—" title="Planned in ${sm} (admin)">`:`${plan==null?'—':this.fmt(plan)}`;
