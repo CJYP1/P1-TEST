@@ -557,7 +557,16 @@ class Component extends DCLogic {
       (ph[p]=ph[p]||[]).push(this.clamp(cumDone/denom,0,1));});
     const out={};Object.keys(ph).forEach(k=>{out[k]=ph[k].reduce((a,b)=>a+b,0)/ph[k].length;});return out;}
   /* zone overall % = weighted average of present phases (renormalized). Piling+D-wall (22%) counts 0% on basement zones. */
-  zoneActPct(lv,z){const ph=this._zonePhases(lv,z);const W=this._pw();
+  /* marine 父区(ZC)的整体进度 = 它自己 + 挂在它下面的 C(bottom/top slab 细分) + P(podium) 一起算.
+     每层各有各的工作(slab/柱子/podium等), 互不冲突, 按面积加权平均. */
+  _marineComboPct(lv,z){const lab=z.label,L=this.SUBLINKS||{};const nrm=s=>String(s||'').replace(/\s+/g,'').toUpperCase(),nlab=nrm(lab);const items=[[lab,z.area||1]];
+    Object.keys(L.c2zc||{}).forEach(c=>{if(nrm(L.c2zc[c])===nlab){const sc=(this.SUBZONES[lv]&&this.SUBZONES[lv].C||[]).find(x=>x.label===c);items.push([c,(sc&&sc.a)||1]);}});
+    Object.keys(L.p2zone||{}).forEach(p=>{if((L.p2zone[p]||[]).some(x=>nrm(x)===nlab)){const sp=(this.SUBZONES[lv]&&this.SUBZONES[lv].P||[]).find(x=>x.label===p);items.push([p,(sp&&sp.a)||1]);}});
+    let acc=0,wsum=0,started=false;items.forEach(([l,w])=>{const r=this._subActPct(l);if(r.pct==null)return;acc+=r.pct*w;wsum+=w;if(r.started)started=true;});
+    return wsum?{pct:Math.round(acc/wsum),n:items.length,started}:null;}
+  zoneActPct(lv,z){
+    if(lv==='L1'&&z&&z.cat==='MA'&&z.ring&&this.SUBLINKS){const _c=this._marineComboPct(lv,z);if(_c)return _c;}   /* marine 父区: ZC+C+P 合并 */
+    const ph=this._zonePhases(lv,z);const W=this._pw();
     const present=Object.keys(ph);if(!present.length)return null;
     let wsum=0,acc=0;present.forEach(p=>{const w=W[p]||0;wsum+=w;acc+=ph[p]*w;});
     return wsum?{pct:Math.round(acc/wsum*100),n:present.length}:null;}
@@ -1287,7 +1296,7 @@ class Component extends DCLogic {
   _subActPct(label){
     const lv=this.curLevel, zmk=lv+'|'+label;
     try{
-      const z={mk:zmk,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{}};
+      const z={mk:zmk,label:label,cat:'MA',cols:[],piles:[],beams:[],lifts:[],stairs:[],sub:[],counts:{},_pod:/^P\d/i.test(label)};
       const acts=(this._actList?this._actList(lv,z):[]).filter(a=>a.custom||this._actApplies(a.id,lv,z));
       const M=this.ACT_MONTHS||[]; const ratios=[]; let anyDone=false;
       acts.forEach(a=>{const tot=a.total; if(tot==null||tot<=0)return; let done=0,plan=0; M.forEach(m=>{const v=this.actDoneMonth(lv,zmk,a.id,m); if(v!=null)done+=(+v||0); const p=this.actPlan(lv,zmk,a.id,m); if(p!=null)plan+=(+p||0);}); if(plan<=0&&done<=0)return; /* 这个区没这项工作(既没排计划也没做过)→ 不参与计算 */ if(done>0)anyDone=true; ratios.push(Math.max(0,Math.min(1,done/tot)));});
