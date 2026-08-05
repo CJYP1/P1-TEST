@@ -1499,8 +1499,17 @@ class Component extends DCLogic {
         <div class="asc-bar"><i style="width:${r.done/tot*100}%;background:${dc}"></i><i style="width:${r.wip/tot*100}%;background:${wc}"></i><i style="width:${r.todo/tot*100}%;background:${tc}"></i></div>
         <div class="asc-foot"><span><b style="color:${dc}">${r.done}</b> done · <b style="color:${wc}">${r.wip}</b> wip · <b style="color:${tc}">${r.todo}</b> todo</span><span>${this.filterCat==='all'?'Click a card to filter':'Filtered · click to clear'}</span></div>
       </div>`;}).join('');
-    host.querySelectorAll('.astrip-card').forEach(el=>el.addEventListener('click',()=>{const c=el.dataset.cat;this.filterCat=(this.filterCat===c)?'all':c;this.selKey=null;this.buildMetrics();this.render();this.paintTimelineSel();}));
+    host.querySelectorAll('.astrip-card').forEach(el=>el.addEventListener('click',()=>{const c=el.dataset.cat;this.filterCat=(this.filterCat===c)?'all':c;this.selKey=null;
+      /* 点分类卡片时把视野对准这个分类, 避免之前缩放/平移后点了却看不到 */
+      if(this.filterCat==='all'){this.vb={...this.base};}else{this._fitVisible();}this._vbLevel=this.curLevel;
+      this.buildMetrics();this.render();this.paintTimelineSel();}));
   }
+  /* 把 viewBox 拟合到当前可见分类的所有区(含 marine 父区几何), 用于筛选时自动对准 */
+  _fitVisible(){const L=this.DATA.levels[this.curLevel];if(!L||!L.zones){this.vb={...this.base};return;}const H=L.h;let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity,n=0;
+    L.zones.forEach(z=>{if(!this.zoneVisible(z)||!z.ring)return;n++;z.ring.forEach(p=>{const x=p[0],y=H-p[1];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;});});
+    if(!n||!isFinite(x0)){this.vb={...this.base};return;}
+    const w=Math.max(x1-x0,1),h=Math.max(y1-y0,1),padX=w*0.1+3000,padY=h*0.1+3000;
+    this.vb={x:x0-padX,y:y0-padY,w:w+padX*2,h:h+padY*2};}
 
   // Clean outer boundary + between-area seams for the three big areas, via a coverage grid
   // (robust to imperfect shared vertices). Cached per level. Neutral bold dividing lines.
