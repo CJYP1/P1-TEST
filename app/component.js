@@ -1736,17 +1736,21 @@ class Component extends DCLogic {
     let s=`<div class="listhint" style="font-size:11.5px;color:var(--faint);padding:16px 6px;line-height:1.7">Select a zone on the map to view its details.<br><span style="font-size:10px">${arr.length} zones on this level · switch <b>Colour</b> to <b>Planned (month)</b> for the monthly plan overview.</span></div>`;
     if(this.colorMode==='plan'){
       const m=this.planMonth(), M=this.visMonths(), mi=M.indexOf(m), curL=this.actCurLabel();
-      const planned=arr.map(z=>({z,items:this.zonePlanItems(this.curLevel,z,m)})).filter(x=>x.items.length)
-                      .sort((a,b)=>this.esc(a.z.label).localeCompare(this.esc(b.z.label)));
+      const planned=arr.map(z=>({z,items:this.zonePlanItems(this.curLevel,z,m),k:this.zid(z)})).filter(x=>x.items.length);
+      if(this.curLevel==='L1'&&this.SUBZONES&&this.SUBZONES.L1){   /* 把 marine C/P 细分里本月有计划或已开工(done>0)的也列进来 */
+        const _subItems=(label)=>{const zmk='L1|'+label,out=[];this._actMeta().forEach(a=>{if(this.actHidden('L1',zmk,a.id))return;const p=this.actPlan('L1',zmk,a.id,m),d=this.actDoneMonth('L1',zmk,a.id,m);if((p!=null&&p>0)||(d!=null&&d>0))out.push({label:a.label,qty:((p!=null&&p>0)?p:d),unit:a.unit});});return out;};
+        ['C','P'].forEach(kind=>{(this.SUBZONES.L1[kind]||[]).forEach((sz,idx)=>{const items=_subItems(sz.label);if(items.length)planned.push({z:{label:sz.label,cat:'MA',crit:false},items,k:sz.label,sub:kind+'|'+idx});});});
+      }
+      planned.sort((a,b)=>this.esc(a.z.label).localeCompare(this.esc(b.z.label)));
       const opts=M.map(mm=>`<option value="${mm}" ${mm===m?'selected':''}>${mm}${mm===curL?' (now)':''}</option>`).join('');
       s=`<div class="planhd"><div class="t">📅 Monthly plan · ${this.curLevel}</div><div class="plan-monthbar"><button class="hbtn planm-nav" data-dir="-1" ${mi<=0?'disabled':''}>‹</button><select class="plan-month">${opts}</select><button class="hbtn planm-nav" data-dir="1" ${mi>=M.length-1?'disabled':''}>›</button></div><div class="plan-sub"><b style="color:var(--accent)">${planned.length}</b> of ${arr.length} zones have planned work in <b>${m}</b> · <span style="color:#6d6f74"><b style="color:#8c968f">■ done (stays)</b> · <b style="color:#166b47">■ done this month</b> · <b style="color:#c98f1e">■ in progress</b> · <b style="color:#3f38a6">■ plan finish</b> · <b style="color:#a7a2e8">■ planned</b></span></div></div>`;
       if(!planned.length){ s+=`<div class="empty" style="padding:16px 6px">No zones have planned activity in ${m}.</div>`; }
-      else { s+=planned.map(({z,items})=>`<div class="planzone" data-k="${this.esc(this.zid(z))}"><div class="pz-nm"><span class="sw" style="background:${(this.CAT[z.cat]||this.CAT.NB).c}"></span>${this.esc(z.label)}${z.crit?' <span style="color:var(--crit)">◆</span>':''}</div><div class="pz-acts">${items.map(it=>`<div class="pz-act"><span>${this.esc(it.label)}</span><b>${this.fmt(it.qty)} ${this.esc(it.unit)}</b></div>`).join('')}</div></div>`).join(''); }
+      else { s+=planned.map(x=>{const z=x.z;const _tag=x.sub?` <span style="font-size:9px;font-weight:700;color:var(--faint)">· ${x.sub[0]==='P'?'Podium':'sub-div'}</span>`:'';return `<div class="planzone" data-k="${this.esc(x.k)}"${x.sub?` data-sub="${this.esc(x.sub)}"`:''}><div class="pz-nm"><span class="sw" style="background:${(this.CAT[z.cat]||this.CAT.NB).c}"></span>${this.esc(z.label)}${z.crit?' <span style="color:var(--crit)">◆</span>':''}${_tag}</div><div class="pz-acts">${x.items.map(it=>`<div class="pz-act"><span>${this.esc(it.label)}</span><b>${this.fmt(it.qty)} ${this.esc(it.unit)}</b></div>`).join('')}</div></div>`;}).join(''); }
     }
     const sb=this.root.querySelector('#sidebody');
     if(!this.selKey||arr.every(z=>this.zid(z)!==this.selKey))sb.innerHTML=s;
     sb.querySelectorAll('.crow').forEach(el=>el.addEventListener('click',()=>{this.setLevel(el.dataset.lv);}));
-    sb.querySelectorAll('.zrow,.planzone').forEach(el=>el.addEventListener('click',()=>{const z=arr.find(x=>this.zid(x)===el.dataset.k);if(z){this.selKey=this.zid(z);this.selectZone(z);this.paintSel();this.paintTimelineSel();}}));
+    sb.querySelectorAll('.zrow,.planzone').forEach(el=>el.addEventListener('click',()=>{if(el.dataset.sub){const pp=el.dataset.sub.split('|');this.selectSubzone(pp[0],+pp[1]);return;}const z=arr.find(x=>this.zid(x)===el.dataset.k);if(z){this.selKey=this.zid(z);this.selectZone(z);this.paintSel();this.paintTimelineSel();}}));
     const _pm=sb.querySelector('.plan-month');if(_pm)_pm.addEventListener('change',()=>{this._planMonth=_pm.value;this._actMonth=_pm.value;this.render();});
     sb.querySelectorAll('.planm-nav').forEach(b=>b.addEventListener('click',()=>{const sel=sb.querySelector('.plan-month');if(!sel)return;const i=sel.selectedIndex+(+b.dataset.dir);if(i<0||i>=sel.options.length)return;this._planMonth=sel.options[i].value;this._actMonth=this._planMonth;this.render();}));
     this.setSummaryVis();
