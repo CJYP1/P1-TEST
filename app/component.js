@@ -581,7 +581,7 @@ class Component extends DCLogic {
     const lv=parts[0],zmk=parts[1],etype=parts[2];
     return this.rwsScopeOk(lv,zmk);
   }
-  rwsIsAdmin(){return !!this._rwsUser && this._rwsUser.role==='admin';}
+  rwsIsAdmin(){return !window.__RWS_LOCKED_VIEW && !!this._rwsUser && this._rwsUser.role==='admin';}   /* 只读快照里永远不是 admin → 隐藏并禁止一切编辑 */
   rwsHasScope(code){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return a.indexOf(code)>=0;}
   /* 评论权限: 必须有 CMT。范围跟随被授权的区域 —— 勾了区域就只能评论那些区; 只勾 CMT(没勾任何区)= 全区可评 */
   rwsCanSnapshot(){const u=this._rwsUser;if(!u)return false;if(u.role==='admin')return true;const a=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];return a.indexOf('HIST')>=0;}   /* 谁能看历史快照: admin 或有 HIST 权限 */
@@ -607,6 +607,13 @@ class Component extends DCLogic {
   }
   async rwsBoot(){
     window.__rwsApp=this;
+    if(window.__RWS_LOCKED_VIEW){   /* 只读快照: 不登录、不连云, 直接看内嵌数据 */
+      this._readonlyView=true;
+      try{const g=this.root.querySelector('#rwsAuthGate');if(g)g.style.display='none';}catch(e){}
+      try{this.buildRail&&this.buildRail();this.buildMetrics&&this.buildMetrics();this.render&&this.render();}catch(e){}
+      try{let b=document.getElementById('__roBanner');if(!b){b=document.createElement('div');b.id='__roBanner';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99998;background:#1f4a73;color:#fff;font:700 12px Poppins,sans-serif;text-align:center;padding:5px 10px;box-shadow:0 2px 8px rgba(0,0,0,.25)';b.textContent='🔒 只读快照 / Read-only snapshot — 仅供查看, 不能编辑或同步';document.body.appendChild(b);document.body.style.paddingTop='26px';}}catch(e){}
+      return;
+    }
     this._adminEntry=rwsIsAdminEntryRequested();
     this.rwsBindAuthUI();
     const cached=rwsGetSession();
@@ -2565,17 +2572,29 @@ class Component extends DCLogic {
       body.querySelectorAll('.__snapDel').forEach(el=>el.addEventListener('click',()=>{this._confirmModal&&this._confirmModal('删除这个快照?',async()=>{await rwsSnapshotDelete(+el.dataset.id);this.rwsOpenHistory();});}));
     }catch(e){body.innerHTML='<div class="empty">加载失败</div>';}}
   snapshot(){return {v:2,project:'RWS P1 CJ',savedAt:new Date().toISOString(),elem:this.elem,elemDate:this._elemDate,updates:this.updates,zpOv:this._zpOv,crit:this._critOv,actTotal:this._actTotal,actPlan:this._actPlan,actDoneM:this._actDoneM,actHidden:this._actHidden,actDefs:this._actDefs,catAdd:this._catAdd,elemAdd:this._elemAdd,editedKeys:this._editedKeys,actDate:this._actDate,colMonth:this._colMonth,actCmt:this._actCmt};}
-  saveLock(){
-    if(this._locking)return; this._locking=true; setTimeout(()=>{this._locking=false;},900);
-    const S='<'+'script', ES='<'+'/script>';
-    const tag=S+' id="locked-data" type="application/json">'+JSON.stringify(this.snapshot())+ES;
-    let html='<!doctype html>\n'+document.documentElement.outerHTML;
-    html=html.replace(new RegExp(S+' id="locked-data"[^>]*>[\\s\\S]*?'+ES),'');
-    html=/<\/body>/i.test(html)? html.replace(/<\/body>/i, tag+'\n</body>') : html+tag;
-    const stamp=new Date().toISOString().slice(0,10);
-    const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);const a=document.createElement('a');
-    a.href=url;a.download=`RWS_P1_CJ_Tracker_${stamp}.html`;document.body.appendChild(a);a.click();
-    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},500);
+  async saveLock(){
+    if(this._locking)return; this._locking=true; setTimeout(()=>{this._locking=false;},4000);
+    const isExt=u=>!u||/^(https?:)?\/\//i.test(u)||/^data:/i.test(u);
+    try{
+      if(this._toast)this._toast('打包中…(内联样式与脚本)');
+      const root=document.documentElement.cloneNode(true);
+      /* 只读标记: 放 <head> 最前, 先于所有脚本执行 → 打开即只读(不登录/不连云/不能编辑) */
+      try{const _flag=document.createElement('script');_flag.textContent='window.__RWS_LOCKED_VIEW=1;';const _hd=root.querySelector('head');if(_hd)_hd.insertBefore(_flag,_hd.firstChild);else root.insertBefore(_flag,root.firstChild);const _b=root.querySelector('#__roBanner');if(_b)_b.remove();}catch(e){}
+      /* 内联本地 CSS: <link rel=stylesheet href=...> → <style> */
+      for(const ln of [...root.querySelectorAll('link[rel="stylesheet"]')]){const href=ln.getAttribute('href');if(isExt(href))continue;try{const css=await (await fetch(href)).text();const st=document.createElement('style');st.textContent=css;ln.replaceWith(st);}catch(e){}}
+      /* 内联本地脚本: <script src=...> → 内联 <script>(CDN 保持外链) */
+      for(const sc of [...root.querySelectorAll('script[src]')]){const src=sc.getAttribute('src');if(isExt(src))continue;try{const js=await (await fetch(src)).text();const ns=document.createElement('script');[...sc.attributes].forEach(a=>{if(a.name!=='src')ns.setAttribute(a.name,a.value);});ns.textContent=js;sc.replaceWith(ns);}catch(e){}}
+      const S='<'+'script', ES='<'+'/script>';
+      const tag=S+' id="locked-data" type="application/json">'+JSON.stringify(this.snapshot())+ES;
+      let html='<!doctype html>\n'+root.outerHTML;
+      html=html.replace(new RegExp(S+' id="locked-data"[^>]*>[\\s\\S]*?'+ES),'');
+      html=/<\/body>/i.test(html)? html.replace(/<\/body>/i, tag+'\n</body>') : html+tag;
+      const stamp=new Date().toISOString().slice(0,10);
+      const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);const a=document.createElement('a');
+      a.href=url;a.download=`RWS_P1_CJ_Tracker_${stamp}.html`;document.body.appendChild(a);a.click();
+      setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},800);
+      if(this._toast)this._toast('已保存自包含 HTML');
+    }catch(e){if(this._toast)this._toast('保存失败: '+(e&&e.message||e));this._locking=false;}
   }
   buildLabelMap(){this.labelMap={};this.DATA.order.forEach(lv=>this.DATA.levels[lv].zones.forEach(z=>{this.labelMap[lv+'||'+z.label]=(z.mk||('_'+z.lid));}));}
   loadLock(file){

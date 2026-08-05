@@ -2,7 +2,7 @@
 /* ---- Supabase cloud sync: accounts, per-record sync, offline queue ---- */
 const SUPABASE_URL = 'https://qjdmcvbagozoyebjbwyh.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ARZCPR5OQxq_Xa3_CbGT6g_yzKG47ni';
-const rwsSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const rwsSb = (window.supabase && window.supabase.createClient && !window.__RWS_LOCKED_VIEW) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;   /* 只读快照/离线打开时不连云, 避免报错 */
 // Hidden admin entry: open this file with #zradmin92 in the URL. Change this
 // string to your own private one before you hand the file to anyone else —
 // treat it like a second password. Nobody sees an admin option without it
@@ -136,7 +136,7 @@ async function rwsSyncPlanQty(planKey, level, zoneMk, value){
   return r;
 }
 /* ---- 进度快照(存/列/取/删) ---- */
-function rwsSnapBlocked(){ return !!(window.__rwsApp && window.__rwsApp._snapView); }   // 正在看历史快照时禁止一切写入
+function rwsSnapBlocked(){ return !!window.__RWS_LOCKED_VIEW || !!(window.__rwsApp && window.__rwsApp._snapView); }   // 只读快照 / 正在看历史 时禁止一切写入
 async function rwsSnapshotSave(label, data){ const s=rwsGetSession(); if(!s) return {ok:false}; const r=await rwsCall('rws_snapshot_save',{p_token:s.token,p_label:label||null,p_data:data}); /* 失败不弹"未同步"红字, 由调用方(rwsSaveSnapshot)决定是否提示, 避免误以为进度没存 */ return r; }
 async function rwsSnapshotList(){ const s=rwsGetSession(); if(!s) return {ok:false}; return await rwsCall('rws_snapshot_list',{p_token:s.token}); }
 async function rwsSnapshotGet(id){ const s=rwsGetSession(); if(!s) return {ok:false}; return await rwsCall('rws_snapshot_get',{p_token:s.token,p_id:id}); }
