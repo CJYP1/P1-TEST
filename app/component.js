@@ -1169,8 +1169,9 @@ class Component extends DCLogic {
       }
       s+=`<polygon class="subz ${cls}" data-sk="${cls}|${i}" points="${pts}" fill="${fill}" fill-opacity="${fo}" stroke="${col}" stroke-width="650"${dash?' stroke-dasharray="2200,1300"':''}/>`;
       s+=`<text class="subzlbl" x="${lq[0].toFixed(0)}" y="${lq[1].toFixed(0)}" font-size="3400" fill="${col}">${this.esc(e.label)}</text>`;});};
+     const _anySub=this.showSubZC||this.showSubC||this.showSubP;   /* 没开任何 marine 子区开关 = 整体视图 → 默认就画 C(细分层, 反映真实进度) */
      _dr(_subL.ZC,'subZC','#1d4ed8',false,this.showSubZC);
-     _dr(_subL.C,'subC','#b35a1f',false,this.showSubC,true);   /* C 按各区进度填色: 绿=完成, 黄=在做, 空=未开始 */
+     _dr(_subL.C,'subC','#b35a1f',false,this.showSubC||!_anySub,true);   /* C 按各区进度填色: 绿=完成, 黄=在做, 空=未开始; 整体视图默认显示 */
      _dr(_subL.P,'subP','#7c3aed',true,this.showSubP);}
     /* Core Wall 多边形(admin 画的) + 正在画的临时轮廓 */
     if(this.showCoreWalls!==false){ this._shapesForLevel('core').forEach(({w,lv:swlv,idx:wi})=>{ if(!w.pts||w.pts.length<3)return;
