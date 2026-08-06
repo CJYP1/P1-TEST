@@ -15,7 +15,16 @@ begin
   if p_username = s.username then raise exception 'cannot delete your own account'; end if;
   select id into uid from rws_users where username = p_username;
   if uid is null then raise exception 'user not found: %', p_username; end if;
-  delete from rws_sessions where user_id = uid;   -- 让该账号已登录的会话失效
+  -- 先解开引用这个用户的外键, 否则删不掉:
+  delete from rws_sessions where user_id = uid;                 -- 让该账号已登录的会话失效
+  -- KV(进度数据)不删, 只把"谁改的"置空, 保留数据本身:
+  begin update rws_kv set updated_by = null where updated_by = uid; exception when others then null; end;
+  -- 活动日志: 优先把 user_id 置空(保留记录, username 还在); 若该列不允许 null 就删掉这些日志:
+  begin
+    update rws_activity_log set user_id = null where user_id = uid;
+  exception when others then
+    delete from rws_activity_log where user_id = uid;
+  end;
   delete from rws_users where id = uid;
   return jsonb_build_object('ok', true);
 end;$$;

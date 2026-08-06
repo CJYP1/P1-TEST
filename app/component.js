@@ -1438,6 +1438,7 @@ class Component extends DCLogic {
     if(this.showBeams && this.DATA.beamlines && this.DATA.beamlines[this.curLevel]) s+=`<div class="lr"><span style="width:18px;border-top:2px solid var(--beam)"></span>Steel-main-beam lines (approx.)</div>`;
     if(this.showCrit)s+=`<div class="lr"><span style="width:13px;color:var(--crit);font-weight:800;text-align:center">Ab</span>Red zone name = critical path</div>`;
     if(this.showSeq && this.rwsIsAdmin())s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(--dim);color:#fff;font-size:8px;text-align:center;line-height:13px;font-weight:800">#</span>Pour sequence</div>`;
+    {const _acc=(this._appCfg&&this._appCfg.access&&this._appCfg.access[this.curLevel])||[];if(_acc.length)s+=`<div class="lr"><svg width="28" height="13" viewBox="0 0 28 13" style="flex:0 0 auto"><line x1="5" y1="6.5" x2="21" y2="6.5" stroke="#1e3a8a" stroke-width="2.4"/><polygon points="28,6.5 20,2.5 20,10.5" fill="#1e3a8a"/><circle cx="4" cy="6.5" r="4" fill="#1e3a8a" stroke="#fff" stroke-width="1.4"/></svg>Access route (● start → direction)</div>`;}
     if(this.showAreaBounds){s+=`<div style="font-weight:700;color:var(--txt);margin:5px 0 2px">Area boundaries</div>`;
       const ld={EB:'solid',NB:'solid',MA:'solid'};
       Object.keys(this.BCOL).forEach(k=>{const cc=this.CAT[k];s+=`<div class="lr"><span style="width:18px;border-top:3px ${ld[k]||'solid'} ${this.BCOL[k]}"></span>${cc.label}</div>`;});
@@ -1601,6 +1602,7 @@ class Component extends DCLogic {
     let acc=GAP*0.55;   // 第一个箭头稍微往里
     for(let i=1;i<projPts.length;i++){const a=projPts[i-1],b=projPts[i];const dx=b[0]-a[0],dy=b[1]-a[1];const seg=Math.hypot(dx,dy)||1;const ux=dx/seg,uy=dy/seg;let d=acc;while(d<=seg){out+=arw(a[0]+ux*d,a[1]+uy*d,ux,uy);d+=GAP;}acc=d-seg;}
     const a=projPts[projPts.length-2],b=projPts[projPts.length-1];const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;out+=arw(b[0],b[1],dx/len,dy/len);   // 末端一定有一个
+    const s0=projPts[0];out+=`<circle cx="${s0[0].toFixed(1)}" cy="${s0[1].toFixed(1)}" r="1900" fill="${color}" stroke="#ffffff" stroke-width="450" style="pointer-events:none"/>`;   // 起点大圆点
     return out;}
   _delLift(lv,idx){this._confirmModal('删除这个 Staircase?',()=>{const arr=(this._appCfg&&this._appCfg.lifts&&this._appCfg.lifts[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveLifts();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
   /* 画完形状时: 从所在分区的现有 lift/stair/core 里选一条挂到这个形状上(链接) */
