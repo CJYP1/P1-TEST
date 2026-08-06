@@ -1217,7 +1217,7 @@ class Component extends DCLogic {
         this._liftBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#1d4ed8" style="pointer-events:none"/>`;});}
     }
     /* Access 折线 + 箭头(admin 画的) + 正在画的预览 */
-    { const _accStore=(this._appCfg&&this._appCfg.access)||{}; const _accArr=_accStore[this.curLevel]||[];
+    { const _accStore=(this._appCfg&&this._appCfg.access)||{}; const _accArr=(this.showAccess!==false)?(_accStore[this.curLevel]||[]):[];
       _accArr.forEach((w,ai)=>{ if(!w.pts||w.pts.length<2)return; const pj=w.pts.map(q=>this.proj(q,H)); s+=this._accArrowSVG(pj,'#1e3a8a',false,'accessline',` data-aci="${ai}"`); });
       if(this._drawingAcc&&this._accBuf&&this._accBuf.length){ const pj=this._accBuf.map(q=>this.proj(q,H));
         if(pj.length>=2)s+=this._accArrowSVG(pj,'#c8102e',true);
@@ -1438,7 +1438,7 @@ class Component extends DCLogic {
     if(this.showBeams && this.DATA.beamlines && this.DATA.beamlines[this.curLevel]) s+=`<div class="lr"><span style="width:18px;border-top:2px solid var(--beam)"></span>Steel-main-beam lines (approx.)</div>`;
     if(this.showCrit)s+=`<div class="lr"><span style="width:13px;color:var(--crit);font-weight:800;text-align:center">Ab</span>Red zone name = critical path</div>`;
     if(this.showSeq && this.rwsIsAdmin())s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(--dim);color:#fff;font-size:8px;text-align:center;line-height:13px;font-weight:800">#</span>Pour sequence</div>`;
-    {const _acc=(this._appCfg&&this._appCfg.access&&this._appCfg.access[this.curLevel])||[];if(_acc.length)s+=`<div class="lr"><svg width="28" height="13" viewBox="0 0 28 13" style="flex:0 0 auto"><line x1="5" y1="6.5" x2="21" y2="6.5" stroke="#1e3a8a" stroke-width="2.4"/><polygon points="28,6.5 20,2.5 20,10.5" fill="#1e3a8a"/><circle cx="4" cy="6.5" r="4" fill="#1e3a8a" stroke="#fff" stroke-width="1.4"/></svg>Access route (● start → direction)</div>`;}
+    {const _acc=(this.showAccess!==false&&this._appCfg&&this._appCfg.access&&this._appCfg.access[this.curLevel])||[];if(_acc.length)s+=`<div class="lr"><svg width="28" height="13" viewBox="0 0 28 13" style="flex:0 0 auto"><line x1="5" y1="6.5" x2="21" y2="6.5" stroke="#1e3a8a" stroke-width="2.4"/><polygon points="28,6.5 20,2.5 20,10.5" fill="#1e3a8a"/><circle cx="4" cy="6.5" r="4" fill="#1e3a8a" stroke="#fff" stroke-width="1.4"/></svg>Access route (● start → direction)</div>`;}
     if(this.showAreaBounds){s+=`<div style="font-weight:700;color:var(--txt);margin:5px 0 2px">Area boundaries</div>`;
       const ld={EB:'solid',NB:'solid',MA:'solid'};
       Object.keys(this.BCOL).forEach(k=>{const cc=this.CAT[k];s+=`<div class="lr"><span style="width:18px;border-top:3px ${ld[k]||'solid'} ${this.BCOL[k]}"></span>${cc.label}</div>`;});
@@ -2372,6 +2372,8 @@ class Component extends DCLogic {
       const _hasLF=this._appCfg&&this._appCfg.lifts&&Object.values(this._appCfg.lifts).some(a=>a&&a.length);
       if(_hasCW) mkToggle(this.showCoreWalls!==false,`<span style="width:10px;height:10px;background:#22c55e;display:inline-block;border-radius:2px"></span>Core walls`,()=>{this.showCoreWalls=(this.showCoreWalls===false);this.buildMetrics();this.render();});
       if(_hasLF) mkToggle(this.showLifts!==false,`<span style="width:10px;height:10px;background:#2a6bd6;display:inline-block;border-radius:2px"></span>Staircase`,()=>{this.showLifts=(this.showLifts===false);this.buildMetrics();this.render();});
+      const _hasAcc=this._appCfg&&this._appCfg.access&&Object.values(this._appCfg.access).some(a=>a&&a.length);
+      if(_hasAcc) mkToggle(this.showAccess!==false,`<span style="width:11px;height:11px;background:#1e3a8a;display:inline-block;border-radius:50%"></span>Access`,()=>{this.showAccess=(this.showAccess===false);this.buildMetrics();this.render();});
     }
     this.refreshSubzPanel();
   }
