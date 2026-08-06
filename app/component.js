@@ -841,7 +841,7 @@ class Component extends DCLogic {
         <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px">
           ${AREAS.map(([c,l])=>`<label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--txt);cursor:pointer"><input type="checkbox" class="rwsNuArea" value="${c}" style="cursor:pointer">${l}</label>`).join('')}
         </div>
-        <button class="hbtn primary" id="rwsNuSave">Save account</button>
+        <button class="hbtn primary" id="rwsNuSave">Save account</button> <button class="hbtn" id="rwsNuClear">+ New (clear)</button> <button class="hbtn" id="rwsNuDel" style="color:var(--crit);display:none">🗑 Delete account</button>
         <div style="font-size:9.5px;color:var(--faint);margin-top:6px">A "user" account can change status and actual completed quantities only inside the areas checked above. The M28 board: any signed-in user can view; editing reuses these areas (Existing/New Basement unlock M28's EB/NB pages, "M28 · L2/L3/L4…" covers the rest); commenting needs the "Comment" box: with area boxes ticked it comments only in those areas; with Comment ticked and no area, it comments in every area (main map + M28). Admins can edit everything (plans, totals) and manage accounts.</div>
       </div>
       <div style="margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)">
@@ -865,18 +865,26 @@ class Component extends DCLogic {
       const _mc=body.querySelector('#rwsMonthCutoff'); if(_mc)_mc.addEventListener('change',()=>this.setUserMonthCutoff(_mc.value));
       const _lc=body.querySelector('#rwsLevelCutoff'); if(_lc)_lc.addEventListener('change',()=>this.setUserLevelCutoff(_lc.value));
       const collectAreas=()=>[...body.querySelectorAll('.rwsNuArea:checked')].map(x=>x.value);
+      this._editUser=null;
+      const _delBtn=body.querySelector('#rwsNuDel'), _clrBtn=body.querySelector('#rwsNuClear');
       body.querySelectorAll('.rwsUserRow').forEach(tr=>tr.addEventListener('click',()=>{
         const u=users.find(x=>x.username===tr.dataset.u); if(!u)return;
+        this._editUser=u.username;   /* 记住原账号名 → 保存时若改了名, 是改这个账号而不是新建 */
         body.querySelector('#rwsNuUser').value=u.username;
         body.querySelector('#rwsNuName').value=u.display_name||'';
+        body.querySelector('#rwsNuPass').value='';
         body.querySelector('#rwsNuRole').value=u.role;
         const areas=Array.isArray(u.allowed_scopes)?u.allowed_scopes:[];
         body.querySelectorAll('.rwsNuArea').forEach(cb=>cb.checked=areas.indexOf(cb.value)>=0);
+        if(_delBtn)_delBtn.style.display='';
       }));
+      if(_clrBtn)_clrBtn.addEventListener('click',()=>{this._editUser=null;['#rwsNuUser','#rwsNuName','#rwsNuPass'].forEach(s=>{const el=body.querySelector(s);if(el)el.value='';});const r=body.querySelector('#rwsNuRole');if(r)r.value='user';body.querySelectorAll('.rwsNuArea').forEach(cb=>cb.checked=false);if(_delBtn)_delBtn.style.display='none';});
+      if(_delBtn)_delBtn.addEventListener('click',()=>{if(!this._editUser)return;const _u=this._editUser;this._confirmModal('确定删除账号 "'+_u+'" ?(不可恢复)',async()=>{try{await rwsAdminDeleteUser(_u);this._toast('已删除 '+_u);this._editUser=null;this.rwsRenderAdmin();}catch(e){this._toast('删除失败: '+e.message);}});});
       body.querySelector('#rwsNuSave').addEventListener('click',async()=>{
         const username=body.querySelector('#rwsNuUser').value.trim();
         if(!username){this._toast('username required');return;}
         try{
+          if(this._editUser && this._editUser!==username){ await rwsAdminRenameUser(this._editUser, username); }   /* 改名: 更新原账号, 不新建 */
           await rwsAdminUpsertUser({
             username, password:body.querySelector('#rwsNuPass').value,
             displayName:body.querySelector('#rwsNuName').value.trim(),
@@ -884,6 +892,7 @@ class Component extends DCLogic {
             allowedScopes:collectAreas(),
             active:true
           });
+          this._editUser=null;
           this.rwsRenderAdmin();
         }catch(e){ this._toast('Could not save: '+e.message); }
       });
