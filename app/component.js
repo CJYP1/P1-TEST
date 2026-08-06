@@ -1217,8 +1217,9 @@ class Component extends DCLogic {
         this._liftBuf.forEach(q=>{const r=this.proj(q,H);s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="640" fill="#1d4ed8" style="pointer-events:none"/>`;});}
     }
     /* Access 折线 + 箭头(admin 画的) + 正在画的预览 */
-    { const _accStore=(this._appCfg&&this._appCfg.access)||{}; const _accArr=(this.showAccess!==false)?(_accStore[this.curLevel]||[]):[];
+    { const _accArr=(this.showAccess!==false)?this._accDisplay(this.curLevel,this._accMon()).arr:[];
       _accArr.forEach((w,ai)=>{ if(!w.pts||w.pts.length<2)return; const pj=w.pts.map(q=>this.proj(q,H)); s+=this._accArrowSVG(pj,'#1e3a8a',false,'accessline',` data-aci="${ai}"`); });
+      if(this._drawingAcc){ _accArr.forEach((w,ai)=>{ if(!w.pts)return; w.pts.forEach((q,pi)=>{ const r=this.proj(q,H); s+=`<circle class="accvtx" data-aci="${ai}" data-pi="${pi}" cx="${r[0].toFixed(1)}" cy="${r[1].toFixed(1)}" r="520" fill="#1e3a8a" stroke="#fff" stroke-width="150" style="cursor:move"/>`; }); }); }
       if(this._drawingAcc&&this._accBuf&&this._accBuf.length){ const pj=this._accBuf.map(q=>this.proj(q,H));
         if(pj.length>=2)s+=this._accArrowSVG(pj,'#c8102e',true);
         pj.forEach(r=>{s+=`<circle cx="${r[0].toFixed(0)}" cy="${r[1].toFixed(0)}" r="560" fill="#c8102e" stroke="#fff" stroke-width="120" style="pointer-events:none"/>`;}); }
@@ -1234,6 +1235,10 @@ class Component extends DCLogic {
     this.svg.querySelectorAll('.corewall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.cwi;const slv=el.dataset.cwlv||this.curLevel;ev.stopPropagation();if(this._drawingCore){this._shapeMenu('core',idx,slv);return;}this._openShape(this._shapeArr('core',slv)[idx],slv);}));   // 画模式=菜单(删/改名); 平时=按名字自动匹配的数据打开
     this.svg.querySelectorAll('.liftwall').forEach(el=>el.addEventListener('click',ev=>{const idx=+el.dataset.lwi;const slv=el.dataset.lwlv||this.curLevel;ev.stopPropagation();if(this._drawingLift){this._shapeMenu('lift',idx,slv);return;}this._openShape(this._shapeArr('lift',slv)[idx],slv);}));
     this.svg.querySelectorAll('.accessline').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();if(this._drawingAcc){this._delAccess(this.curLevel,+el.dataset.aci);}}));   // 画模式下点线=删除
+    if(this._drawingAcc){ const _lv=this.curLevel,_H=this.DATA.levels[_lv].h,_mon=this._accMon();   // 画模式下: 拖动圆点微调点位
+      const _cs=(e)=>{try{const pt=this.svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());return [p.x,p.y];}catch(_){const r=this.svg.getBoundingClientRect();return [this.vb.x+(e.clientX-r.left)/r.width*this.vb.w,this.vb.y+(e.clientY-r.top)/r.height*this.vb.h];}};
+      this.svg.querySelectorAll('.accvtx').forEach(el=>el.addEventListener('mousedown',ev=>{ev.stopPropagation();ev.preventDefault();const aci=+el.dataset.aci,pi=+el.dataset.pi,arr=this._accArr(_lv,_mon),w=arr[aci];if(!w||!w.pts)return;const line=this.svg.querySelector('.accessline[data-aci="'+aci+'"]');let moved=false;const mv=e=>{const c=_cs(e);moved=true;w.pts[pi]=[c[0],_H-c[1]];el.setAttribute('cx',c[0].toFixed(1));el.setAttribute('cy',c[1].toFixed(1));if(line)line.setAttribute('points',w.pts.map(q=>{const r=this.proj(q,_H);return r[0].toFixed(1)+','+r[1].toFixed(1);}).join(' '));};const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);if(moved){this._saveAccess();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);}));
+    }
     this.svg.querySelectorAll('.zone').forEach(el=>{
       el.addEventListener('mousemove',ev=>this.showTip(ev,+el.dataset.i));
       el.addEventListener('mouseleave',()=>this.tip.style.opacity=0);
@@ -1438,7 +1443,7 @@ class Component extends DCLogic {
     if(this.showBeams && this.DATA.beamlines && this.DATA.beamlines[this.curLevel]) s+=`<div class="lr"><span style="width:18px;border-top:2px solid var(--beam)"></span>Steel-main-beam lines (approx.)</div>`;
     if(this.showCrit)s+=`<div class="lr"><span style="width:13px;color:var(--crit);font-weight:800;text-align:center">Ab</span>Red zone name = critical path</div>`;
     if(this.showSeq && this.rwsIsAdmin())s+=`<div class="lr"><span class="sw" style="border-radius:50%;background:var(--dim);color:#fff;font-size:8px;text-align:center;line-height:13px;font-weight:800">#</span>Pour sequence</div>`;
-    {const _acc=(this.showAccess!==false&&this._appCfg&&this._appCfg.access&&this._appCfg.access[this.curLevel])||[];if(_acc.length)s+=`<div class="lr"><svg width="28" height="13" viewBox="0 0 28 13" style="flex:0 0 auto"><line x1="5" y1="6.5" x2="21" y2="6.5" stroke="#1e3a8a" stroke-width="2.4"/><polygon points="28,6.5 20,2.5 20,10.5" fill="#1e3a8a"/><circle cx="4" cy="6.5" r="4" fill="#1e3a8a" stroke="#fff" stroke-width="1.4"/></svg>Access route (● start → direction)</div>`;}
+    {const _acc=(this.showAccess!==false)?this._accDisplay(this.curLevel,this._accMon()).arr:[];if(_acc.length)s+=`<div class="lr"><svg width="28" height="13" viewBox="0 0 28 13" style="flex:0 0 auto"><line x1="5" y1="6.5" x2="21" y2="6.5" stroke="#1e3a8a" stroke-width="2.4"/><polygon points="28,6.5 20,2.5 20,10.5" fill="#1e3a8a"/><circle cx="4" cy="6.5" r="4" fill="#1e3a8a" stroke="#fff" stroke-width="1.4"/></svg>Access route (● start → direction)</div>`;}
     if(this.showAreaBounds){s+=`<div style="font-weight:700;color:var(--txt);margin:5px 0 2px">Area boundaries</div>`;
       const ld={EB:'solid',NB:'solid',MA:'solid'};
       Object.keys(this.BCOL).forEach(k=>{const cc=this.CAT[k];s+=`<div class="lr"><span style="width:18px;border-top:3px ${ld[k]||'solid'} ${this.BCOL[k]}"></span>${cc.label}</div>`;});
@@ -1582,7 +1587,12 @@ class Component extends DCLogic {
   _liftCancel(){this._liftBuf=[];this._drawingLift=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _saveLifts(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','lifts',this._appCfg.lifts||{},null,null);}
   /* ---- 在图上画 Access(带箭头的折线, 可多点拐弯, admin) —— 存 settings, 云端同步 ---- */
-  toggleDrawAcc(){if(!this.rwsIsAdmin())return;this._drawingAcc=!this._drawingAcc;this._accBuf=[];if(this._drawingAcc){this._placingCol=false;this._hidingCol=false;this._drawingCore=false;this._drawingLift=false;this._toast&&this._toast('点地图逐点画线(可拐弯), 点完按 ✓ 完成');}if(this.svg)this.svg.style.cursor=this._drawingAcc?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
+  toggleDrawAcc(){if(!this.rwsIsAdmin())return;this._drawingAcc=!this._drawingAcc;this._accBuf=[];
+    if(this._drawingAcc){this._placingCol=false;this._hidingCol=false;this._drawingCore=false;this._drawingLift=false;
+      const lv=this.curLevel,mon=this._accMon(),o=this._accLevelObj(lv);
+      if(!(o[mon]&&o[mon].length)){const p=this._accPrevArr(lv,mon);if(p){o[mon]=p.arr.map(w=>({pts:(w.pts||[]).map(q=>q.slice())}));this._saveAccess();this._toast&&this._toast('已复制 '+p.mon+' 的路线到 '+mon+' · 拖动圆点微调');}else{this._toast&&this._toast('点地图逐点画线(可拐弯), 点完按 ✓ 完成');}}
+      else this._toast&&this._toast('拖动圆点微调 · 继续点地图可加新线 · 点线可删');}
+    if(this.svg)this.svg.style.cursor=this._drawingAcc?'crosshair':'';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _accClickAt(clientX,clientY){if(!this._drawingAcc||!this.rwsIsAdmin())return;const lv=this.curLevel,L=this.DATA.levels[lv];if(!L)return;const H=L.h;let sx,sy;
     try{const pt=this.svg.createSVGPoint();pt.x=clientX;pt.y=clientY;const p=pt.matrixTransform(this.svg.getScreenCTM().inverse());sx=p.x;sy=p.y;}
     catch(e){const r=this.svg.getBoundingClientRect();sx=this.vb.x+(clientX-r.left)/r.width*this.vb.w;sy=this.vb.y+(clientY-r.top)/r.height*this.vb.h;}
@@ -1590,11 +1600,17 @@ class Component extends DCLogic {
   _accUndo(){if(this._accBuf&&this._accBuf.length){this._accBuf.pop();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}}
   _accCancel(){this._accBuf=[];this._drawingAcc=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
   _saveAccess(){try{localStorage.setItem('rws_app_cfg',JSON.stringify(this._appCfg));}catch(e){}if(typeof rwsSyncKV==='function')rwsSyncKV('settings','access',this._appCfg.access||{},null,null);}
+  /* Access 路线现在按月份存: access[lv] = { "Aug'26":[{pts}], ... }。旧格式 access[lv]=[{pts}] 自动迁移到当前月份 */
+  _accMon(){return this.planMonth();}
+  _accLevelObj(lv){this._appCfg=this._appCfg||{};const ac=this._appCfg.access=this._appCfg.access||{};let o=ac[lv];if(Array.isArray(o)){const mo={};if(o.length)mo[this.planMonth()]=o;ac[lv]=mo;o=mo;this._saveAccess();}else if(!o||typeof o!=='object'){o=ac[lv]={};}return o;}
+  _accArr(lv,mon){return this._accLevelObj(lv)[mon||this._accMon()]||[];}
+  _accPrevArr(lv,mon){const o=this._accLevelObj(lv);const i=this.ACT_MONTHS.indexOf(mon);for(let j=i-1;j>=0;j--){const a=o[this.ACT_MONTHS[j]];if(a&&a.length)return {mon:this.ACT_MONTHS[j],arr:a};}return null;}
+  _accDisplay(lv,mon){const own=this._accArr(lv,mon);if(own&&own.length)return {arr:own,inherited:false,src:mon};const p=this._accPrevArr(lv,mon);if(p)return {arr:p.arr,inherited:true,src:p.mon};return {arr:[],inherited:false,src:mon};}
   _accFinish(){if(!this._accBuf||this._accBuf.length<2){this._toast&&this._toast('至少点 2 个点画一条线 / need ≥2 points');return;}
-    const lv=this.curLevel;const pts=this._accBuf.slice();
-    this._appCfg=this._appCfg||{};const ac=this._appCfg.access=this._appCfg.access||{};const arr=ac[lv]=ac[lv]||[];
+    const lv=this.curLevel,mon=this._accMon();const pts=this._accBuf.slice();
+    const o=this._accLevelObj(lv);const arr=o[mon]=o[mon]||[];
     arr.push({pts});this._saveAccess();this._accBuf=[];this._drawingAcc=false;if(this.svg)this.svg.style.cursor='';this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}
-  _delAccess(lv,idx){this._confirmModal('删除这条 Access 线?',()=>{const arr=(this._appCfg&&this._appCfg.access&&this._appCfg.access[lv])||[];if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveAccess();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
+  _delAccess(lv,idx){const mon=this._accMon();this._confirmModal('删除这条 Access 线('+mon+')?',()=>{const arr=this._accArr(lv,mon);if(idx>=0&&idx<arr.length){arr.splice(idx,1);this._saveAccess();this.render();this.refreshSubzPanel&&this.refreshSubzPanel();}});}
   _accArrowSVG(projPts,color,dash,cls,dataAttr){ if(!projPts||projPts.length<2)return '';
     let out=`<polyline${cls?' class="'+cls+'"':''}${dataAttr||''} points="${projPts.map(r=>r[0].toFixed(1)+','+r[1].toFixed(1)).join(' ')}" fill="none" stroke="${color}" stroke-width="640" stroke-linejoin="round" stroke-linecap="round"${dash?' stroke-dasharray="1600,900"':''} style="pointer-events:stroke;cursor:pointer"/>`;
     const S=2900,W=1550,GAP=(this._accArrowGap||11000);   // 箭头大小 + 间距(整条线上每隔 GAP 一个)
@@ -2372,7 +2388,7 @@ class Component extends DCLogic {
       const _hasLF=this._appCfg&&this._appCfg.lifts&&Object.values(this._appCfg.lifts).some(a=>a&&a.length);
       if(_hasCW) mkToggle(this.showCoreWalls!==false,`<span style="width:10px;height:10px;background:#22c55e;display:inline-block;border-radius:2px"></span>Core walls`,()=>{this.showCoreWalls=(this.showCoreWalls===false);this.buildMetrics();this.render();});
       if(_hasLF) mkToggle(this.showLifts!==false,`<span style="width:10px;height:10px;background:#2a6bd6;display:inline-block;border-radius:2px"></span>Staircase`,()=>{this.showLifts=(this.showLifts===false);this.buildMetrics();this.render();});
-      const _hasAcc=this._appCfg&&this._appCfg.access&&Object.values(this._appCfg.access).some(a=>a&&a.length);
+      const _hasAcc=this._appCfg&&this._appCfg.access&&Object.values(this._appCfg.access).some(a=>Array.isArray(a)?a.length:(a&&typeof a==='object'&&Object.values(a).some(x=>x&&x.length)));
       if(_hasAcc) mkToggle(this.showAccess!==false,`<span style="width:11px;height:11px;background:#1e3a8a;display:inline-block;border-radius:50%"></span>Access`,()=>{this.showAccess=(this.showAccess===false);this.buildMetrics();this.render();});
     }
     this.refreshSubzPanel();
