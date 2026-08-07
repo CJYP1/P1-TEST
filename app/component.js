@@ -1282,12 +1282,18 @@ class Component extends DCLogic {
   paintSel(){const L=this.DATA.levels[this.curLevel],H=L.h;
     const old=this.svg.querySelector('#selovl');if(old)old.remove();
     this.svg.querySelectorAll('.zone').forEach(el=>el.classList.remove('sel'));
-    if(!this.selKey)return;
     const col=this.cssvar('--txt');let ov='';
-    L.zones.forEach((z,i)=>{if(this.zid(z)!==this.selKey)return;
-      const el=this.svg.querySelector('.zone[data-i="'+i+'"]');if(el)el.classList.add('sel');
-      const pts=z.ring.map(p=>{const q=this.proj(p,H);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');
-      ov+=`<polygon points="${pts}" fill="none" stroke="${col}" stroke-width="560" stroke-linejoin="round" pointer-events="none"/><polygon points="${pts}" fill="none" stroke="var(--accent)" stroke-width="200" stroke-linejoin="round" pointer-events="none"/>`;});
+    const _ring=pts=>`<polygon points="${pts}" fill="none" stroke="${col}" stroke-width="560" stroke-linejoin="round" pointer-events="none"/><polygon points="${pts}" fill="none" stroke="var(--accent)" stroke-width="200" stroke-linejoin="round" pointer-events="none"/>`;
+    if(this.selKey){
+      L.zones.forEach((z,i)=>{if(this.zid(z)!==this.selKey)return;
+        const el=this.svg.querySelector('.zone[data-i="'+i+'"]');if(el)el.classList.add('sel');
+        const pts=z.ring.map(p=>{const q=this.proj(p,H);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');
+        ov+=_ring(pts);});
+    } else if(this._subOpen){   /* 选中的是 marine 细分(C/P): 按其几何画选中外框 */
+      const SL=this.SUBZONES&&this.SUBZONES[this.curLevel];
+      const e=SL&&SL[this._subOpen.kind]&&SL[this._subOpen.kind][this._subOpen.i];
+      if(e&&e.pts){const pts=e.pts.map(p=>{const q=this.proj(p,H);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');ov+=_ring(pts);}
+    }
     if(ov)this.svg.insertAdjacentHTML('beforeend',`<g id="selovl">${ov}</g>`);
   }
 
@@ -1334,7 +1340,7 @@ class Component extends DCLogic {
     if(editable){
       // 直接复用 ZC 的完整分区面板(含 ACTIVITIES/月份切换/STATUS/日期/锁), 合成一个只属于此细分的分区
       const _mcols=(kind==='P'&&this._marineCol&&this._marineCol[e.label])?this._marineCol[e.label].map(c=>({id:c.id,sz:c.sz||'',c:c.c?1:0})):[];
-      const sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:e.a,
+      const sz={mk:lv+'|'+e.label,label:e.label,cat:'MA',area:(kind==='P'?0:e.a),   /* Podium(P)不需要 area 总量 → 置空; 加权仍用 SUBZONES 原始面积 */
         grp:(kind==='P'?e.label:''),fam:(kind==='P'?('Pour group '+e.label):'Marine sub-division'),
         cols:_mcols,piles:[],beams:[],lifts:[],stairs:[],sub:[],
         counts:{columns:_mcols.length,pilecap:0,mainbeam:0,steelbeam:0},crit:false,_pod:(kind==='P'),_mslab:(kind==='C')};
@@ -1349,7 +1355,7 @@ class Component extends DCLogic {
     this._subOpen=null;
     sb.innerHTML=`<div class="zsticky"><span class="back" id="subback"><span class="bkarrow">‹</span> Back</span><span class="zst-info"><b>${this.esc(e.label)}</b></span></div>
       <div class="sec"><div class="t">${t}</div>
-      <div class="row" style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--dim)">Area</span><b>${this.fmt(e.a)} m²</b></div>
+      ${kind==='P'?'':`<div class="row" style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--dim)">Area</span><b>${this.fmt(e.a)} m²</b></div>`}
       ${rows.map(r=>`<div class="row" style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--dim)">${r[0]}</span><b style="text-align:right;max-width:60%">${this.esc(r[1])}</b></div>`).join('')}
       <div style="font-size:10px;color:var(--faint);margin-top:8px">Overlay reference layer — quantities & progress stay on the main zones.</div></div>`;
     const bk=sb.querySelector('#subback'); if(bk)bk.addEventListener('click',()=>{this._subOpen=null;this.selKey=null;this.paintSel&&this.paintSel();this.buildList();});
@@ -2001,7 +2007,7 @@ class Component extends DCLogic {
         </div>
       </div>
       <div class="statgrid">
-        ${z._pod?'':this.statCell(lv,z.mk||z.lid,'area','Area m²',z.area||0)}
+        ${z.area?this.statCell(lv,z.mk||z.lid,'area','Area m²',z.area):''}
         ${!(z.cat==='NB'&&(lv==='B2'||lv==='B1'))?'':this.excAuto(lv,z)!=null?`<div class="stat" title="Auto-computed for new basement: area \u00d7 depth"><div class="n">${this.fmt(this.excTotal(lv,z))}</div><div class="l">Excavation m\u00b3</div><div class="statcalc">${this.fmt(z.area||0)} m\u00b2 \u00d7 ${this.excDepth(lv)} m</div></div>`:(this.rwsIsAdmin()?`<div class="stat"><input class="exc-ov-in" value="${this.actTotal(lv,z.mk||z.lid,'exc','')}" placeholder="\u2014" title="Excavation total m\u00b3 (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">Excavation m\u00b3</div></div>`:(this.actTotal(lv,z.mk||z.lid,'exc',0)?`<div class="stat"><div class="n">${this.fmt(this.actTotal(lv,z.mk||z.lid,'exc',0))}</div><div class="l">Excavation m\u00b3</div></div>`:''))}
         ${!(z.cat==='EB'&&(lv==='B2'||lv==='B1'))?'':this.rwsIsAdmin()?`<div class="stat"><input class="demo-ov-in" value="${this.actTotal(lv,z.mk||z.lid,'demo','')}" placeholder="\u2014" title="Demolition total m\u00b3 (admin)" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">Demolition m\u00b3</div></div>`:(this.actTotal(lv,z.mk||z.lid,'demo',0)?`<div class="stat"><div class="n">${this.fmt(this.actTotal(lv,z.mk||z.lid,'demo',0))}</div><div class="l">Demolition m\u00b3</div></div>`:'')}
         ${this._actList(lv,z).filter(a=>a.id!=='exc'&&a.id!=='demo'&&(a.id!=='pile'||lv==='B2')).map(a=>{const zmk=z.mk||z.lid;const hidden=this.actHidden(lv,zmk,a.id);if(!this.rwsIsAdmin()&&hidden)return '';const tot=this.actTotal(lv,zmk,a.id,a.total);const lab=this.esc(a.label)+(a.unit?' '+this.esc(a.unit):'');const _isOv=this.actTotal(lv,zmk,a.id,null)!=null;const _autoTag=(!_isOv&&tot!=null)?' <span style="font-weight:600;color:var(--faint);font-size:8px;text-transform:none">· auto</span>':'';if(this.rwsIsAdmin())return `<div class="stat"><input class="actot-ov-in" data-a="${this.esc(a.id)}" value="${tot==null?'':tot}" placeholder="—" title="${this.esc(a.label)} total (admin) — ${_isOv?'manually set; clear to restore auto-calc from the Activities data below':'auto-calculated by summing the Activities plan quantities below — type a value to override'}" style="width:100%;background:var(--panel);border:1px dashed var(--accent);border-radius:5px;padding:2px 5px;font-size:15px;font-weight:700;color:var(--accent);text-align:left"><div class="l">${lab}${_autoTag}${this._lockIco('act_total',lv+'||'+zmk+'||'+a.id)}</div></div>`;return tot?`<div class="stat"><div class="n">${this.fmt(tot)}</div><div class="l">${lab}</div></div>`:'';}).join('')}
