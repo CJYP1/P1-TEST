@@ -1,15 +1,25 @@
-# 自动构建: 在 GitHub 网页上改 CSV / 源文件后, 推送即自动校验并重新生成
-name: auto-build
+# 构建并部署到 GitHub Pages
+# 每次 push 到 main: 校验 CSV → 重新生成 bundle → 直接部署到 Pages。
+# 关键: workflow 级 concurrency + cancel-in-progress=true ——
+#   新的一次部署会自动取消还在排队/进行中的旧部署, 永远不会堆队卡住。
+# 注意: 不再回推生成文件(之前那个 auto-build 提交会二次触发部署, 是卡队的根源)。
+#   → 仓库 Settings → Pages → Source 需设为 "GitHub Actions"。
+name: build-and-deploy
 on:
   push:
-    paths:
-      - 'app/**'
-      - 'presentation/**'
-      - 'data-csv/**'
-      - 'tools/**'
+    branches: [main]
   workflow_dispatch: {}
+
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只保留最新一次部署, 旧的自动取消(不再一个个排队)
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,10 +36,19 @@ jobs:
         run: python tools/build.py
       - name: 重新生成 L1 标记清单
         run: python tools/mark_l1.py
-      - name: 提交生成结果
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet || git commit -m "auto-build: 重新生成 bundle 与数据"
-          git push
+      - uses: actions/configure-pages@v5
+      - name: 打包站点(整个仓库根目录作为静态站点)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
